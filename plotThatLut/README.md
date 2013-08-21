@@ -2,7 +2,7 @@ Plot that LUT
 ========================
 
 Plot that LUT is a python script for plotting look up tables.
-It uses [OpenColorIO](http://opencolorio.org/) to read input LUTs and [matplotlib](http://matplotlib.org/) to plot results.
+It uses [OpenColorIO](http://opencolorio.org/) to read and process input LUTs, and [matplotlib](http://matplotlib.org/) to plot results.
 
 Supported LUT formats : 3dl, ccc, cc, csp, cub, cube, hdl, look, mga/m3d, spid1d, spi3d, spimtx, vf.
 See [OpenColorIO FAQ](http://opencolorio.org/FAQ.html) for more informations.
@@ -11,7 +11,7 @@ Requirements
 ------------
 - Python
 - matplotlib + a backend (for exemple Qt, Gtk...)
-- OpenColorIO binding
+- OpenColorIO Python binding
 
 Tested config
 -------------
