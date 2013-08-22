@@ -12,6 +12,19 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.pyplot import figure
 from matplotlib.colors import rgb2hex
 
+OCIO_LUTS_FORMATS =     ['.3dl',
+                        '.csp',
+                        '.cub',
+                        '.cube',
+                        '.hdl',
+                        '.look',
+                        '.mga/m3d',
+                        '.spi1d',
+                        '.spi3d',
+                        '.spimtx',
+                        '.vf'
+                        ]
+
 """
 createOCIOProcessor
 lutfile : path to a LUT
@@ -118,8 +131,13 @@ def testLUT3D():
     lutfile = "testFiles/identity.3dl"
     plot3DLUT(lutfile, cubeSize=17)
 
+def dumpSupportedFomats():
+    print "Supported LUT formats : " + ', '.join(OCIO_LUTS_FORMATS)
+
 def dumpHelp():
     print "--- Help ---"
+    dumpSupportedFomats()
+    print "How to plot : "
     print "* To plot a 1D LUT : ./plotThatLut.py <path to a lut> 1D <samples count>"
     print "* To plot a 3D LUT : ./plotThatLut.py <path to a lut> 3D <cube size>"
     print "ex :"
@@ -132,6 +150,16 @@ def main():
         dumpHelp()
     else:
         lutfile = sys.argv[1]
+        # check if LUT format is supported
+        fileext = path.splitext(lutfile)[1]
+        if not fileext:
+            print "Error: Couldn't extract extension in this path : "+ lutfile
+            sys.exit(1)
+        if fileext not in OCIO_LUTS_FORMATS:
+            print "Error: " + fileext + " file format aren't supported."
+            dumpSupportedFomats()
+            sys.exit(1)
+        # set Args from the command line
         lutType = sys.argv[2]
         count = int(sys.argv[3])
         if lutType=='1D':
