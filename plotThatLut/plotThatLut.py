@@ -141,7 +141,7 @@ def dumpHelp():
     print "./plotThatLut.py testFiles/identity.3dl 3D 17"
 
 def main():
-    if len(sys.argv) < 4:
+    if len(sys.argv) < 2:
         print "Syntax error !"
         dumpHelp()
     else:
@@ -155,11 +155,26 @@ def main():
             print "Error: " + fileext + " file format aren't supported."
             dumpSupportedFomats()
             sys.exit(1)
-        # set Args from the command line
-        lutType = sys.argv[2]
-        count = int(sys.argv[3])
         # create OCIO processor
         processor = createOCIOProcessor(lutfile, INTERP_LINEAR)
+        # init args
+        if len(sys.argv) == 4:
+            # set args from the command line
+            lutType = sys.argv[2]
+            count = int(sys.argv[3])
+        elif len(sys.argv) == 2:
+            # auto-detect args
+            if processor.hasChannelCrosstalk() or fileext == '.spimtx':
+                lutType = '3D'
+                count = 17
+            else:
+                lutType = '1D'
+                count = 256
+            print "Plotting a " + lutType + " LUT with " + str(count) + " samples."
+        else:
+            print "Syntax error !"
+            dumpHelp()
+            sys.exit(1)
         # plot
         if lutType=='1D':
             plot1DLUT(lutfile, count, processor)
