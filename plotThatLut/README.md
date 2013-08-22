@@ -4,7 +4,7 @@ Plot that LUT
 Plot that LUT is a python script for plotting look up tables.
 It uses [OpenColorIO](http://opencolorio.org/) to read and process input LUTs, and [matplotlib](http://matplotlib.org/) to plot results.
 
-Supported LUT formats : 3dl, ccc, cc, csp, cub, cube, hdl, look, mga/m3d, spid1d, spi3d, spimtx, vf.
+Supported LUT formats : 3dl, csp, cub, cube, hdl, look, mga/m3d, spid1d, spi3d, spimtx, vf.
 See [OpenColorIO FAQ](http://opencolorio.org/FAQ.html) for more informations.
 
 Requirements
@@ -19,11 +19,14 @@ Tested config
 
 Usage
 -----
-To plot a 1D LUT : ./plotThatLut.py < path to a lut > 1D < samples count >
->plotThatLut.py testFiles/identity.csp 1D 256
+* Dispay a cube (17 segments) for 3D LUTs and matrixes or a curve (256 points) for 1D/2D LUTs :   
+`plotThatLut.py < path to a LUT >`
 
-To plot a 3D LUT : ./plotThatLut.py < path to a lut > 3D < cube size >
->plotThatLut.py testFiles/identity.3dl 3D 17
+* Display a curve with x points (default value : 256) :   
+`plotThatLut.py < path to a LUT > curve [points count]`
+
+* Display a cube with x segments (default value : 17) :   
+`plotThatLut.py < path to a LUT > cube [cube size]`
 
 Screenshots
 -----------
