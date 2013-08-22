@@ -48,9 +48,7 @@ plot1DLUT
 lutfile : path to a LUT
 samplesCount : number of points for the displayed curve
 """
-def plot1DLUT(lutfile, samplesCount):
-    # create OCIO processor
-    processor = createOCIOProcessor(lutfile, INTERP_LINEAR)
+def plot1DLUT(lutfile, samplesCount, processor):
     # init vars
     maxValue = samplesCount - 1.0
     redValues = []
@@ -82,9 +80,7 @@ plot3DLUT
 lutfile : path to a LUT
 cubeSize : number of segments. Ex : If set to 17, 17*17*17 points will be displayed
 """
-def plot3DLUT(lutfile, cubeSize):
-    # create OCIO processor
-    processor = createOCIOProcessor(lutfile, INTERP_TETRAHEDRAL)
+def plot3DLUT(lutfile, cubeSize, processor):
     # init vars
     inputRange  = range(0, cubeSize)
     maxValue = cubeSize - 1.0
@@ -162,10 +158,13 @@ def main():
         # set Args from the command line
         lutType = sys.argv[2]
         count = int(sys.argv[3])
+        # create OCIO processor
+        processor = createOCIOProcessor(lutfile, INTERP_LINEAR)
+        # plot
         if lutType=='1D':
-            plot1DLUT(lutfile, count)
+            plot1DLUT(lutfile, count, processor)
         elif lutType=='3D':
-            plot3DLUT(lutfile, count)
+            plot3DLUT(lutfile, count, processor)
         else:
             print "Unknown LUT tppe : " + lutType
             print "LUT type should be 1D or 3D."
