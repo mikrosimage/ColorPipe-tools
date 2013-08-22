@@ -1,4 +1,13 @@
 #!/usr/bin/python
+
+############################
+#
+# Plot That Lut
+# Version : 0.1
+# Author : mfe
+#
+############################
+
 ## imports
 from os import path
 from os import sys
