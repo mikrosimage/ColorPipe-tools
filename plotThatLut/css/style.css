@@ -1,0 +1,41 @@
+body {
+    margin: 0;
+    font-family: Verdana;
+    font-size: 14px;
+    color: #666;
+    background-color: #fff;
+}
+
+a:link {color: #666;}      /* unvisited link */
+a:visited {color: #666;}  /* visited link */
+a:hover {color: #666;}  /* mouse over link */
+a:active {color: #666;}  /* selected link */
+
+#header{
+    background-color: #ccc;
+    color: #fff;
+    font-family: Arial;
+    padding-left: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+#text{
+    font-family: Arial;
+    padding-left: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    line-height:40px; 
+}
+
+
+#content {
+    width: 640px;
+    height: 600px;
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
