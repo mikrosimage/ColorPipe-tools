@@ -3,7 +3,7 @@
 ############################
 #
 # Plot That Lut
-# Version : 0.1
+# Version : 0.2
 # Author : mfe
 #
 ############################
@@ -14,12 +14,16 @@ from os import sys
 # OpenColorIO
 from PyOpenColorIO import Config, ColorSpace, FileTransform
 from PyOpenColorIO.Constants import INTERP_NEAREST, INTERP_LINEAR, INTERP_TETRAHEDRAL, COLORSPACE_DIR_TO_REFERENCE
-# matplotlib : general plot
-from matplotlib.pyplot import title, plot, xlabel, ylabel, grid, show
-# matplotlib : for 3D plot
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib.pyplot import figure
-from matplotlib.colors import rgb2hex
+# matplotlib
+import matplotlib
+
+cherryPyMode = True
+
+def setMatplotlibBackend():
+    if cherryPyMode:
+        matplotlib.use('Agg')
+    else:
+        matplotlib.use('Qt4Agg')
 
 OCIO_LUTS_FORMATS =     ['.3dl',
                         '.csp',
@@ -36,6 +40,18 @@ OCIO_LUTS_FORMATS =     ['.3dl',
 
 DEFAULT_SAMPLE = 256
 DEFAULT_CUBE_SIZE = 17
+
+def showPlot(fig, filename):
+    if cherryPyMode:
+        splitFilename =  path.splitext(filename)
+        filename = splitFilename[0] + splitFilename[1].replace(".", "_")
+        exportPath = 'img/export_'+ filename +'.png'
+        print "export figure : " +exportPath
+        fig.savefig(exportPath)
+        return '<img src="/' + exportPath +'" width="640" height="480" border="0" />'
+    else:
+        matplotlib.pyplot.show()
+        return ""
 
 """
 createOCIOProcessor
@@ -61,6 +77,8 @@ lutfile : path to a color transformation file (lut, matrix...)
 samplesCount : number of points for the displayed curve
 """
 def plotCurve(lutfile, samplesCount, processor):
+    # matplotlib : general plot
+    from matplotlib.pyplot import title, plot, xlabel, ylabel, grid, show, figure
     # init vars
     maxValue = samplesCount - 1.0
     redValues = []
@@ -76,8 +94,10 @@ def plotCurve(lutfile, samplesCount, processor):
         blueValues.append(res[2])
         inputRange.append(x)
     # init plot
-    figure().canvas.set_window_title('Plot That 1D LUT')
-    title(path.basename(lutfile))
+    fig = figure()
+    fig.canvas.set_window_title('Plot That 1D LUT')
+    filename = path.basename(lutfile)
+    title(filename)
     xlabel("Input")
     ylabel("Output")
     grid(True)
@@ -85,7 +105,7 @@ def plotCurve(lutfile, samplesCount, processor):
     plot(inputRange, redValues, 'r-', label='Red values', linewidth=1)
     plot(inputRange, greenValues, 'g-', label='Green values', linewidth=1)
     plot(inputRange, blueValues, 'b-', label='Blue values', linewidth=1)
-    show()
+    return showPlot(fig, filename)
 
 """
 plotCube
@@ -93,6 +113,11 @@ lutfile : path to a color transformation file (lut, matrix...)
 cubeSize : number of segments. Ex : If set to 17, 17*17*17 points will be displayed
 """
 def plotCube(lutfile, cubeSize, processor):
+    # matplotlib : general plot
+    from matplotlib.pyplot import title, show, figure
+    # matplotlib : for 3D plot
+    from mpl_toolkits.mplot3d import Axes3D
+    from matplotlib.colors import rgb2hex
     # init vars
     inputRange  = range(0, cubeSize)
     maxValue = cubeSize - 1.0
@@ -126,10 +151,11 @@ def plotCube(lutfile, cubeSize, processor):
     ax.set_xlim(min(redValues),max(redValues))
     ax.set_ylim(min(greenValues),max(greenValues))
     ax.set_zlim(min(blueValues),max(blueValues))
-    title(path.basename(lutfile))
+    filename = path.basename(lutfile)
+    title(filename)
     # plot 3D values
     ax.scatter(redValues, greenValues, blueValues, c=colors, marker="o")
-    show()
+    return showPlot(fig, filename)
 
 def testLUT1D():
     lutfile = "testFiles/identity.csp"
@@ -139,68 +165,74 @@ def testLUT3D():
     lutfile = "testFiles/identity.3dl"
     plotCube(lutfile, cubeSize=DEFAULT_CUBE_SIZE)
 
-def dumpSupportedFomats():
-    print "Supported LUT formats : " + ', '.join(OCIO_LUTS_FORMATS)
+def supportedFormats():
+    return "Supported LUT formats : " + ', '.join(OCIO_LUTS_FORMATS)
 
-def dumpHelp():
-    print "----"
-    print "plotThatLut.py <path to a LUT>                               :   dispay a cube ("+ str(DEFAULT_CUBE_SIZE) +" segments) for 3D LUTs and matrixes"
-    print "                                                                 or a curve ("+ str(DEFAULT_SAMPLE) +" points) for 1D/2D LUTs.\n"
-    print "plotThatLut.py <path to a LUT> curve [points count]          :   display a curve with x points (default value : "+ str(DEFAULT_SAMPLE) +").\n"
-    print "plotThatLut.py <path to a LUT> cube [cube size]              :   display a cube with x segments (default value : "+ str(DEFAULT_CUBE_SIZE) +").\n"
-    dumpSupportedFomats()
+def help():
+    h = "----\n"
+    h += "plotThatLut.py <path to a LUT>                               :   dispay a cube ("+ str(DEFAULT_CUBE_SIZE) +" segments) for 3D LUTs and matrixes\n"
+    h += "                                                                 or a curve ("+ str(DEFAULT_SAMPLE) +" points) for 1D/2D LUTs.\n"
+    h += "plotThatLut.py <path to a LUT> curve [points count]          :   display a curve with x points (default value : "+ str(DEFAULT_SAMPLE) +").\n"
+    h += "plotThatLut.py <path to a LUT> cube [cube size]              :   display a cube with x segments (default value : "+ str(DEFAULT_CUBE_SIZE) +").\n"
+    h += supportedFormats()
+    return h
 
-def main():
-    if len(sys.argv) < 2:
-        print "Syntax error !"
-        dumpHelp()
-    else:
-        lutfile = sys.argv[1]
-        # check if LUT format is supported
-        fileext = path.splitext(lutfile)[1]
-        if not fileext:
-            print "Error: Couldn't extract extension in this path : "+ lutfile
-            sys.exit(1)
-        if fileext not in OCIO_LUTS_FORMATS:
-            print "Error: " + fileext + " file format aren't supported."
-            dumpSupportedFomats()
-            sys.exit(1)
-        # create OCIO processor
-        processor = createOCIOProcessor(lutfile, INTERP_LINEAR)
-        # init args
-        if len(sys.argv) == 4:
-            # set args from the command line
-            plotType = sys.argv[2]
-            count = int(sys.argv[3])
-        elif len(sys.argv) == 3:
-            # set plotType from the command line and init default count
-            plotType = sys.argv[2]
-            if plotType=='curve':
-                count = DEFAULT_SAMPLE
-            else:
-                count = DEFAULT_CUBE_SIZE
-        elif len(sys.argv) == 2:
-            # auto-detect args
-            if processor.hasChannelCrosstalk() or fileext == '.spimtx':
-                plotType = 'cube'
-                count = DEFAULT_CUBE_SIZE
-            else:
-                plotType = 'curve'
-                count = DEFAULT_SAMPLE
+def plotThatLut(lutfile, plotType=None, count=None):
+    setMatplotlibBackend()
+    # check if LUT format is supported
+    fileext = path.splitext(lutfile)[1]
+    if not fileext:
+        raise Exception("Error: Couldn't extract extension in this path : "+ lutfile)
+    if fileext not in OCIO_LUTS_FORMATS:
+        raise Exception( "Error: " + fileext + " file format aren't supported.\n" + supportedFormats())
+    # create OCIO processor
+    processor = createOCIOProcessor(lutfile, INTERP_LINEAR)
+    # init args
+    if not plotType or plotType == 'auto':
+        if processor.hasChannelCrosstalk() or fileext == '.spimtx':
+            plotType = 'cube'
         else:
-            print "Syntax error !"
-            dumpHelp()
-            sys.exit(1)
-        # plot
-        print "Plotting a " + plotType + " with " + str(count) + " samples..."
+            plotType = 'curve'
+    if not count or count == 'auto' :
+        # set plotType from the command line and init default count
         if plotType=='curve':
-            plotCurve(lutfile, count, processor)
-        elif plotType=='cube':
-            plotCube(lutfile, count, processor)
+            count = DEFAULT_SAMPLE
         else:
-            print "Unknown plot type : " + plotType
-            print "Plot type should be curve or cube."
-            dumpHelp()
+            count = DEFAULT_CUBE_SIZE
+    # plot
+    print "Plotting a " + plotType + " with " + str(count) + " samples..."
+    if plotType=='curve':
+        return plotCurve(lutfile, count, processor)
+    elif plotType=='cube':
+        return plotCube(lutfile, count, processor)
+    else:
+        raise Exception( "Unknown plot type : " + plotType + "\n"
+        + "Plot type should be curve or cube.\n" + help())
 
 if __name__ == '__main__':
-    main()
+    cherryPyMode = False
+    paramsCount = len(sys.argv)
+    lutfile =""
+    plotType = None
+    count = None
+    if paramsCount < 2:
+        print "Syntax error !"
+        print help()
+        sys.exit(1)
+    elif paramsCount == 2:
+        lutfile = sys.argv[1]
+    elif paramsCount == 3:
+        lutfile = sys.argv[1]
+        plotType = sys.argv[2]
+    elif paramsCount == 4:
+        lutfile = sys.argv[1]
+        plotType = sys.argv[2]
+        count = int(sys.argv[3])
+    else:
+        print "Syntax error !"
+        print help()
+        sys.exit(1)
+    try:
+        plotThatLut(lutfile, plotType, count)
+    except Exception, e:
+        print "Watch out !\n%s" % e
