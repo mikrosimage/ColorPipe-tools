@@ -53,12 +53,15 @@ def showPlot(fig, filename):
         matplotlib.pyplot.show()
         return ""
 
-"""
-createOCIOProcessor
-lutfile : path to a LUT
-interpolation : can be INTERP_NEAREST, INTERP_LINEAR or INTERP_TETRAHEDRAL (only for 3D LUT)
-"""
 def createOCIOProcessor(lutfile, interpolation):
+    """
+    Create an OpenColorIO processor for lutfile
+
+    Keyword arguments:
+    lutfile -- path to a LUT
+    interpolation -- can be INTERP_NEAREST, INTERP_LINEAR or INTERP_TETRAHEDRAL (only for 3D LUT)
+
+    """
     config = Config()
     # In colorspace (LUT)
     colorspace = ColorSpace(name='RawInput')
@@ -71,12 +74,16 @@ def createOCIOProcessor(lutfile, interpolation):
     # Create a processor corresponding to the LUT transformation
     return config.getProcessor('RawInput', 'ProcessedOutput')
 
-"""
-plotCurve
-lutfile : path to a color transformation file (lut, matrix...)
-samplesCount : number of points for the displayed curve
-"""
+
 def plotCurve(lutfile, samplesCount, processor):
+    """
+    plot lutfile as a curve
+
+    Keyword arguments:
+    lutfile -- path to a color transformation file (lut, matrix...)
+    samplesCount -- number of points for the displayed curve
+
+    """
     # matplotlib : general plot
     from matplotlib.pyplot import title, plot, xlabel, ylabel, grid, show, figure
     # init vars
@@ -107,12 +114,15 @@ def plotCurve(lutfile, samplesCount, processor):
     plot(inputRange, blueValues, 'b-', label='Blue values', linewidth=1)
     return showPlot(fig, filename)
 
-"""
-plotCube
-lutfile : path to a color transformation file (lut, matrix...)
-cubeSize : number of segments. Ex : If set to 17, 17*17*17 points will be displayed
-"""
 def plotCube(lutfile, cubeSize, processor):
+    """
+    plot lutfile as a cubue
+
+    Keyword arguments:
+    lutfile -- path to a color transformation file (lut, matrix...)
+    cubeSize -- number of segments. Ex : If set to 17, 17*17*17 points will be displayed
+
+    """
     # matplotlib : general plot
     from matplotlib.pyplot import title, show, figure
     # matplotlib : for 3D plot
