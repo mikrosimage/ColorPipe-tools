@@ -36,11 +36,14 @@ DEFAULT_CUBE_SIZE = 17
 def showPlot(fig, filename):
     if cherryPyMode:
         splitFilename = path.splitext(filename)
-        filename = splitFilename[0] + splitFilename[1].replace(".", "_")
-        exportPath = 'img/export_' + filename + '.png'
-        print "export figure : " + exportPath
+        filename = '{0}{1}'.format(splitFilename[0],
+                                   splitFilename[1].replace(".", "_"))
+        exportPath = 'img/export_{0}.png'.format(filename)
         fig.savefig(exportPath)
-        return '<img src="/' + exportPath + '" width="640" height="480" border="0" />'
+        return """
+               <img src="/{0}"" width="640" height="480"
+               border="0"/>
+               """.format(exportPath)
     else:
         matplotlib.pyplot.show()
         return ""
@@ -177,17 +180,25 @@ def testLUT3D():
 
 
 def supportedFormats():
-    return "Supported LUT formats : " + ', '.join(OCIO_LUTS_FORMATS)
+    return "Supported LUT formats : {0}".format(', '.join(OCIO_LUTS_FORMATS))
 
 
 def help():
-    h = "----\n"
-    h += "plotThatLut.py <path to a LUT>                               :   dispay a cube ("+ str(DEFAULT_CUBE_SIZE) +" segments) for 3D LUTs and matrixes\n"
-    h += "                                                                 or a curve ("+ str(DEFAULT_SAMPLE) +" points) for 1D/2D LUTs.\n"
-    h += "plotThatLut.py <path to a LUT> curve [points count]          :   display a curve with x points (default value : "+ str(DEFAULT_SAMPLE) +").\n"
-    h += "plotThatLut.py <path to a LUT> cube [cube size]              :   display a cube with x segments (default value : "+ str(DEFAULT_CUBE_SIZE) +").\n"
-    h += supportedFormats()
-    return h
+    return """
+----
+plotThatLut.py <path to a LUT>
+            dispay a cube ({0} segments) for 3D LUTs and matrixes
+            or a curve ({1} points) for 1D/2D LUTs.
+
+plotThatLut.py <path to a LUT> curve [points count]
+            display a curve with x points (default value : {2}).
+
+plotThatLut.py <path to a LUT> cube [cube size]
+            display a cube with x segments (default value : {3}).
+
+{4}
+           """.format(DEFAULT_CUBE_SIZE, DEFAULT_SAMPLE, DEFAULT_SAMPLE,
+                      DEFAULT_CUBE_SIZE, supportedFormats())
 
 
 def plotThatLut(lutfile, plotType=None, count=None):
@@ -195,11 +206,13 @@ def plotThatLut(lutfile, plotType=None, count=None):
     # check if LUT format is supported
     fileext = path.splitext(lutfile)[1]
     if not fileext:
-        raise Exception("Error: Couldn't extract extension in this path : " +
-                        lutfile)
+        raise Exception("""
+Error: Couldn't extract extension in this
+path : {0}
+                        """.format(lutfile))
     if fileext not in OCIO_LUTS_FORMATS:
-        raise Exception( "Error: " + fileext +
-                         " file format aren't supported.\n" + supportedFormats())
+        raise Exception("Error: {0} file format aren't supported.\n{1}"
+                        .format(fileext, supportedFormats()))
     # create OCIO processor
     processor = createOCIOProcessor(lutfile, INTERP_LINEAR)
     # init args
@@ -215,14 +228,15 @@ def plotThatLut(lutfile, plotType=None, count=None):
         else:
             count = DEFAULT_CUBE_SIZE
     # plot
-    print "Plotting a " + plotType + " with " + str(count) + " samples..."
+    print "Plotting a {0} with {1} samples...".format(plotType, count)
     if plotType == 'curve':
         return plotCurve(lutfile, count, processor)
     elif plotType == 'cube':
         return plotCube(lutfile, count, processor)
     else:
-        raise Exception( "Unknown plot type : " + plotType + "\n"
-        + "Plot type should be curve or cube.\n" + help())
+        raise Exception("""Unknown plot type : {0}
+Plot type should be curve or cube.\n{1}
+                        """.format(plotType, help()))
 
 if __name__ == '__main__':
     cherryPyMode = False
@@ -250,4 +264,4 @@ if __name__ == '__main__':
     try:
         plotThatLut(lutfile, plotType, count)
     except Exception, e:
-        print "Watch out !\n%s" % e
+        print "Watch out !\n%s"% e

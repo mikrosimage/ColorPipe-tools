@@ -30,12 +30,12 @@ class PlotThatLutWeb(object):
         <div id="content">
             <div id='header'><h1># Plot That LUT #</h1></div>
             <div id='text'>
-                """ + body + """
+               {0}
             </div>
         </div>
 </body>
 </html>
-                """
+                """.format(body)
 
     def form(self):
         return """
@@ -68,26 +68,35 @@ class PlotThatLutWeb(object):
                 break
             allData += data
         # copy uploaded file on the server to use it with plotThatLUT
-        backup_filename = "uploads/"+lutFile.filename
+        backup_filename = "uploads/{0}".format(lutFile.filename)
         savedFile = open(backup_filename, 'wb')
         savedFile.write(allData)
         savedFile.close()
         # init args
-        label = 'Displaying : ' + backup_filename + " (type : " + lutType + ", samples : "
         if count == 'custom':
             tmpCount = int(customCount)
-            label += str(tmpCount)
+            displayCount = str(tmpCount)
         else:
             tmpCount = None
-            label += count
-        label +=  ")"
+            displayCount = count
+
+        label = 'Displaying : {0} (type : {1}, samples : {2}'.format(
+                backup_filename, lutType, displayCount)
         # call plotThatLut to export the graph
         try:
             result = plotThatLut(backup_filename, lutType, tmpCount)
         except Exception, e:
             error = str(e).replace('\n', '<br>')
-            result = """<h2>Something went wrong ! </h2><br><font color="#FF0000">%s</font><br>"""%error
-        return self.html(label + "<br>" + result + """<br><a href=javascript:history.back()>Go back</a>""")
+            result = """
+<h2>Something went wrong ! </h2>
+<br>
+<font color="#FF0000">{0}</font><br>
+                     """.format(error)
+        return self.html("""
+{0}<br>
+{1}<br>
+<a href=javascript:history.back()>Go back</a>
+                         """.format(label, result))
     upload.exposed = True
 
 # CherryPy configuration
