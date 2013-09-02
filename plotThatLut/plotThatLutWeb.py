@@ -17,53 +17,59 @@ import sys
 from cherrypy import quickstart, tree, server
 from plotThatLut import plotThatLut
 
+
 class PlotThatLutWeb(object):
     def html(self, body):
-         return """
-                <html>
-                <head>
-                    <title>Plot That Lut</title>
-                    <link rel="stylesheet" type="text/css" href="css/style.css">
-                </head>
-                <body>
-                        <div id="content">
-                            <div id='header'><h1># Plot That LUT #</h1></div>
-                            <div id='text'>
-                                """ + body + """
-                            </div>
-                        </div>
-                </body>
-                </html>
+        return """
+<html>
+<head>
+    <title>Plot That Lut</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+        <div id="content">
+            <div id='header'><h1># Plot That LUT #</h1></div>
+            <div id='text'>
+                """ + body + """
+            </div>
+        </div>
+</body>
+</html>
                 """
+
     def form(self):
         return """
-                    <form action="upload" method="post" enctype="multipart/form-data">
-                        Choose LUT file: <input type="file" name="lutFile" /><br/>
-                        Lut Type: <input type="radio" name="lutType" value="auto" checked=true> auto
-                        <input type="radio" name="lutType" value="curve"> curve
-                        <input type="radio" name="lutType" value="cube"> cube
-                        <br>
-                        Samples count: <input type="radio" name="count" value="auto" checked=true> auto
-                        <input type="radio" name="count" value="custom"> custom : <input type="text" name="customCount" value=17 size=5>
-                        <br>
-                        <input type="submit" />
-                    </form>
+<form action="upload" method="post" enctype="multipart/form-data">
+    Choose LUT file: <input type="file" name="lutFile" /><br/>
+    Lut Type:
+    <input type="radio" name="lutType" value="auto" checked=true> auto
+    <input type="radio" name="lutType" value="curve"> curve
+    <input type="radio" name="lutType" value="cube"> cube
+    <br>
+    Samples count:
+    <input type="radio" name="count" value="auto" checked=true> auto
+    <input type="radio" name="count" value="custom"> custom :
+    <input type="text" name="customCount" value=17 size=5>
+    <br>
+    <input type="submit" />
+</form>
 
                 """
+
     def index(self):
         return self.html(self.form())
     index.exposed = True
 
     def upload(self, lutFile, lutType, count, customCount):
-        allData=''
+        allData = ''
         while True:
             data = lutFile.file.read(8192)
             if not data:
                 break
-            allData+=data
+            allData += data
         # copy uploaded file on the server to use it with plotThatLUT
         backup_filename = "uploads/"+lutFile.filename
-        savedFile=open(backup_filename, 'wb')
+        savedFile = open(backup_filename, 'wb')
         savedFile.write(allData)
         savedFile.close()
         # init args
@@ -88,13 +94,16 @@ class PlotThatLutWeb(object):
 currdir = path.dirname(path.abspath(__file__))
 server.socket_host = 'devpc17.mikros.int'
 server.socket_port = 8080
-conf = {
-    '/css/style.css':{'tools.staticfile.on':True,
-    'tools.staticfile.filename': path.join(currdir,'css','style.css')},
-    '/img':{'tools.staticdir.on':True,
-    'tools.staticdir.dir': path.join(currdir,'img')},
-    '/uploads':{'tools.staticdir.on':True,
-    'tools.staticdir.dir': path.join(currdir,'uploads')}}
+conf = {'/css/style.css': {'tools.staticfile.on': True,
+                           'tools.staticfile.filename': path.join(currdir,
+                                                                  'css',
+                                                                  'style.css')
+                           },
+        '/img': {'tools.staticdir.on': True,
+                 'tools.staticdir.dir': path.join(currdir, 'img')},
+        '/uploads': {'tools.staticdir.on': True,
+                     'tools.staticdir.dir': path.join(currdir, 'uploads')}
+        }
 
 sys.path.append(currdir)
 

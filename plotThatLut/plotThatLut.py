@@ -13,11 +13,12 @@ from os import path
 from os import sys
 # OpenColorIO
 from PyOpenColorIO import Config, ColorSpace, FileTransform
-from PyOpenColorIO.Constants import INTERP_NEAREST, INTERP_LINEAR, INTERP_TETRAHEDRAL, COLORSPACE_DIR_TO_REFERENCE
+from PyOpenColorIO.Constants import INTERP_LINEAR, COLORSPACE_DIR_TO_REFERENCE
 # matplotlib
 import matplotlib
 
 cherryPyMode = True
+
 
 def setMatplotlibBackend():
     if cherryPyMode:
@@ -25,33 +26,25 @@ def setMatplotlibBackend():
     else:
         matplotlib.use('Qt4Agg')
 
-OCIO_LUTS_FORMATS =     ['.3dl',
-                        '.csp',
-                        '.cub',
-                        '.cube',
-                        '.hdl',
-                        '.look',
-                        '.mga/m3d',
-                        '.spi1d',
-                        '.spi3d',
-                        '.spimtx',
-                        '.vf'
-                        ]
+OCIO_LUTS_FORMATS = ['.3dl', '.csp', '.cub', '.cube', '.hdl', '.look',
+                     '.mga/m3d', '.spi1d', '.spi3d', '.spimtx', '.vf']
 
 DEFAULT_SAMPLE = 256
 DEFAULT_CUBE_SIZE = 17
 
+
 def showPlot(fig, filename):
     if cherryPyMode:
-        splitFilename =  path.splitext(filename)
+        splitFilename = path.splitext(filename)
         filename = splitFilename[0] + splitFilename[1].replace(".", "_")
-        exportPath = 'img/export_'+ filename +'.png'
-        print "export figure : " +exportPath
+        exportPath = 'img/export_' + filename + '.png'
+        print "export figure : " + exportPath
         fig.savefig(exportPath)
-        return '<img src="/' + exportPath +'" width="640" height="480" border="0" />'
+        return '<img src="/' + exportPath + '" width="640" height="480" border="0" />'
     else:
         matplotlib.pyplot.show()
         return ""
+
 
 def createOCIOProcessor(lutfile, interpolation):
     """
@@ -59,13 +52,14 @@ def createOCIOProcessor(lutfile, interpolation):
 
     Keyword arguments:
     lutfile -- path to a LUT
-    interpolation -- can be INTERP_NEAREST, INTERP_LINEAR or INTERP_TETRAHEDRAL (only for 3D LUT)
+    interpolation -- can be INTERP_NEAREST, INTERP_LINEAR or
+    INTERP_TETRAHEDRAL (only for 3D LUT)
 
     """
     config = Config()
     # In colorspace (LUT)
     colorspace = ColorSpace(name='RawInput')
-    t = FileTransform(lutfile,interpolation=interpolation)
+    t = FileTransform(lutfile, interpolation=interpolation)
     colorspace.setTransform(t, COLORSPACE_DIR_TO_REFERENCE)
     config.addColorSpace(colorspace)
     # Out colorspace
@@ -85,7 +79,8 @@ def plotCurve(lutfile, samplesCount, processor):
 
     """
     # matplotlib : general plot
-    from matplotlib.pyplot import title, plot, xlabel, ylabel, grid, show, figure
+    from matplotlib.pyplot import (title, plot, xlabel, ylabel, grid,
+                                   figure)
     # init vars
     maxValue = samplesCount - 1.0
     redValues = []
@@ -95,7 +90,7 @@ def plotCurve(lutfile, samplesCount, processor):
     # process color values
     for n in range(0, samplesCount):
         x = n/maxValue
-        res = processor.applyRGB([x,x,x])
+        res = processor.applyRGB([x, x, x])
         redValues.append(res[0])
         greenValues.append(res[1])
         blueValues.append(res[2])
@@ -114,22 +109,25 @@ def plotCurve(lutfile, samplesCount, processor):
     plot(inputRange, blueValues, 'b-', label='Blue values', linewidth=1)
     return showPlot(fig, filename)
 
+
 def plotCube(lutfile, cubeSize, processor):
     """
     plot lutfile as a cubue
 
     Keyword arguments:
     lutfile -- path to a color transformation file (lut, matrix...)
-    cubeSize -- number of segments. Ex : If set to 17, 17*17*17 points will be displayed
+    cubeSize -- number of segments. Ex : If set to 17, 17*17*17 points will be
+    displayed
 
     """
     # matplotlib : general plot
-    from matplotlib.pyplot import title, show, figure
+    from matplotlib.pyplot import title, figure
     # matplotlib : for 3D plot
-    from mpl_toolkits.mplot3d import Axes3D
+    # mplot3d has to be imported for 3d projection
+    import mpl_toolkits.mplot3d
     from matplotlib.colors import rgb2hex
     # init vars
-    inputRange  = range(0, cubeSize)
+    inputRange = range(0, cubeSize)
     maxValue = cubeSize - 1.0
     redValues = []
     greenValues = []
@@ -144,13 +142,13 @@ def plotCube(lutfile, cubeSize, processor):
                 normG = g/maxValue
                 normB = b/maxValue
                 # apply correction via OCIO
-                res = processor.applyRGB([normR,normG,normB])
+                res = processor.applyRGB([normR, normG, normB])
                 # append values
                 redValues.append(res[0])
                 greenValues.append(res[1])
                 blueValues.append(res[2])
                 # append corresponding color
-                colors.append(rgb2hex([normR,normG,normB]))
+                colors.append(rgb2hex([normR, normG, normB]))
     # init plot
     fig = figure()
     fig.canvas.set_window_title('Plot That 3D LUT')
@@ -158,25 +156,29 @@ def plotCube(lutfile, cubeSize, processor):
     ax.set_xlabel('Red')
     ax.set_ylabel('Green')
     ax.set_zlabel('Blue')
-    ax.set_xlim(min(redValues),max(redValues))
-    ax.set_ylim(min(greenValues),max(greenValues))
-    ax.set_zlim(min(blueValues),max(blueValues))
+    ax.set_xlim(min(redValues), max(redValues))
+    ax.set_ylim(min(greenValues), max(greenValues))
+    ax.set_zlim(min(blueValues), max(blueValues))
     filename = path.basename(lutfile)
     title(filename)
     # plot 3D values
     ax.scatter(redValues, greenValues, blueValues, c=colors, marker="o")
     return showPlot(fig, filename)
 
+
 def testLUT1D():
     lutfile = "testFiles/identity.csp"
     plotCurve(lutfile, samplesCount=DEFAULT_SAMPLE)
+
 
 def testLUT3D():
     lutfile = "testFiles/identity.3dl"
     plotCube(lutfile, cubeSize=DEFAULT_CUBE_SIZE)
 
+
 def supportedFormats():
     return "Supported LUT formats : " + ', '.join(OCIO_LUTS_FORMATS)
+
 
 def help():
     h = "----\n"
@@ -187,14 +189,17 @@ def help():
     h += supportedFormats()
     return h
 
+
 def plotThatLut(lutfile, plotType=None, count=None):
     setMatplotlibBackend()
     # check if LUT format is supported
     fileext = path.splitext(lutfile)[1]
     if not fileext:
-        raise Exception("Error: Couldn't extract extension in this path : "+ lutfile)
+        raise Exception("Error: Couldn't extract extension in this path : " +
+                        lutfile)
     if fileext not in OCIO_LUTS_FORMATS:
-        raise Exception( "Error: " + fileext + " file format aren't supported.\n" + supportedFormats())
+        raise Exception( "Error: " + fileext +
+                         " file format aren't supported.\n" + supportedFormats())
     # create OCIO processor
     processor = createOCIOProcessor(lutfile, INTERP_LINEAR)
     # init args
@@ -203,17 +208,17 @@ def plotThatLut(lutfile, plotType=None, count=None):
             plotType = 'cube'
         else:
             plotType = 'curve'
-    if not count or count == 'auto' :
+    if not count or count == 'auto':
         # set plotType from the command line and init default count
-        if plotType=='curve':
+        if plotType == 'curve':
             count = DEFAULT_SAMPLE
         else:
             count = DEFAULT_CUBE_SIZE
     # plot
     print "Plotting a " + plotType + " with " + str(count) + " samples..."
-    if plotType=='curve':
+    if plotType == 'curve':
         return plotCurve(lutfile, count, processor)
-    elif plotType=='cube':
+    elif plotType == 'cube':
         return plotCube(lutfile, count, processor)
     else:
         raise Exception( "Unknown plot type : " + plotType + "\n"
@@ -222,7 +227,7 @@ def plotThatLut(lutfile, plotType=None, count=None):
 if __name__ == '__main__':
     cherryPyMode = False
     paramsCount = len(sys.argv)
-    lutfile =""
+    lutfile = ""
     plotType = None
     count = None
     if paramsCount < 2:
