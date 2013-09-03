@@ -17,11 +17,11 @@ from PyOpenColorIO.Constants import INTERP_LINEAR, COLORSPACE_DIR_TO_REFERENCE
 # matplotlib
 import matplotlib
 
-cherryPyMode = True
+cherry_py_mode = True
 
 
 def setMatplotlibBackend():
-    if cherryPyMode:
+    if cherry_py_mode:
         matplotlib.use('Agg')
     else:
         matplotlib.use('Qt4Agg')
@@ -34,7 +34,7 @@ DEFAULT_CUBE_SIZE = 17
 
 
 def showPlot(fig, filename):
-    if cherryPyMode:
+    if cherry_py_mode:
         splitFilename = path.splitext(filename)
         filename = '{0}{1}'.format(splitFilename[0],
                                    splitFilename[1].replace(".", "_"))
@@ -239,7 +239,7 @@ Plot type should be curve or cube.\n{1}
                         """.format(plotType, help()))
 
 if __name__ == '__main__':
-    cherryPyMode = False
+    cherry_py_mode = False
     paramsCount = len(sys.argv)
     lutfile = ""
     plotType = None
