@@ -1,12 +1,10 @@
 #!/usr/bin/python
 
-############################
-#
-# Plot That Lut
-# Version : 0.2
-# Author : mfe
-#
-############################
+""" A Look Up Table plotting tool based on OpenColorIO and matplotlib.
+
+.. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
+
+"""
 
 ## imports
 from os import path
@@ -17,10 +15,17 @@ from PyOpenColorIO.Constants import INTERP_LINEAR, COLORSPACE_DIR_TO_REFERENCE
 # matplotlib
 import matplotlib
 
+
 cherry_py_mode = True
 
 
 def set_matplotlib_backend():
+    """ Select display backend
+
+    .. todo:: Externalize this and remove cherry_py_mode global var
+
+    """
+
     if cherry_py_mode:
         matplotlib.use('Agg')
     else:
@@ -34,6 +39,19 @@ DEFAULT_CUBE_SIZE = 17
 
 
 def show_plot(fig, filename):
+    """Plot the figure depending on the backend
+
+    Args:
+        fig (matplotlib.pyplot.figure): figure to plot
+
+        filename (str): associated lut filename
+
+    Returns:
+        str.
+            if in cherrypy mode, an html string,
+            else a void string.
+
+    """
     if cherry_py_mode:
         split_filename = path.splitext(filename)
         filename = '{0}{1}'.format(split_filename[0],
@@ -50,13 +68,16 @@ def show_plot(fig, filename):
 
 
 def create_ocio_processor(lutfile, interpolation):
-    """
-    Create an OpenColorIO processor for lutfile
+    """Create an OpenColorIO processor for lutfile
 
-    Keyword arguments:
-    lutfile -- path to a LUT
-    interpolation -- can be INTERP_NEAREST, INTERP_LINEAR or
-    INTERP_TETRAHEDRAL (only for 3D LUT)
+    Args:
+        lutfile (str): path to a LUT
+
+        interpolation (int): can be INTERP_NEAREST, INTERP_LINEAR or
+        INTERP_TETRAHEDRAL (only for 3D LUT)
+
+    Returns:
+        PyOpenColorIO.config.Processor.
 
     """
     config = Config()
@@ -73,12 +94,18 @@ def create_ocio_processor(lutfile, interpolation):
 
 
 def plot_curve(lutfile, samples_count, processor):
-    """
-    plot lutfile as a curve
+    """Plot a lutfile as a curve
 
-    Keyword arguments:
-    lutfile -- path to a color transformation file (lut, matrix...)
-    samples_count -- number of points for the displayed curve
+    Args:
+        lutfile (str): path to a color transformation file (lut, matrix...)
+
+        samples_count (int): number of points for the displayed curve
+
+        processor (PyOpenColorIO.config.Processor): an OpenColorIO processor
+        for lutfile
+
+    Returns:
+            str.
 
     """
     # matplotlib : general plot
@@ -114,13 +141,19 @@ def plot_curve(lutfile, samples_count, processor):
 
 
 def plot_cube(lutfile, cube_size, processor):
-    """
-    plot lutfile as a cubue
+    """Plot a lutfile as a cube
 
-    Keyword arguments:
-    lutfile -- path to a color transformation file (lut, matrix...)
-    cube_size -- number of segments. Ex : If set to 17, 17*17*17 points will be
-    displayed
+    Args:
+        lutfile (str): path to a color transformation file (lut, matrix...)
+
+        cube_size (int): number of segments. Ex : If set to 17, 17*17*17
+        points will be displayed
+
+        processor (PyOpenColorIO.config.Processor): an OpenColorIO processor
+        for lutfile
+
+    Returns:
+        str.
 
     """
     # matplotlib : general plot
@@ -180,10 +213,22 @@ def test_lut_3d():
 
 
 def supported_formats():
+    """Return supported formats
+
+    Returns:
+        str.
+
+    """
     return "Supported LUT formats : {0}".format(', '.join(OCIO_LUTS_FORMATS))
 
 
 def help():
+    """Return help
+
+    Returns:
+        str.
+
+    """
     return """
 ----
 plot_that_lut.py <path to a LUT>
@@ -202,6 +247,20 @@ plot_that_lut.py <path to a LUT> cube [cube size]
 
 
 def plot_that_lut(lutfile, plot_type=None, count=None):
+    """Plot a lut depending on its type and/or args
+
+    Args:
+        lutfile (str): path to a color transformation file (lut, matrix...)
+
+    kwargs:
+        plot_type (str): possible values are 'curve' or 'cube'
+
+        count: possible values are curve size or curve samples count or 'auto'
+
+    Raises:
+        Exception
+
+    """
     set_matplotlib_backend()
     # check if LUT format is supported
     fileext = path.splitext(lutfile)[1]
@@ -239,6 +298,11 @@ Plot type should be curve or cube.\n{1}
                         """.format(plot_type, help()))
 
 if __name__ == '__main__':
+    """ Command line interface for plot_that_lut
+
+    .. todo:: use optparse (or argparse)
+
+    """
     cherry_py_mode = False
     params_count = len(sys.argv)
     lutfile = ""
@@ -264,4 +328,4 @@ if __name__ == '__main__':
     try:
         plot_that_lut(lutfile, plot_type, count)
     except Exception, e:
-        print "Watch out !\n%s"% e
+        print "Watch out !\n%s" % e

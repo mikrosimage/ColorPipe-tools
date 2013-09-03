@@ -1,15 +1,10 @@
 #!/usr/bin/python
 
-############################
-#
-# Plot That LUT **Web**
-# Version : 0.1
-# Author : mfe
-#
-# CherryPy Web app
-# for Plot That LUT
-#
-############################
+"""A cherrypy **Web** app for plot_that_lut.
+
+.. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
+
+"""
 
 from os import path
 import sys
@@ -19,7 +14,19 @@ from plot_that_lut import plot_that_lut
 
 
 class PlotThatLutWeb(object):
+    """cherrypy publication object
+
+    """
     def html(self, body):
+        """ Return an html page
+
+        Args:
+            body (str): html code to insert in the body of the html page
+
+        Returns:
+            str.
+
+        """
         return """
 <html>
 <head>
@@ -38,9 +45,15 @@ class PlotThatLutWeb(object):
                 """.format(body)
 
     def form(self):
+        """Return plot that lut web ui
+
+        Returns:
+            str.
+
+        """
         return """
 <form action="upload" method="post" enctype="multipart/form-data">
-    Choose LUT file: <input type="file" name="lut_file" /><br/>
+    Choose LUT file: <input type="file" name="lutfile" /><br/>
     Lut Type:
     <input type="radio" name="lut_type" value="auto" checked=true> auto
     <input type="radio" name="lut_type" value="curve"> curve
@@ -53,22 +66,46 @@ class PlotThatLutWeb(object):
     <br>
     <input type="submit" />
 </form>
-
                 """
 
     def index(self):
+        """Index page
+
+        Returns:
+            str.
+
+        .. note:: required by cherrypy
+
+        """
         return self.html(self.form())
     index.exposed = True
 
-    def upload(self, lut_file, lut_type, count, custom_count):
+    def upload(self, lutfile, lut_type, count, custom_count):
+        """Upload page
+
+        Args:
+            lutfile (str): path to a color transformation file (lut, matrix...)
+
+            lut_type (str): possible values are 'curve' or 'cube'
+
+            count: possible values are curve size or curve samples count or
+            'auto'
+
+            custom_count (int): custom cube size or curve samples count
+
+        Returns:
+            str.
+
+        """
+
         all_data = ''
         while True:
-            data = lut_file.file.read(8192)
+            data = lutfile.file.read(8192)
             if not data:
                 break
             all_data += data
         # copy uploaded file on the server to use it with plot_that_lut
-        backup_filename = "uploads/{0}".format(lut_file.filename)
+        backup_filename = "uploads/{0}".format(lutfile.filename)
         saved_file = open(backup_filename, 'wb')
         saved_file.write(all_data)
         saved_file.close()
@@ -108,10 +145,13 @@ conf = {'/css/style.css': {'tools.staticfile.on': True,
                                                                   'css',
                                                                   'style.css')
                            },
-        '/img': {'tools.staticdir.on': True,
-                 'tools.staticdir.dir': path.join(currdir, 'img')},
-        '/uploads': {'tools.staticdir.on': True,
-                     'tools.staticdir.dir': path.join(currdir, 'uploads')}
+        '/img':           {'tools.staticdir.on': True,
+                           'tools.staticdir.dir': path.join(currdir, 'img')
+                           },
+        '/uploads':       {'tools.staticdir.on': True,
+                           'tools.staticdir.dir': path.join(currdir, 'uploads'
+                                                            )
+                           }
         }
 
 sys.path.append(currdir)
