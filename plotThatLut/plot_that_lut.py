@@ -19,6 +19,9 @@ import matplotlib
 cherry_py_mode = True
 
 
+class PlotThatLutException(Exception):
+    pass
+
 def set_matplotlib_backend():
     """ Select display backend
 
@@ -265,13 +268,13 @@ def plot_that_lut(lutfile, plot_type=None, count=None):
     # check if LUT format is supported
     fileext = os.path.splitext(lutfile)[1]
     if not fileext:
-        raise Exception("""
+        raise PlotThatLutException("""
 Error: Couldn't extract extension in this
 path : {0}
                         """.format(lutfile))
     if fileext not in OCIO_LUTS_FORMATS:
-        raise Exception("Error: {0} file format aren't supported.\n{1}"
-                        .format(fileext, supported_formats()))
+        raise PlotThatLutException("Error: {0} file aren't supported.\n{1}"
+                                   .format(fileext, supported_formats()))
     # create OCIO processor
     processor = create_ocio_processor(lutfile, INTERP_LINEAR)
     # init args
@@ -293,7 +296,7 @@ path : {0}
     elif plot_type == 'cube':
         return plot_cube(lutfile, count, processor)
     else:
-        raise Exception("""Unknown plot type : {0}
+        raise PlotThatLutException("""Unknown plot type : {0}
 Plot type should be curve or cube.\n{1}
                         """.format(plot_type, help()))
 
