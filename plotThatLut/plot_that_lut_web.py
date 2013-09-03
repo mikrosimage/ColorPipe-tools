@@ -15,7 +15,7 @@ from os import path
 import sys
 
 from cherrypy import quickstart, tree, server
-from plotThatLut import plotThatLut
+from plot_that_lut import plot_that_lut
 
 
 class PlotThatLutWeb(object):
@@ -40,16 +40,16 @@ class PlotThatLutWeb(object):
     def form(self):
         return """
 <form action="upload" method="post" enctype="multipart/form-data">
-    Choose LUT file: <input type="file" name="lutFile" /><br/>
+    Choose LUT file: <input type="file" name="lut_file" /><br/>
     Lut Type:
-    <input type="radio" name="lutType" value="auto" checked=true> auto
-    <input type="radio" name="lutType" value="curve"> curve
-    <input type="radio" name="lutType" value="cube"> cube
+    <input type="radio" name="lut_type" value="auto" checked=true> auto
+    <input type="radio" name="lut_type" value="curve"> curve
+    <input type="radio" name="lut_type" value="cube"> cube
     <br>
     Samples count:
     <input type="radio" name="count" value="auto" checked=true> auto
     <input type="radio" name="count" value="custom"> custom :
-    <input type="text" name="customCount" value=17 size=5>
+    <input type="text" name="custom_count" value=17 size=5>
     <br>
     <input type="submit" />
 </form>
@@ -60,31 +60,31 @@ class PlotThatLutWeb(object):
         return self.html(self.form())
     index.exposed = True
 
-    def upload(self, lutFile, lutType, count, customCount):
-        allData = ''
+    def upload(self, lut_file, lut_type, count, custom_count):
+        all_data = ''
         while True:
-            data = lutFile.file.read(8192)
+            data = lut_file.file.read(8192)
             if not data:
                 break
-            allData += data
-        # copy uploaded file on the server to use it with plotThatLUT
-        backup_filename = "uploads/{0}".format(lutFile.filename)
-        savedFile = open(backup_filename, 'wb')
-        savedFile.write(allData)
-        savedFile.close()
+            all_data += data
+        # copy uploaded file on the server to use it with plot_that_lut
+        backup_filename = "uploads/{0}".format(lut_file.filename)
+        saved_file = open(backup_filename, 'wb')
+        saved_file.write(all_data)
+        saved_file.close()
         # init args
         if count == 'custom':
-            tmpCount = int(customCount)
-            displayCount = str(tmpCount)
+            tmp_count = int(custom_count)
+            display_count = str(tmp_count)
         else:
-            tmpCount = None
-            displayCount = count
+            tmp_count = None
+            display_count = count
 
         label = 'Displaying : {0} (type : {1}, samples : {2}'.format(
-                backup_filename, lutType, displayCount)
-        # call plotThatLut to export the graph
+                backup_filename, lut_type, display_count)
+        # call plot_that_lut to export the graph
         try:
-            result = plotThatLut(backup_filename, lutType, tmpCount)
+            result = plot_that_lut(backup_filename, lut_type, tmp_count)
         except Exception, e:
             error = str(e).replace('\n', '<br>')
             result = """

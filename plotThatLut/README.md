@@ -13,7 +13,7 @@ Requirements
 - matplotlib + a backend (for exemple Qt, Gtk...)
 - OpenColorIO Python binding
 
-To use plotThatLutWeb.py :  
+To use plot_that_lut_web.py :  
 
 - CherryPy
 
@@ -24,13 +24,13 @@ Tested config
 Command line usage
 -----
 * Dispay a cube (17 segments) for 3D LUTs and matrixes or a curve (256 points) for 1D/2D LUTs :   
-`plotThatLut.py < path to a LUT >`
+`plot_that_lut.py < path to a LUT >`
 
 * Display a curve with x points (default value : 256) :   
-`plotThatLut.py < path to a LUT > curve [points count]`
+`plot_that_lut.py < path to a LUT > curve [points count]`
 
 * Display a cube with x segments (default value : 17) :   
-`plotThatLut.py < path to a LUT > cube [cube size]`
+`plot_that_lut.py < path to a LUT > cube [cube size]`
 
 Web app usage
 -------------
@@ -38,7 +38,7 @@ You can test quickly in local by :
 - setting up your environnement ($PYTHONPATH, ...).  
 - creating img and uploads directories.  
 - and then launching :  
-`plotThatWeb.py`
+`plot_that_lut_web.py`
 
 For deeper usages, you'll have to customize your own cherryPy config.
 
