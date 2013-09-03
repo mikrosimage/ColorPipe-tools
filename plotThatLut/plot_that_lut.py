@@ -7,8 +7,8 @@
 """
 
 ## imports
-from os import path
-from os import sys
+import os
+import sys
 # OpenColorIO
 from PyOpenColorIO import Config, ColorSpace, FileTransform
 from PyOpenColorIO.Constants import INTERP_LINEAR, COLORSPACE_DIR_TO_REFERENCE
@@ -53,7 +53,7 @@ def show_plot(fig, filename):
 
     """
     if cherry_py_mode:
-        split_filename = path.splitext(filename)
+        split_filename = os.path.splitext(filename)
         filename = '{0}{1}'.format(split_filename[0],
                                    split_filename[1].replace(".", "_"))
         export_path = 'img/export_{0}.png'.format(filename)
@@ -128,7 +128,7 @@ def plot_curve(lutfile, samples_count, processor):
     # init plot
     fig = figure()
     fig.canvas.set_window_title('Plot That 1D LUT')
-    filename = path.basename(lutfile)
+    filename = os.path.basename(lutfile)
     title(filename)
     xlabel("Input")
     ylabel("Output")
@@ -195,7 +195,7 @@ def plot_cube(lutfile, cube_size, processor):
     ax.set_xlim(min(red_values), max(red_values))
     ax.set_ylim(min(green_values), max(green_values))
     ax.set_zlim(min(blue_values), max(blue_values))
-    filename = path.basename(lutfile)
+    filename = os.path.basename(lutfile)
     title(filename)
     # plot 3D values
     ax.scatter(red_values, green_values, blue_values, c=colors, marker="o")
@@ -263,7 +263,7 @@ def plot_that_lut(lutfile, plot_type=None, count=None):
     """
     set_matplotlib_backend()
     # check if LUT format is supported
-    fileext = path.splitext(lutfile)[1]
+    fileext = os.path.splitext(lutfile)[1]
     if not fileext:
         raise Exception("""
 Error: Couldn't extract extension in this
