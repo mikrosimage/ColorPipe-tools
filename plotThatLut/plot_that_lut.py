@@ -22,6 +22,7 @@ cherry_py_mode = True
 class PlotThatLutException(Exception):
     pass
 
+
 def set_matplotlib_backend():
     """ Select display backend
 
@@ -61,10 +62,10 @@ def show_plot(fig, filename):
                                    split_filename[1].replace(".", "_"))
         export_path = 'img/export_{0}.png'.format(filename)
         fig.savefig(export_path)
-        return """
-               <img src="/{0}"" width="640" height="480"
-               border="0"/>
-               """.format(export_path)
+        return (
+            '<img src="/{0}" width="640" height="480"'
+            'border="0"/>'
+        ).format(export_path)
     else:
         matplotlib.pyplot.show()
         return ""
@@ -232,21 +233,19 @@ def help():
         str.
 
     """
-    return """
-----
-plot_that_lut.py <path to a LUT>
-            dispay a cube ({0} segments) for 3D LUTs and matrixes
-            or a curve ({1} points) for 1D/2D LUTs.
+    return (
+        "----\n"
+        "plot_that_lut.py <path to a LUT>\n"
+        "       dispay a cube ({0} segments) for 3D LUTs and matrixes\n"
+        "       or a curve ({1} points) for 1D/2D LUTs.\n"
 
-plot_that_lut.py <path to a LUT> curve [points count]
-            display a curve with x points (default value : {2}).
-
-plot_that_lut.py <path to a LUT> cube [cube size]
-            display a cube with x segments (default value : {3}).
-
-{4}
-           """.format(DEFAULT_CUBE_SIZE, DEFAULT_SAMPLE, DEFAULT_SAMPLE,
-                      DEFAULT_CUBE_SIZE, supported_formats())
+        "plot_that_lut.py <path to a LUT> curve [points count]\n"
+        "       display a curve with x points (default value : {2}).\n"
+        "       plot_that_lut.py <path to a LUT> cube [cube size]\n"
+        "       display a cube with x segments (default value : {3}).\n"
+        "\n{4}"
+    ).format(DEFAULT_CUBE_SIZE, DEFAULT_SAMPLE, DEFAULT_SAMPLE,
+             DEFAULT_CUBE_SIZE, supported_formats())
 
 
 def plot_that_lut(lutfile, plot_type=None, count=None):
@@ -268,10 +267,10 @@ def plot_that_lut(lutfile, plot_type=None, count=None):
     # check if LUT format is supported
     fileext = os.path.splitext(lutfile)[1]
     if not fileext:
-        raise PlotThatLutException("""
-Error: Couldn't extract extension in this
-path : {0}
-                        """.format(lutfile))
+        raise PlotThatLutException((
+            "Error: Couldn't extract extension in this\n"
+            "path : {0}"
+        ).format(lutfile))
     if fileext not in OCIO_LUTS_FORMATS:
         raise PlotThatLutException("Error: {0} file aren't supported.\n{1}"
                                    .format(fileext, supported_formats()))
@@ -296,9 +295,10 @@ path : {0}
     elif plot_type == 'cube':
         return plot_cube(lutfile, count, processor)
     else:
-        raise PlotThatLutException("""Unknown plot type : {0}
-Plot type should be curve or cube.\n{1}
-                        """.format(plot_type, help()))
+        raise PlotThatLutException((
+            "Unknown plot type : {0}\n"
+            "Plot type should be curve or cube.\n{1}"
+        ).format(plot_type, help()))
 
 if __name__ == '__main__':
     """ Command line interface for plot_that_lut
