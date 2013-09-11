@@ -27,22 +27,22 @@ class PlotThatLutWeb(object):
             str.
 
         """
-        return """
-<html>
-<head>
-    <title>Plot That Lut</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
-</head>
-<body>
-        <div id="content">
-            <div id='header'><h1># Plot That LUT #</h1></div>
-            <div id='text'>
-               {0}
-            </div>
-        </div>
-</body>
-</html>
-                """.format(body)
+        return (
+            "<html>\n"
+            "<head>\n"
+            "    <title>Plot That Lut</title>\n"
+            '    <link rel="stylesheet" type="text/css" href="css/style.css">\n'
+            "</head>\n"
+            "<body>\n"
+            '        <div id="content">\n'
+            '            <div id="header"><h1># Plot That LUT #</h1></div>\n'
+            '            <div id="text">\n'
+            '               {0}\n'
+            '           </div>\n'
+            '        </div>\n'
+            '</body>\n'
+            '</html>\n'
+        ).format(body)
 
     def form(self):
         """Return plot that lut web ui
@@ -51,22 +51,25 @@ class PlotThatLutWeb(object):
             str.
 
         """
-        return """
-<form action="upload" method="post" enctype="multipart/form-data">
-    Choose LUT file: <input type="file" name="lutfile" /><br/>
-    Lut Type:
-    <input type="radio" name="lut_type" value="auto" checked=true> auto
-    <input type="radio" name="lut_type" value="curve"> curve
-    <input type="radio" name="lut_type" value="cube"> cube
-    <br>
-    Samples count:
-    <input type="radio" name="count" value="auto" checked=true> auto
-    <input type="radio" name="count" value="custom"> custom :
-    <input type="text" name="custom_count" value=17 size=5>
-    <br>
-    <input type="submit" />
-</form>
-                """
+        return (
+            '<form action="upload" method="post" '
+            'enctype="multipart/form-data">\n'
+            '    Choose LUT file: <input type="file" name="lutfile"/><br/>\n'
+            "    Lut Type:"
+            '    <input type="radio" name="lut_type" value="auto" '
+            'checked=true> auto\n'
+            '    <input type="radio" name="lut_type" value="curve"> curve\n'
+            '    <input type="radio" name="lut_type" value="cube"> cube\n'
+            "    <br>\n"
+            "    Samples count:\n"
+            '    <input type="radio" name="count" value="auto" checked=true> '
+            'auto\n'
+            '    <input type="radio" name="count" value="custom"> custom :\n'
+            '   <input type="text" name="custom_count" value=17 size=5>\n'
+            "    <br>\n"
+            '    <input type="submit"/>\n'
+            "</form>"
+        )
 
     def index(self):
         """Index page
@@ -124,16 +127,16 @@ class PlotThatLutWeb(object):
             result = plot_that_lut(backup_filename, lut_type, tmp_count)
         except Exception, e:
             error = str(e).replace('\n', '<br>')
-            result = """
-<h2>Something went wrong ! </h2>
-<br>
-<font color="#FF0000">{0}</font><br>
-                     """.format(error)
-        return self.html("""
-{0}<br>
-{1}<br>
-<a href=javascript:history.back()>Go back</a>
-                         """.format(label, result))
+            result = (
+                "<h2>Something went wrong ! </h2>"
+                "<br>"
+                '<font color="#FF0000">{0}</font><br>'
+            ).format(error)
+        return self.html((
+            "{0}<br>"
+            "{1}<br>"
+            "<a href=javascript:history.back()>Go back</a>"
+        ).format(label, result))
     upload.exposed = True
 
 # CherryPy configuration
