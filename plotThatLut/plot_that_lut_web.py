@@ -67,7 +67,7 @@ class PlotThatLutWeb(object):
             '    <input type="radio" name="count" value="auto" checked=true> '
             'auto\n'
             '    <input type="radio" name="count" value="custom"> custom :\n'
-            '   <input type="text" name="custom_count" value=17 size=5>\n'
+            '    <input type="text" name="custom_count" value=17 size=5>\n'
             "    <br>\n"
             '    <input type="submit"/>\n'
             "</form>"
@@ -121,8 +121,7 @@ class PlotThatLutWeb(object):
         else:
             tmp_count = None
             display_count = count
-
-        label = 'Displaying : {0} (type : {1}, samples : {2}'.format(
+        label = 'Displaying : {0} (type : {1}, samples : {2})'.format(
                 backup_filename, lut_type, display_count)
         # call plot_that_lut to export the graph
         try:
@@ -144,8 +143,8 @@ class PlotThatLutWeb(object):
 
 # CherryPy configuration
 currdir = path.dirname(path.abspath(__file__))
-server.socket_host = 'devpc17.mikros.int'
-server.socket_port = 8080
+server.socket_host = '127.0.0.1'
+server.socket_port = 8282
 conf = {'/css/style.css': {'tools.staticfile.on': True,
                            'tools.staticfile.filename': path.join(currdir,
                                                                   'css',
