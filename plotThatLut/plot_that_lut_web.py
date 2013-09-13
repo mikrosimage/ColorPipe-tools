@@ -55,6 +55,8 @@ class PlotThatLutWeb(object):
             '<form action="upload" method="post" '
             'enctype="multipart/form-data">\n'
             '    Choose LUT file: <input type="file" name="lutfile"/><br/>\n'
+            '    <input type="checkbox" name="inverse" value="1">Inverse'
+            "(1D / 2D LUT only)<br>"
             "    Lut Type:"
             '    <input type="radio" name="lut_type" value="auto" '
             'checked=true> auto\n'
@@ -83,7 +85,7 @@ class PlotThatLutWeb(object):
         return self.html(self.form())
     index.exposed = True
 
-    def upload(self, lutfile, lut_type, count, custom_count):
+    def upload(self, lutfile, lut_type, count, custom_count, inverse=False):
         """Upload page
 
         Args:
@@ -124,7 +126,8 @@ class PlotThatLutWeb(object):
                 backup_filename, lut_type, display_count)
         # call plot_that_lut to export the graph
         try:
-            result = plot_that_lut(backup_filename, lut_type, tmp_count)
+            result = plot_that_lut(backup_filename, lut_type, tmp_count,
+                                   inverse)
         except Exception, e:
             error = str(e).replace('\n', '<br>')
             result = (

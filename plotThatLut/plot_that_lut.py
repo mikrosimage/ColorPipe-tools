@@ -11,7 +11,9 @@ import os
 import sys
 # OpenColorIO
 from PyOpenColorIO import Config, ColorSpace, FileTransform
-from PyOpenColorIO.Constants import INTERP_LINEAR, COLORSPACE_DIR_TO_REFERENCE
+from PyOpenColorIO.Constants import (
+    INTERP_LINEAR, COLORSPACE_DIR_TO_REFERENCE, COLORSPACE_DIR_FROM_REFERENCE
+)
 # matplotlib
 import matplotlib
 
@@ -71,7 +73,7 @@ def show_plot(fig, filename):
         return ""
 
 
-def create_ocio_processor(lutfile, interpolation):
+def create_ocio_processor(lutfile, interpolation, inverse):
     """Create an OpenColorIO processor for lutfile
 
     Args:
@@ -80,15 +82,21 @@ def create_ocio_processor(lutfile, interpolation):
         interpolation (int): can be INTERP_NEAREST, INTERP_LINEAR or
         INTERP_TETRAHEDRAL (only for 3D LUT)
 
+        inverse (bool): get an inverse direction processor
+
     Returns:
         PyOpenColorIO.config.Processor.
 
     """
+    if inverse:
+        direction = COLORSPACE_DIR_FROM_REFERENCE
+    else:
+        direction = COLORSPACE_DIR_TO_REFERENCE
     config = Config()
     # In colorspace (LUT)
     colorspace = ColorSpace(name='RawInput')
     t = FileTransform(lutfile, interpolation=interpolation)
-    colorspace.setTransform(t, COLORSPACE_DIR_TO_REFERENCE)
+    colorspace.setTransform(t, direction)
     config.addColorSpace(colorspace)
     # Out colorspace
     colorspace = ColorSpace(name='ProcessedOutput')
@@ -248,7 +256,7 @@ def help():
              DEFAULT_CUBE_SIZE, supported_formats())
 
 
-def plot_that_lut(lutfile, plot_type=None, count=None):
+def plot_that_lut(lutfile, plot_type=None, count=None, inverse=False):
     """Plot a lut depending on its type and/or args
 
     Args:
@@ -260,7 +268,8 @@ def plot_that_lut(lutfile, plot_type=None, count=None):
         count: possible values are curve size or curve samples count or 'auto'
 
     Raises:
-        Exception
+        PlotThatLutException
+        Exception from OpenColorIO binding
 
     """
     set_matplotlib_backend()
@@ -275,7 +284,7 @@ def plot_that_lut(lutfile, plot_type=None, count=None):
         raise PlotThatLutException("Error: {0} file aren't supported.\n{1}"
                                    .format(fileext, supported_formats()))
     # create OCIO processor
-    processor = create_ocio_processor(lutfile, INTERP_LINEAR)
+    processor = create_ocio_processor(lutfile, INTERP_LINEAR, inverse)
     # init args
     if not plot_type or plot_type == 'auto':
         if processor.hasChannelCrosstalk() or fileext == '.spimtx':
