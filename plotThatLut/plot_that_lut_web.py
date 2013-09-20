@@ -11,7 +11,7 @@ import sys
 import traceback
 
 from cherrypy import quickstart, tree, server
-from plot_that_lut import plot_that_lut
+import plot_that_lut
 
 
 class PlotThatLutWeb(object):
@@ -170,9 +170,14 @@ class PlotThatLutWeb(object):
                                                      backup_post_filename)
         # call plot_that_lut to export the graph
         try:
-            result = plot_that_lut(backup_filename, lut_type, tmp_count,
-                                   inverse, backup_pre_filename,
-                                   backup_post_filename)
+            result = plot_that_lut.plot_that_lut(backup_filename, lut_type,
+                                                 tmp_count, inverse,
+                                                 backup_pre_filename,
+                                                 backup_post_filename)
+            result = (
+                '<img src="/{0}" width="640" height="480"'
+                'border="0"/>'
+            ).format(result)
         except Exception, e:
             error = str(e).replace('\n', '<br>')
             result = (
@@ -209,6 +214,7 @@ conf = {'/css/style.css': {'tools.staticfile.on': True,
 sys.path.append(currdir)
 
 if __name__ == '__main__':
+    plot_that_lut.web_mode = True
     # CherryPy always starts with app.root when trying to map request URIs
     # to objects, so we need to mount a request handler root. A request
     # to '/' will be mapped to HelloWorld().index().
