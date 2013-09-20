@@ -10,9 +10,12 @@
 import os
 import sys
 # OpenColorIO
-from PyOpenColorIO import Config, ColorSpace, FileTransform
+from PyOpenColorIO import (
+    Config, ColorSpace, FileTransform, GroupTransform,
+)
 from PyOpenColorIO.Constants import (
-    INTERP_LINEAR, COLORSPACE_DIR_TO_REFERENCE, COLORSPACE_DIR_FROM_REFERENCE
+    INTERP_LINEAR, COLORSPACE_DIR_TO_REFERENCE,
+    TRANSFORM_DIR_FORWARD, TRANSFORM_DIR_INVERSE,
 )
 # matplotlib
 import matplotlib
@@ -73,7 +76,8 @@ def show_plot(fig, filename):
         return ""
 
 
-def create_ocio_processor(lutfile, interpolation, inverse):
+def create_ocio_processor(lutfile, interpolation, inverse, prelutfile=None,
+                          postlutfile=None):
     """Create an OpenColorIO processor for lutfile
 
     Args:
@@ -84,19 +88,36 @@ def create_ocio_processor(lutfile, interpolation, inverse):
 
         inverse (bool): get an inverse direction processor
 
+    Kwargs:
+        prelutfile (str): path to a pre LUT
+
+        postlutfile (str): path to a post LUT
+
     Returns:
         PyOpenColorIO.config.Processor.
 
     """
     if inverse:
-        direction = COLORSPACE_DIR_FROM_REFERENCE
+        direction = TRANSFORM_DIR_INVERSE
     else:
-        direction = COLORSPACE_DIR_TO_REFERENCE
+        direction = TRANSFORM_DIR_FORWARD
     config = Config()
     # In colorspace (LUT)
     colorspace = ColorSpace(name='RawInput')
-    t = FileTransform(lutfile, interpolation=interpolation)
-    colorspace.setTransform(t, direction)
+    mainLut = FileTransform(lutfile, interpolation=interpolation,
+                            direction=direction)
+    group = GroupTransform()
+    # Prelut
+    if prelutfile:
+        prelut = FileTransform(prelutfile, interpolation=interpolation)
+        group.push_back(prelut)
+    # Mainlut
+    group.push_back(mainLut)
+    # Postlut
+    if postlutfile:
+        postlut = FileTransform(postlutfile, interpolation=interpolation)
+        group.push_back(postlut)
+    colorspace.setTransform(group, COLORSPACE_DIR_TO_REFERENCE)
     config.addColorSpace(colorspace)
     # Out colorspace
     colorspace = ColorSpace(name='ProcessedOutput')
@@ -256,7 +277,8 @@ def help():
              DEFAULT_CUBE_SIZE, supported_formats())
 
 
-def plot_that_lut(lutfile, plot_type=None, count=None, inverse=False):
+def plot_that_lut(lutfile, plot_type=None, count=None, inverse=False,
+                  prelutfile=None, postlutfile=None):
     """Plot a lut depending on its type and/or args
 
     Args:
@@ -266,6 +288,10 @@ def plot_that_lut(lutfile, plot_type=None, count=None, inverse=False):
         plot_type (str): possible values are 'curve' or 'cube'
 
         count: possible values are curve size or curve samples count or 'auto'
+
+        prelutfile (str): path to a pre LUT
+
+        postlutfile (str): path to a post LUT
 
     Raises:
         PlotThatLutException
@@ -284,7 +310,8 @@ def plot_that_lut(lutfile, plot_type=None, count=None, inverse=False):
         raise PlotThatLutException("Error: {0} file aren't supported.\n{1}"
                                    .format(fileext, supported_formats()))
     # create OCIO processor
-    processor = create_ocio_processor(lutfile, INTERP_LINEAR, inverse)
+    processor = create_ocio_processor(lutfile, INTERP_LINEAR, inverse,
+                                      prelutfile, postlutfile)
     # init args
     if not plot_type or plot_type == 'auto':
         if processor.hasChannelCrosstalk() or fileext == '.spimtx':

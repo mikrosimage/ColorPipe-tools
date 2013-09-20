@@ -8,6 +8,7 @@
 
 from os import path
 import sys
+import traceback
 
 from cherrypy import quickstart, tree, server
 from plot_that_lut import plot_that_lut
@@ -55,8 +56,6 @@ class PlotThatLutWeb(object):
             '<form action="upload" method="post" '
             'enctype="multipart/form-data">\n'
             '    Choose LUT file: <input type="file" name="lutfile"/><br/>\n'
-            '    <input type="checkbox" name="inverse" value="1">Inverse'
-            "(1D / 2D LUT only)<br>"
             "    Lut Type:"
             '    <input type="radio" name="lut_type" value="auto" '
             'checked=true> auto\n'
@@ -69,6 +68,15 @@ class PlotThatLutWeb(object):
             '    <input type="radio" name="count" value="custom"> custom :\n'
             '    <input type="text" name="custom_count" value=17 size=5>\n'
             "    <br>\n"
+            '    <div id="advanced">\n'
+            "    # Advanced options #<br>\n"
+            '    <input type="checkbox" name="inverse" value="1">Reverse main '
+            "LUT (for 1D / 2D LUT only)<br>\n"
+            '    Choose a pre-lut : <input type="file" name="prelutfile"/>\n'
+            "    <br>\n"
+            '    Choose a post-lut : <input type="file" name="postlutfile"/>\n'
+            '    </div>\n'
+            "<br>\n"
             '    <input type="submit"/>\n'
             "</form>"
         )
@@ -85,11 +93,36 @@ class PlotThatLutWeb(object):
         return self.html(self.form())
     index.exposed = True
 
-    def upload(self, lutfile, lut_type, count, custom_count, inverse=False):
+    @staticmethod
+    def __copyUploadedFile(upfile):
+        """Copy uploaded file on the server and return its path
+
+        Args:
+            file (file): path to a file
+
+        Returns:
+            str.
+        """
+        # read data
+        all_data = ''
+        while True:
+            data = upfile.file.read(8192)
+            if not data:
+                break
+            all_data += data
+        # copy uploaded file on the server
+        backup_filename = "uploads/{0}".format(upfile.filename)
+        saved_file = open(backup_filename, 'wb')
+        saved_file.write(all_data)
+        saved_file.close()
+        return backup_filename
+
+    def upload(self, lutfile, lut_type, count, custom_count, inverse=False,
+               prelutfile=None, postlutfile=None):
         """Upload page
 
         Args:
-            lutfile (str): path to a color transformation file (lut, matrix...)
+            lutfile : path to a color transformation file (lut, matrix...)
 
             lut_type (str): possible values are 'curve' or 'cube'
 
@@ -98,22 +131,24 @@ class PlotThatLutWeb(object):
 
             custom_count (int): custom cube size or curve samples count
 
+            inverse (bool): inverse LUT
+
+            prelutfile : path to a prelut
+
+            postlutfile : path to a prelut
+
         Returns:
             str.
 
         """
-
-        all_data = ''
-        while True:
-            data = lutfile.file.read(8192)
-            if not data:
-                break
-            all_data += data
-        # copy uploaded file on the server to use it with plot_that_lut
-        backup_filename = "uploads/{0}".format(lutfile.filename)
-        saved_file = open(backup_filename, 'wb')
-        saved_file.write(all_data)
-        saved_file.close()
+        # copy uploaded files on the server to use it with plot_that_lut
+        backup_filename = self.__copyUploadedFile(lutfile)
+        backup_pre_filename = None
+        backup_post_filename = None
+        if prelutfile.file:
+            backup_pre_filename = self.__copyUploadedFile(prelutfile)
+        if postlutfile.file:
+            backup_post_filename = self.__copyUploadedFile(postlutfile)
         # init args
         if count == 'custom':
             tmp_count = int(custom_count)
@@ -121,12 +156,23 @@ class PlotThatLutWeb(object):
         else:
             tmp_count = None
             display_count = count
-        label = 'Displaying : {0} (type : {1}, samples : {2})'.format(
-                backup_filename, lut_type, display_count)
+        if inverse:
+            inverse_text = "Yes"
+        else:
+            inverse_text = "No"
+        label = ('Displaying : {0} (type : {1}, samples : {2}, inverted : {3})'
+                 ).format(backup_filename, lut_type, display_count,
+                          inverse_text)
+        if prelutfile.file:
+            label = ('{0}<br>Pre-LUT : {1}').format(label, backup_pre_filename)
+        if postlutfile.file:
+            label = ('{0}<br>Post-LUT : {1}').format(label,
+                                                     backup_post_filename)
         # call plot_that_lut to export the graph
         try:
             result = plot_that_lut(backup_filename, lut_type, tmp_count,
-                                   inverse)
+                                   inverse, backup_pre_filename,
+                                   backup_post_filename)
         except Exception, e:
             error = str(e).replace('\n', '<br>')
             result = (
@@ -134,6 +180,7 @@ class PlotThatLutWeb(object):
                 "<br>"
                 '<font color="#FF0000">{0}</font><br>'
             ).format(error)
+            print traceback.format_exc()
         return self.html((
             "{0}<br>"
             "{1}<br>"
