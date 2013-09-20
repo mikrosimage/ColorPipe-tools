@@ -23,14 +23,8 @@ Tested config
 
 Command line usage
 -----
-* Dispay a cube (17 segments) for 3D LUTs and matrixes or a curve (256 points) for 1D/2D LUTs :   
-`plot_that_lut.py < path to a LUT >`
-
-* Display a curve with x points (default value : 256) :   
-`plot_that_lut.py < path to a LUT > curve [points count]`
-
-* Display a cube with x segments (default value : 17) :   
-`plot_that_lut.py < path to a LUT > cube [cube size]`
+See command line help :   
+`ptlut.py -h`
 
 Web app usage
 -------------
@@ -48,4 +42,4 @@ Screenshots
 
 ![Rec709 1D](https://dl.dropboxusercontent.com/u/2979643/Rec709_1D_LUT.png "Rec709 1D")
 
-![Web app](https://dl.dropboxusercontent.com/u/2979643/PlotThatLUT_webapp.png "Web app")
+![Web app](https://dl.dropboxusercontent.com/u/2979643/PlotThatLUT_webapp2.png "Web app")
