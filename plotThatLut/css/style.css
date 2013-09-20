@@ -28,7 +28,6 @@ a:active {color: #666;}  /* selected link */
     line-height:40px; 
 }
 
-
 #content {
     width: 640px;
     height: 600px;
@@ -38,4 +37,15 @@ a:active {color: #666;}  /* selected link */
     left: 0;
     right: 0;
     margin: auto;
+}
+
+#advanced {
+    background-color: #eee;
+    padding-left: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+input[type="file"] {
+    width: 80%
 }

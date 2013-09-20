@@ -8,15 +8,19 @@
 
 ## imports
 import os
-import sys
 # OpenColorIO
-from PyOpenColorIO import Config, ColorSpace, FileTransform
-from PyOpenColorIO.Constants import INTERP_LINEAR, COLORSPACE_DIR_TO_REFERENCE
+from PyOpenColorIO import (
+    Config, ColorSpace, FileTransform, GroupTransform,
+)
+from PyOpenColorIO.Constants import (
+    INTERP_LINEAR, COLORSPACE_DIR_TO_REFERENCE,
+    TRANSFORM_DIR_FORWARD, TRANSFORM_DIR_INVERSE,
+)
 # matplotlib
 import matplotlib
 
 
-cherry_py_mode = True
+web_mode = False
 
 
 class PlotThatLutException(Exception):
@@ -26,11 +30,11 @@ class PlotThatLutException(Exception):
 def set_matplotlib_backend():
     """ Select display backend
 
-    .. todo:: Externalize this and remove cherry_py_mode global var
+    .. todo:: Externalize this and remove web_mode global var
 
     """
 
-    if cherry_py_mode:
+    if web_mode:
         matplotlib.use('Agg')
     else:
         matplotlib.use('Qt4Agg')
@@ -52,26 +56,24 @@ def show_plot(fig, filename):
 
     Returns:
         str.
-            if in cherrypy mode, an html string,
+            if in web mode, an html string,
             else a void string.
 
     """
-    if cherry_py_mode:
+    if web_mode:
         split_filename = os.path.splitext(filename)
         filename = '{0}{1}'.format(split_filename[0],
                                    split_filename[1].replace(".", "_"))
         export_path = 'img/export_{0}.png'.format(filename)
         fig.savefig(export_path)
-        return (
-            '<img src="/{0}" width="640" height="480"'
-            'border="0"/>'
-        ).format(export_path)
+        return export_path
     else:
         matplotlib.pyplot.show()
         return ""
 
 
-def create_ocio_processor(lutfile, interpolation):
+def create_ocio_processor(lutfile, interpolation, inverse, prelutfile=None,
+                          postlutfile=None):
     """Create an OpenColorIO processor for lutfile
 
     Args:
@@ -80,15 +82,38 @@ def create_ocio_processor(lutfile, interpolation):
         interpolation (int): can be INTERP_NEAREST, INTERP_LINEAR or
         INTERP_TETRAHEDRAL (only for 3D LUT)
 
+        inverse (bool): get an inverse direction processor
+
+    Kwargs:
+        prelutfile (str): path to a pre LUT
+
+        postlutfile (str): path to a post LUT
+
     Returns:
         PyOpenColorIO.config.Processor.
 
     """
+    if inverse:
+        direction = TRANSFORM_DIR_INVERSE
+    else:
+        direction = TRANSFORM_DIR_FORWARD
     config = Config()
     # In colorspace (LUT)
     colorspace = ColorSpace(name='RawInput')
-    t = FileTransform(lutfile, interpolation=interpolation)
-    colorspace.setTransform(t, COLORSPACE_DIR_TO_REFERENCE)
+    mainLut = FileTransform(lutfile, interpolation=interpolation,
+                            direction=direction)
+    group = GroupTransform()
+    # Prelut
+    if prelutfile:
+        prelut = FileTransform(prelutfile, interpolation=interpolation)
+        group.push_back(prelut)
+    # Mainlut
+    group.push_back(mainLut)
+    # Postlut
+    if postlutfile:
+        postlut = FileTransform(postlutfile, interpolation=interpolation)
+        group.push_back(postlut)
+    colorspace.setTransform(group, COLORSPACE_DIR_TO_REFERENCE)
     config.addColorSpace(colorspace)
     # Out colorspace
     colorspace = ColorSpace(name='ProcessedOutput')
@@ -226,29 +251,8 @@ def supported_formats():
     return "Supported LUT formats : {0}".format(', '.join(OCIO_LUTS_FORMATS))
 
 
-def help():
-    """Return help
-
-    Returns:
-        str.
-
-    """
-    return (
-        "----\n"
-        "plot_that_lut.py <path to a LUT>\n"
-        "       dispay a cube ({0} segments) for 3D LUTs and matrixes\n"
-        "       or a curve ({1} points) for 1D/2D LUTs.\n"
-
-        "plot_that_lut.py <path to a LUT> curve [points count]\n"
-        "       display a curve with x points (default value : {2}).\n"
-        "       plot_that_lut.py <path to a LUT> cube [cube size]\n"
-        "       display a cube with x segments (default value : {3}).\n"
-        "\n{4}"
-    ).format(DEFAULT_CUBE_SIZE, DEFAULT_SAMPLE, DEFAULT_SAMPLE,
-             DEFAULT_CUBE_SIZE, supported_formats())
-
-
-def plot_that_lut(lutfile, plot_type=None, count=None):
+def plot_that_lut(lutfile, plot_type=None, count=None, inverse=False,
+                  prelutfile=None, postlutfile=None):
     """Plot a lut depending on its type and/or args
 
     Args:
@@ -259,8 +263,13 @@ def plot_that_lut(lutfile, plot_type=None, count=None):
 
         count: possible values are curve size or curve samples count or 'auto'
 
+        prelutfile (str): path to a pre LUT
+
+        postlutfile (str): path to a post LUT
+
     Raises:
-        Exception
+        PlotThatLutException
+        Exception from OpenColorIO binding
 
     """
     set_matplotlib_backend()
@@ -275,7 +284,8 @@ def plot_that_lut(lutfile, plot_type=None, count=None):
         raise PlotThatLutException("Error: {0} file aren't supported.\n{1}"
                                    .format(fileext, supported_formats()))
     # create OCIO processor
-    processor = create_ocio_processor(lutfile, INTERP_LINEAR)
+    processor = create_ocio_processor(lutfile, INTERP_LINEAR, inverse,
+                                      prelutfile, postlutfile)
     # init args
     if not plot_type or plot_type == 'auto':
         if processor.hasChannelCrosstalk() or fileext == '.spimtx':
@@ -297,38 +307,5 @@ def plot_that_lut(lutfile, plot_type=None, count=None):
     else:
         raise PlotThatLutException((
             "Unknown plot type : {0}\n"
-            "Plot type should be curve or cube.\n{1}"
-        ).format(plot_type, help()))
-
-if __name__ == '__main__':
-    """ Command line interface for plot_that_lut
-
-    .. todo:: use optparse (or argparse)
-
-    """
-    cherry_py_mode = False
-    params_count = len(sys.argv)
-    lutfile = ""
-    plot_type = None
-    count = None
-    if params_count < 2:
-        print "Syntax error !"
-        print help()
-        sys.exit(1)
-    elif params_count == 2:
-        lutfile = sys.argv[1]
-    elif params_count == 3:
-        lutfile = sys.argv[1]
-        plot_type = sys.argv[2]
-    elif params_count == 4:
-        lutfile = sys.argv[1]
-        plot_type = sys.argv[2]
-        count = int(sys.argv[3])
-    else:
-        print "Syntax error !"
-        print help()
-        sys.exit(1)
-    try:
-        plot_that_lut(lutfile, plot_type, count)
-    except Exception, e:
-        print "Watch out !\n%s" % e
+            "Plot type should be curve or cube.\n"
+        ).format(plot_type))
