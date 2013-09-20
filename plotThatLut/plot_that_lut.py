@@ -252,7 +252,7 @@ def supported_formats():
 
 
 def plot_that_lut(lutfile, plot_type=None, count=None, inverse=False,
-                  prelutfile=None, postlutfile=None, helpMessage=""):
+                  prelutfile=None, postlutfile=None):
     """Plot a lut depending on its type and/or args
 
     Args:
@@ -307,5 +307,5 @@ def plot_that_lut(lutfile, plot_type=None, count=None, inverse=False,
     else:
         raise PlotThatLutException((
             "Unknown plot type : {0}\n"
-            "Plot type should be curve or cube.\n{1}"
-        ).format(plot_type, helpMessage))
+            "Plot type should be curve or cube.\n"
+        ).format(plot_type))
