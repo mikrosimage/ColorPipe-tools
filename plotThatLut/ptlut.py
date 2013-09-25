@@ -52,8 +52,6 @@ default=None, type=int)
 if __name__ == '__main__':
     """ Command line interface for plot_that_lut
 
-    .. todo:: use optparse (or argparse)
-
     """
     args = __get_options()
     try:
