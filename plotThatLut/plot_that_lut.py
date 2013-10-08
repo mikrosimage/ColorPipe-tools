@@ -10,7 +10,9 @@
 import os
 # OpenColorIO
 from PyOpenColorIO.Constants import INTERP_LINEAR
-from utils.ocio_helper import OCIO_LUTS_FORMATS, create_ocio_processor
+from utils.ocio_helper import (
+    OCIO_LUTS_FORMATS, create_ocio_processor, is_3d_lut
+)
 # matplotlib
 import matplotlib
 
@@ -230,7 +232,7 @@ def plot_that_lut(lutfile, plot_type=None, count=None, inverse=False,
                                       prelutfile, postlutfile)
     # init args
     if not plot_type or plot_type == 'auto':
-        if processor.hasChannelCrosstalk() or fileext == '.spimtx':
+        if is_3d_lut(processor, lutfile):
             plot_type = 'cube'
         else:
             plot_type = 'curve'

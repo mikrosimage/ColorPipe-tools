@@ -3,6 +3,7 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
+import os
 # import OpenColorIO
 from PyOpenColorIO import (
     Config, ColorSpace, FileTransform, GroupTransform,
@@ -70,3 +71,8 @@ def create_ocio_processor(lutfile, interpolation=INTERP_LINEAR, inverse=False,
     config.addColorSpace(colorspace)
     # Create a processor corresponding to the LUT transformation
     return config.getProcessor('RawInput', 'ProcessedOutput')
+
+
+def is_3d_lut(processor, filepath):
+    fileext = os.path.splitext(filepath)[1]
+    return processor.hasChannelCrosstalk() or fileext == '.spimtx'
