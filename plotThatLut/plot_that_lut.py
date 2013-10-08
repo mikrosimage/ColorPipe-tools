@@ -9,16 +9,12 @@
 ## imports
 import os
 # OpenColorIO
-from PyOpenColorIO import (
-    Config, ColorSpace, FileTransform, GroupTransform,
-)
-from PyOpenColorIO.Constants import (
-    INTERP_LINEAR, COLORSPACE_DIR_TO_REFERENCE,
-    TRANSFORM_DIR_FORWARD, TRANSFORM_DIR_INVERSE,
+from PyOpenColorIO.Constants import INTERP_LINEAR
+from utils.ocio_helper import (
+    OCIO_LUTS_FORMATS, create_ocio_processor, is_3d_lut
 )
 # matplotlib
 import matplotlib
-
 
 web_mode = False
 
@@ -39,8 +35,6 @@ def set_matplotlib_backend():
     else:
         matplotlib.use('Qt4Agg')
 
-OCIO_LUTS_FORMATS = ['.3dl', '.csp', '.cub', '.cube', '.hdl', '.look',
-                     '.mga/m3d', '.spi1d', '.spi3d', '.spimtx', '.vf']
 
 DEFAULT_SAMPLE = 256
 DEFAULT_CUBE_SIZE = 17
@@ -70,56 +64,6 @@ def show_plot(fig, filename):
     else:
         matplotlib.pyplot.show()
         return ""
-
-
-def create_ocio_processor(lutfile, interpolation, inverse, prelutfile=None,
-                          postlutfile=None):
-    """Create an OpenColorIO processor for lutfile
-
-    Args:
-        lutfile (str): path to a LUT
-
-        interpolation (int): can be INTERP_NEAREST, INTERP_LINEAR or
-        INTERP_TETRAHEDRAL (only for 3D LUT)
-
-        inverse (bool): get an inverse direction processor
-
-    Kwargs:
-        prelutfile (str): path to a pre LUT
-
-        postlutfile (str): path to a post LUT
-
-    Returns:
-        PyOpenColorIO.config.Processor.
-
-    """
-    if inverse:
-        direction = TRANSFORM_DIR_INVERSE
-    else:
-        direction = TRANSFORM_DIR_FORWARD
-    config = Config()
-    # In colorspace (LUT)
-    colorspace = ColorSpace(name='RawInput')
-    mainLut = FileTransform(lutfile, interpolation=interpolation,
-                            direction=direction)
-    group = GroupTransform()
-    # Prelut
-    if prelutfile:
-        prelut = FileTransform(prelutfile, interpolation=interpolation)
-        group.push_back(prelut)
-    # Mainlut
-    group.push_back(mainLut)
-    # Postlut
-    if postlutfile:
-        postlut = FileTransform(postlutfile, interpolation=interpolation)
-        group.push_back(postlut)
-    colorspace.setTransform(group, COLORSPACE_DIR_TO_REFERENCE)
-    config.addColorSpace(colorspace)
-    # Out colorspace
-    colorspace = ColorSpace(name='ProcessedOutput')
-    config.addColorSpace(colorspace)
-    # Create a processor corresponding to the LUT transformation
-    return config.getProcessor('RawInput', 'ProcessedOutput')
 
 
 def plot_curve(lutfile, samples_count, processor):
@@ -231,14 +175,7 @@ def plot_cube(lutfile, cube_size, processor):
     return show_plot(fig, filename)
 
 
-def test_lut_1d():
-    lutfile = "test_files/identity.csp"
-    plot_curve(lutfile, samples_count=DEFAULT_SAMPLE)
 
-
-def test_lut_3d():
-    lutfile = "test_files/identity.3dl"
-    plot_cube(lutfile, cube_size=DEFAULT_CUBE_SIZE)
 
 
 def supported_formats():
@@ -288,7 +225,7 @@ def plot_that_lut(lutfile, plot_type=None, count=None, inverse=False,
                                       prelutfile, postlutfile)
     # init args
     if not plot_type or plot_type == 'auto':
-        if processor.hasChannelCrosstalk() or fileext == '.spimtx':
+        if is_3d_lut(processor, lutfile):
             plot_type = 'cube'
         else:
             plot_type = 'curve'

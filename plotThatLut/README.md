@@ -1,6 +1,8 @@
 Plot that LUT
 ========================
 
+** Developments under progress **
+
 Plot that LUT is a python script for plotting look up tables.
 It uses [OpenColorIO](http://opencolorio.org/) to read and process input LUTs, and [matplotlib](http://matplotlib.org/) to plot results.
 
