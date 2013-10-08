@@ -175,14 +175,7 @@ def plot_cube(lutfile, cube_size, processor):
     return show_plot(fig, filename)
 
 
-def test_lut_1d():
-    lutfile = "test_files/identity.csp"
-    plot_curve(lutfile, samples_count=DEFAULT_SAMPLE)
 
-
-def test_lut_3d():
-    lutfile = "test_files/identity.3dl"
-    plot_cube(lutfile, cube_size=DEFAULT_CUBE_SIZE)
 
 
 def supported_formats():
