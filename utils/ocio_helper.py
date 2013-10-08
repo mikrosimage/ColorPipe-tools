@@ -8,6 +8,7 @@ from PyOpenColorIO import (
     Config, ColorSpace, FileTransform, GroupTransform,
 )
 from PyOpenColorIO.Constants import (
+    INTERP_LINEAR,
     COLORSPACE_DIR_TO_REFERENCE,
     TRANSFORM_DIR_FORWARD, TRANSFORM_DIR_INVERSE,
 )
@@ -21,8 +22,8 @@ OCIO_LUTS_FORMATS = sorted(OCIO_1D_LUTS_FORMATS + list(set(OCIO_3D_LUTS_FORMATS)
                            - set(OCIO_1D_LUTS_FORMATS)))
 
 
-def create_ocio_processor(lutfile, interpolation, inverse, prelutfile=None,
-                          postlutfile=None):
+def create_ocio_processor(lutfile, interpolation=INTERP_LINEAR, inverse=False,
+                          prelutfile=None, postlutfile=None):
     """Create an OpenColorIO processor for lutfile
 
     Args:
