@@ -8,7 +8,7 @@ It uses [OpenColorIO](http://opencolorio.org/) to read and process input LUTs.
 
 Available scripts :   
 
-- **lut_to_lut**: convert a lut into another format. For now, only conversion to 1D/2D cube or 1D/2D csp is supported   
+- **lut_to_lut**: convert a lut into another format. For now, only conversion to 1D/2D/3D cube or 1D/2D csp is supported   
 
 - **ext_1d_lut**: extract the tone mapping curve of a 3D LUT using a bicubic interpolation (or not)   
 
