@@ -67,6 +67,7 @@ def write_1d_cube_lut(filename, values, comment=None, title="Iridas LUT"):
         comment (str): an optionnal comment
 
         title (str): title of the LUT
+
     """
     write_2d_cube_lut(filename, values, comment, title)
 

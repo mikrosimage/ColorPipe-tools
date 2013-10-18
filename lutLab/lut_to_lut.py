@@ -30,8 +30,8 @@ def lut_to_lut(inlutfile, outlutfile=None, type='1D_CUBE',
         outlutfile (str): the output 1D LUT. If not define, LUT is written in
         the input LUT directory and post-fixed with "_export"
 
-        type (str): specify output LUT format. For now only 2D csp and 2D cube
-        are available.
+        type (str): specify output LUT format. For now only 2D/3D csp and 2D
+        cube are available.
 
         lutsize (int): out LUT bit precision for 1D. Ex : 16 (bits)
 
