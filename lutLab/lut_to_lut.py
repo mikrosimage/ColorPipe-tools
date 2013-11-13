@@ -20,7 +20,7 @@ class LutToLutException(Exception):
 
 
 def lut_to_lut(inlutfile, outlutfile=None, type='1D_CUBE',
-               lutsize=16, cubesize=17):
+               lutsize=16, cubesize=17, inverse=False):
     """Extract the tone mapping curve of a 3D LUT
 
     Args:
@@ -53,7 +53,8 @@ def lut_to_lut(inlutfile, outlutfile=None, type='1D_CUBE',
         raise LutToLutException("Unsupported export format!")
     if not outlutfile:
         outlutfile = get_default_out_path(inlutfile, ext)
-    processor = create_ocio_processor(inlutfile, interpolation=interp)
+    processor = create_ocio_processor(inlutfile, interpolation=interp,
+                                      inverse=inverse)
     # init vars
     max_value = samples_count - 1.0
     red_values = []
@@ -106,6 +107,9 @@ def __get_options():
     parser.add_argument("-ocs", "--out-cube-size", help=(
         "Output cube size (3D only). Ex : 17, 32."
     ), default=17, type=int)
+    # inverse
+    parser.add_argument("-inv", "--inverse", help="Inverse input LUT",
+                        action="store_true")
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -113,4 +117,4 @@ if __name__ == '__main__':
     """
     args = __get_options()
     lut_to_lut(args.inlutfile, args.outlutfile, args.out_type,
-               args.out_lut_size, args.out_cube_size)
+               args.out_lut_size, args.out_cube_size, args.inverse)
