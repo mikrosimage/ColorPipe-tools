@@ -208,7 +208,11 @@ conf = {'/css/style.css': {'tools.staticfile.on': True,
         '/uploads':       {'tools.staticdir.on': True,
                            'tools.staticdir.dir': path.join(currdir, 'uploads'
                                                             )
-                           }
+                           },
+        '/favicon.ico': {'tools.staticfile.on': True,
+                         'tools.staticfile.filename':
+                         path.join(currdir, 'icons', 'favicon.ico')
+                         }
         }
 
 sys.path.append(currdir)

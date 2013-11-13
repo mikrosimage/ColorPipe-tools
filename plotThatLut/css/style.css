@@ -2,8 +2,8 @@ body {
     margin: 0;
     font-family: Verdana;
     font-size: 14px;
-    color: #666;
-    background-color: #fff;
+    color: #999;
+    background-color: #222;
 }
 
 a:link {color: #666;}      /* unvisited link */
@@ -12,12 +12,13 @@ a:hover {color: #666;}  /* mouse over link */
 a:active {color: #666;}  /* selected link */
 
 #header{
-    background-color: #ccc;
-    color: #fff;
+    background-color: #555;
+    color: #999;
     font-family: Arial;
     padding-left: 10px;
     padding-top: 5px;
     padding-bottom: 5px;
+    border-radius: 10px;
 }
 
 #text{
@@ -40,10 +41,13 @@ a:active {color: #666;}  /* selected link */
 }
 
 #advanced {
-    background-color: #eee;
-    padding-left: 10px;
+    background-color: #333;
+    padding-left: 5px;
     padding-top: 5px;
     padding-bottom: 5px;
+    border-style: dashed;
+    border-width: 1px;
+    border-radius: 10px;
 }
 
 input[type="file"] {
