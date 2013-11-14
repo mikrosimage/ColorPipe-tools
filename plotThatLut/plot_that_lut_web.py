@@ -7,6 +7,7 @@
 """
 
 from os import path
+import ntpath
 import sys
 import traceback
 
@@ -111,7 +112,9 @@ class PlotThatLutWeb(object):
                 break
             all_data += data
         # copy uploaded file on the server
-        backup_filename = "uploads/{0}".format(upfile.filename)
+        backup_filename = "{0}/uploads/{1}".format(currdir,
+                                                   ntpath.basename(
+                                                   upfile.filename))
         saved_file = open(backup_filename, 'wb')
         saved_file.write(all_data)
         saved_file.close()
