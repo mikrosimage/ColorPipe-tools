@@ -58,8 +58,10 @@ def show_plot(fig, filename):
         split_filename = os.path.splitext(filename)
         filename = '{0}{1}'.format(split_filename[0],
                                    split_filename[1].replace(".", "_"))
+        currdir = os.path.dirname(os.path.abspath(__file__))
         export_path = 'img/export_{0}.png'.format(filename)
-        fig.savefig(export_path)
+        abs_export_path = '{0}/img/export_{1}.png'.format(currdir, filename)
+        fig.savefig(abs_export_path)
         return export_path
     else:
         matplotlib.pyplot.show()
@@ -173,9 +175,6 @@ def plot_cube(lutfile, cube_size, processor):
     # plot 3D values
     ax.scatter(red_values, green_values, blue_values, c=colors, marker="o")
     return show_plot(fig, filename)
-
-
-
 
 
 def supported_formats():
