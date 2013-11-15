@@ -12,6 +12,8 @@ Available scripts :
 
 - **ext_1d_lut**: extract the tone mapping curve of a 3D LUT using a bicubic interpolation (or not)   
 
+- **rgb_to_xyz_matrix**: generate RGB colorspace to XYZ conversion matrix    
+
 
 Supported input LUT formats : 3dl, csp, cub, cube, hdl, look, mga/m3d, spid1d, spi3d, spimtx, vf.   
 See [OpenColorIO FAQ](http://opencolorio.org/FAQ.html) for more informations.
@@ -33,6 +35,7 @@ Command line usage
 See command line help :   
 `lut_to_lut.py -h`   
 `ext_1d_lut.py -h`   
+`rgb_to_xyz_matrix.py -h`   
 
 Screenshots
 -----------
