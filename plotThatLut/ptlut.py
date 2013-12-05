@@ -20,11 +20,15 @@ def __get_options():
     description = 'PlotThatLUT command line tool'
     parser = argparse.ArgumentParser(description=description)
     # main lut
-    parser.add_argument("lutfile", help=(
+    parser.add_argument("lutfiles", help=(
         "path to the main LUT to plot.\n{0}"
-    ).format(plot_that_lut.supported_formats()), type=str)
+    ).format(plot_that_lut.supported_formats()), type=str, nargs='+')
     # inverse
     parser.add_argument("-i", "--inverse", help="inverse main lut",
+                        action="store_true")
+    # display markers
+    parser.add_argument("-m", "--markers",
+                        help="display markers on curves (useless on cubes)",
                         action="store_true")
     # pre lut
     parser.add_argument("-pre", "--prelutfile", help=(
@@ -39,7 +43,9 @@ def __get_options():
                         help=("Plot type. By default, a curve for a 1D/2D LUT "
                         "and a cube for a 3D LUT."),
                         type=str,
-                        choices=['auto', 'curve', 'cube'], default='auto')
+                        choices=['auto', 'curve', 'red_curve', 'blue_curve',
+                                 'green_curve', 'cube'],
+                        default='auto')
     # samples count
     parser.add_argument("-s", "--samples-count", help=(
         "Samples count. Ex : {0} for a curve or {1} for a cube."
@@ -55,11 +61,12 @@ if __name__ == '__main__':
     """
     args = __get_options()
     try:
-        plot_that_lut.plot_that_lut(args.lutfile,
+        plot_that_lut.plot_that_lut(args.lutfiles,
                                     args.plot_type,
                                     args.samples_count,
                                     args.inverse,
                                     args.prelutfile,
-                                    args.postlutfile)
+                                    args.postlutfile,
+                                    args.markers)
     except Exception, e:
         print "Watch out !\n%s" % e

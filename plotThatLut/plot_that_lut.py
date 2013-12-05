@@ -15,6 +15,7 @@ from utils.ocio_helper import (
 )
 # matplotlib
 import matplotlib
+import itertools
 
 web_mode = False
 
@@ -38,6 +39,11 @@ def set_matplotlib_backend():
 
 DEFAULT_SAMPLE = 256
 DEFAULT_CUBE_SIZE = 17
+
+MARKERS = ['o', '*', 'H', 'D', '8', 's', 'p', 'h', 'd']
+REDS = ['r', 'c', '#990000', '#660000']
+GREENS = ['g', 'm', '#009900', '#006600']
+BLUES = ['b', 'y', '#000099', '#000066']
 
 
 def show_plot(fig, filename):
@@ -68,16 +74,26 @@ def show_plot(fig, filename):
         return ""
 
 
-def plot_curve(lutfile, samples_count, processor):
+def plot_curve(lutfiles, samples_count, processors, draw_red_curve=True,
+               draw_green_curve=True, draw_blue_curve=True,
+               display_markers=False):
     """Plot a lutfile as a curve
 
     Args:
-        lutfile (str): path to a color transformation file (lut, matrix...)
+        lutfiles ([str]): pathes to color transformation files (lut, matrix...)
 
         samples_count (int): number of points for the displayed curve
 
-        processor (PyOpenColorIO.config.Processor): an OpenColorIO processor
-        for lutfile
+        processors ([PyOpenColorIO.config.Processor]): OpenColorIO processors
+        for lutfiles
+
+        draw_red_curve (bool): plot red curve only
+
+        draw_green_curve (bool): plot green curve only
+
+        draw_blue_curve (bool): plot blue curve only
+
+        display_markers (bool): should display markers on curve
 
     Returns:
             str.
@@ -86,32 +102,55 @@ def plot_curve(lutfile, samples_count, processor):
     # matplotlib : general plot
     from matplotlib.pyplot import (title, plot, xlabel, ylabel, grid,
                                    figure)
-    # init vars
-    max_value = samples_count - 1.0
-    red_values = []
-    green_values = []
-    blue_values = []
-    input_range = []
-    # process color values
-    for n in range(0, samples_count):
-        x = n/max_value
-        res = processor.applyRGB([x, x, x])
-        red_values.append(res[0])
-        green_values.append(res[1])
-        blue_values.append(res[2])
-        input_range.append(x)
+
     # init plot
     fig = figure()
     fig.canvas.set_window_title('Plot That 1D LUT')
-    filename = os.path.basename(lutfile)
-    title(filename)
+    figure_title = ""
+    for lutfile in lutfiles:
+        filename = os.path.basename(lutfile)
+        figure_title = "{0}\n{1}".format(figure_title, filename)
+    title(figure_title)
     xlabel("Input")
     ylabel("Output")
     grid(True)
-    # plot curves
-    plot(input_range, red_values, 'r-', label='Red values', linewidth=1)
-    plot(input_range, green_values, 'g-', label='Green values', linewidth=1)
-    plot(input_range, blue_values, 'b-', label='Blue values', linewidth=1)
+    index = 0
+    markers_it = itertools.cycle(MARKERS)
+    reds_it = itertools.cycle(REDS)
+    greens_it = itertools.cycle(GREENS)
+    blues_it = itertools.cycle(BLUES)
+    for lutfile, processor in itertools.izip(lutfiles, processors):
+        # init vars
+        max_value = samples_count - 1.0
+        red_values = []
+        green_values = []
+        blue_values = []
+        input_range = []
+        # process color values
+        for n in range(0, samples_count):
+            x = n/max_value
+            res = processor.applyRGB([x, x, x])
+            red_values.append(res[0])
+            green_values.append(res[1])
+            blue_values.append(res[2])
+            input_range.append(x)
+        # markers
+        marker = markers_it.next()
+        markersize = 0
+        if display_markers:
+            markersize = 4
+        # plot curves
+        if draw_red_curve:
+            plot(input_range, red_values, color=reds_it.next(), marker=marker,
+                 label='Red values', linewidth=1, markersize=markersize)
+        if draw_green_curve:
+            plot(input_range, green_values, color=greens_it.next(),
+                 marker=marker, label='Green values', linewidth=1,
+                 markersize=markersize)
+        if draw_blue_curve:
+            plot(input_range, blue_values, color=blues_it.next(), marker=marker,
+                 label='Blue values', linewidth=1, markersize=markersize)
+        index += 1
     return show_plot(fig, filename)
 
 
@@ -187,12 +226,12 @@ def supported_formats():
     return "Supported LUT formats : {0}".format(', '.join(OCIO_LUTS_FORMATS))
 
 
-def plot_that_lut(lutfile, plot_type=None, count=None, inverse=False,
-                  prelutfile=None, postlutfile=None):
+def plot_that_lut(lutfiles, plot_type=None, count=None, inverse=False,
+                  prelutfile=None, postlutfile=None, display_markers=False):
     """Plot a lut depending on its type and/or args
 
     Args:
-        lutfile (str): path to a color transformation file (lut, matrix...)
+        lutfiles (str): pathes to color transformation files (lut, matrix...)
 
     kwargs:
         plot_type (str): possible values are 'curve' or 'cube'
@@ -203,43 +242,70 @@ def plot_that_lut(lutfile, plot_type=None, count=None, inverse=False,
 
         postlutfile (str): path to a post LUT
 
+        display_markers (bool): should display markers on curve
+
     Raises:
         PlotThatLutException
         Exception from OpenColorIO binding
 
     """
+    if not isinstance(lutfiles, list):
+        lutfiles = [lutfiles]
     set_matplotlib_backend()
-    # check if LUT format is supported
-    fileext = os.path.splitext(lutfile)[1]
-    if not fileext:
-        raise PlotThatLutException((
-            "Error: Couldn't extract extension in this\n"
-            "path : {0}"
-        ).format(lutfile))
-    if fileext not in OCIO_LUTS_FORMATS:
-        raise PlotThatLutException("Error: {0} file aren't supported.\n{1}"
-                                   .format(fileext, supported_formats()))
-    # create OCIO processor
-    processor = create_ocio_processor(lutfile, INTERP_LINEAR, inverse,
-                                      prelutfile, postlutfile)
+    processors = []
+    for lutfile in lutfiles:
+        # check if LUT format is supported
+        fileext = os.path.splitext(lutfile)[1]
+        if not fileext:
+            raise PlotThatLutException((
+                "Error: Couldn't extract extension in this\n"
+                "path : {0}"
+            ).format(lutfile))
+        if fileext not in OCIO_LUTS_FORMATS:
+            raise PlotThatLutException("Error: {0} file aren't supported.\n{1}"
+                                       .format(fileext, supported_formats()))
+        # create OCIO processor
+        processors.append(create_ocio_processor(lutfile, INTERP_LINEAR, inverse,
+                                                prelutfile, postlutfile))
     # init args
     if not plot_type or plot_type == 'auto':
-        if is_3d_lut(processor, lutfile):
+        # deduce plot type considering first lutfile
+        if is_3d_lut(processors[0], lutfiles[0]):
             plot_type = 'cube'
         else:
             plot_type = 'curve'
     if not count or count == 'auto':
         # set plot_type from the command line and init default count
-        if plot_type == 'curve':
+        if 'curve' in plot_type:
             count = DEFAULT_SAMPLE
         else:
             count = DEFAULT_CUBE_SIZE
     # plot
     print "Plotting a {0} with {1} samples...".format(plot_type, count)
-    if plot_type == 'curve':
-        return plot_curve(lutfile, count, processor)
+    if 'curve' in plot_type:
+        draw_red_curve = True
+        draw_green_curve = True
+        draw_blue_curve = True
+        if 'red' in plot_type:
+            #red_curve option
+            draw_green_curve = False
+            draw_blue_curve = False
+        elif 'green' in plot_type:
+            #green_curve option
+            draw_red_curve = False
+            draw_blue_curve = False
+        elif 'blue' in plot_type:
+            #blue_curve option
+            draw_red_curve = False
+            draw_green_curve = False
+        return plot_curve(lutfiles, count, processors,
+                          draw_red_curve=draw_red_curve,
+                          draw_green_curve=draw_green_curve,
+                          draw_blue_curve=draw_blue_curve,
+                          display_markers=display_markers)
     elif plot_type == 'cube':
-        return plot_cube(lutfile, count, processor)
+        # TODO support multiple cubes display
+        return plot_cube(lutfiles[0], count, processors[0])
     else:
         raise PlotThatLutException((
             "Unknown plot type : {0}\n"
