@@ -94,3 +94,21 @@ def get_3d_list_values(cubesize, processor, hexa_values=False):
             'blue_values': blue_values,
             'input_colors': input_colors
             }
+
+
+def write_3d_json_file(filepath, cubesize, processor):
+    """Export cube into a json file
+
+    Args:
+        filepath (str): out LUT path
+
+        cubesize (int): cube size. Ex: 17, 32...
+
+        processor (PyOpenColorIO.config.Processor): an OpenColorIO processor
+
+    """
+    processed_values = get_3d_list_values(cubesize, processor)
+    import json
+    f = open(filepath, 'w+')
+    json.dump(processed_values, f)
+    f.close()

@@ -9,7 +9,7 @@ import argparse
 from utils.ocio_helper import OCIO_LUTS_FORMATS, create_ocio_processor
 from utils.csp_helper import write_2d_csp_lut
 from utils.cube_helper import write_2d_cube_lut, write_3d_cube_lut
-from utils.lut_utils import get_default_out_path
+from utils.lut_utils import get_default_out_path, write_3d_json_file
 from PyOpenColorIO.Constants import (
     INTERP_LINEAR, INTERP_TETRAHEDRAL
 )
@@ -49,6 +49,10 @@ def lut_to_lut(inlutfile, outlutfile=None, type='1D_CUBE',
         ext = ".csp"
         write_function = write_2d_csp_lut
         interp = INTERP_LINEAR
+    elif type == '3D_JSON':
+        ext = ".json"
+        write_function = write_3d_json_file
+        interp = INTERP_TETRAHEDRAL
     else:
         raise LutToLutException("Unsupported export format!")
     if not outlutfile:
@@ -97,7 +101,7 @@ def __get_options():
     parser.add_argument("-t", "--out-type",
                         help=("Output LUT type."),
                         type=str,
-                        choices=['1D_CSP', '1D_CUBE', '3D_CUBE'],
+                        choices=['1D_CSP', '1D_CUBE', '3D_CUBE', '3D_JSON'],
                         default='1D_CUBE')
     # out lut size
     parser.add_argument("-os", "--out-lut-size", help=(
