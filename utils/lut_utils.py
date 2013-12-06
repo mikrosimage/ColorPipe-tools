@@ -34,6 +34,10 @@ def check_arrays_length(array1, array2, array3):
 def get_default_out_path(filepath, ext):
     """ Return a defaut output LUT path from an input LUT path
 
+    Args:
+        filepath (str): input LUT file path
+        ext (str): output file extension
+
     Returns:
         .str
 
