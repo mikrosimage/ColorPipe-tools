@@ -13,6 +13,7 @@ from PyOpenColorIO.Constants import INTERP_LINEAR
 from utils.ocio_helper import (
     OCIO_LUTS_FORMATS, create_ocio_processor, is_3d_lut
 )
+from utils.lut_utils import get_3d_list_values
 # matplotlib
 import matplotlib
 import itertools
@@ -175,30 +176,13 @@ def plot_cube(lutfile, cube_size, processor):
     # matplotlib : for 3D plot
     # mplot3d has to be imported for 3d projection
     import mpl_toolkits.mplot3d
-    from matplotlib.colors import rgb2hex
     # init vars
-    input_range = range(0, cube_size)
-    max_value = cube_size - 1.0
-    red_values = []
-    green_values = []
-    blue_values = []
-    colors = []
-    # process color values
-    for r in input_range:
-        for g in input_range:
-            for b in input_range:
-                # get a value between [0..1]
-                norm_r = r/max_value
-                norm_g = g/max_value
-                norm_b = b/max_value
-                # apply correction via OCIO
-                res = processor.applyRGB([norm_r, norm_g, norm_b])
-                # append values
-                red_values.append(res[0])
-                green_values.append(res[1])
-                blue_values.append(res[2])
-                # append corresponding color
-                colors.append(rgb2hex([norm_r, norm_g, norm_b]))
+    processed_values = get_3d_list_values(cube_size, processor,
+                                          hexa_values=True)
+    red_values = processed_values['red_values']
+    green_values = processed_values['green_values']
+    blue_values = processed_values['blue_values']
+    input_colors = processed_values['input_colors']
     # init plot
     fig = figure()
     fig.canvas.set_window_title('Plot That 3D LUT')
@@ -212,7 +196,8 @@ def plot_cube(lutfile, cube_size, processor):
     filename = os.path.basename(lutfile)
     title(filename)
     # plot 3D values
-    ax.scatter(red_values, green_values, blue_values, c=colors, marker="o")
+    ax.scatter(red_values, green_values, blue_values, c=input_colors,
+               marker="o")
     return show_plot(fig, filename)
 
 

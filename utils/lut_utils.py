@@ -40,3 +40,57 @@ def get_default_out_path(filepath, ext):
     """
     split_filename = os.path.splitext(filepath)
     return "{0}_export{1}".format(split_filename[0], ext)
+
+
+def get_3d_list_values(cubesize, processor, hexa_values=False):
+    """Process cube values
+
+    Args:
+        filepath (str): out LUT path
+
+        cubesize (int): cube size. Ex: 17, 32...
+
+        processor (PyOpenColorIO.config.Processor): an OpenColorIO processor
+
+    Kwargs:
+        hexa_values (bool): if true, input colors will be hexa values and rgb
+        float triplets if false
+
+    Returns:
+        .dict containing cubesize and red, green, blue, input color values
+        as lists
+
+    """
+    input_range = range(0, cubesize)
+    max_value = cubesize - 1.0
+    red_values = []
+    green_values = []
+    blue_values = []
+    input_colors = []
+    if hexa_values:
+        from matplotlib.colors import rgb2hex
+    # process color values
+    for b in input_range:
+        for g in input_range:
+            for r in input_range:
+                # get a value between [0..1]
+                norm_r = r/max_value
+                norm_g = g/max_value
+                norm_b = b/max_value
+                # apply correction via OCIO
+                res = processor.applyRGB([norm_r, norm_g, norm_b])
+                red_values.append(res[0])
+                green_values.append(res[1])
+                blue_values.append(res[2])
+                # append corresponding input color
+                if hexa_values:
+                    color = rgb2hex([norm_r, norm_g, norm_b])
+                else:
+                    color = [norm_r, norm_g, norm_b]
+                input_colors.append(color)
+    return {'cubesize': cubesize,
+            'red_values': red_values,
+            'green_values': green_values,
+            'blue_values': blue_values,
+            'input_colors': input_colors
+            }
