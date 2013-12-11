@@ -112,21 +112,29 @@ def display_matrix(colorspace, format):
                                    colorspace.get_blue_primaries(),
                                    colorspace.get_white_point())
     if format == 'simple':
-        print ("{0} {1} {2}\n"
-               "{3} {4} {5}\n"
-               "{6} {7} {8}\n").format(matrix.item(0, 0), matrix.item(0, 1),
-                                       matrix.item(0, 2), matrix.item(1, 0),
-                                       matrix.item(1, 1), matrix.item(1, 2),
-                                       matrix.item(2, 0), matrix.item(2, 1),
-                                       matrix.item(2, 2))
+        print ("{0:.10f} {1:.10f} {2:.10f}\n"
+               "{3:.10f} {4:.10f} {5:.10f}\n"
+               "{6:.10f} {7:.10f} {8:.10f}\n").format(matrix.item(0, 0),
+                                                      matrix.item(0, 1),
+                                                      matrix.item(0, 2),
+                                                      matrix.item(1, 0),
+                                                      matrix.item(1, 1),
+                                                      matrix.item(1, 2),
+                                                      matrix.item(2, 0),
+                                                      matrix.item(2, 1),
+                                                      matrix.item(2, 2))
     elif format == 'spimtx':
-        print ("{0} {1} {2} 0\n"
-               "{3} {4} {5} 0\n"
-               "{6} {7} {8} 0\n").format(matrix.item(0, 0), matrix.item(0, 1),
-                                         matrix.item(0, 2), matrix.item(1, 0),
-                                         matrix.item(1, 1), matrix.item(1, 2),
-                                         matrix.item(2, 0), matrix.item(2, 1),
-                                         matrix.item(2, 2))
+        print ("{0:.10f} {1:.10f} {2:.10f} 0\n"
+               "{3:.10f} {4:.10f} {5:.10f} 0\n"
+               "{6:.10f} {7:.10f} {8:.10f} 0\n").format(matrix.item(0, 0),
+                                                        matrix.item(0, 1),
+                                                        matrix.item(0, 2),
+                                                        matrix.item(1, 0),
+                                                        matrix.item(1, 1),
+                                                        matrix.item(1, 2),
+                                                        matrix.item(2, 0),
+                                                        matrix.item(2, 1),
+                                                        matrix.item(2, 2))
     else:
         print matrix
 
