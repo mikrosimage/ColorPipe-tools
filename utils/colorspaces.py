@@ -82,6 +82,11 @@ class Rec709(AbstractColorspace):
     """rec709 colorspace
 
     """
+    def __init__(self):
+        self._alpha = 1.099
+        self._beta = 0.018
+        self._round_depth = 3
+
     def get_red_primaries(self):
         return 0.64, 0.33
 
@@ -95,18 +100,17 @@ class Rec709(AbstractColorspace):
         return 0.3127, 0.3290
 
     def lin_to_gamma(self, value):
-        if value < 0.018:
-            value *= 4.5
+        if value < self._beta:
+            return value * 4.5
         else:
-            value = float(pow(value, 0.45)*1.099 - 0.099)
-        return value
+            return pow(value, 0.45)*self._alpha - (self._alpha - 1)
 
     def gamma_to_lin(self, value):
-        if value < 0.081:
-            value *= 1.0/4.5
+        inv_beta = round(self.lin_to_gamma(self._beta), self._round_depth)
+        if value < inv_beta:
+            return value * 1/4.5
         else:
-            value = float(pow((value + 0.099) * (1.0/1.099), 1.0/0.45))
-        return value
+            return pow((value + (self._alpha - 1)) * (1/self._alpha), 1/0.45)
 
 
 class AlexaLogCV3(AbstractColorspace):
