@@ -153,7 +153,8 @@ def __get_options():
     parser.add_argument("-c", "--colorspace",
                         help=("Input RGB Colorspace."),
                         type=str,
-                        choices= COLORSPACES.keys()+PRIVATE_COLORSPACES.keys(),
+                        choices= sorted(COLORSPACES.keys() +
+                                        PRIVATE_COLORSPACES.keys()),
                         default='REC709')
     # Output format
     parser.add_argument("-f", "--format",
