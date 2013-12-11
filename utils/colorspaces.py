@@ -78,15 +78,10 @@ class AbstractColorspace:
         pass
 
 
-class Rec709(AbstractColorspace):
-    """rec709 colorspace
+class sRGB(AbstractColorspace):
+    """sRGB colorspace
 
     """
-    def __init__(self):
-        self._alpha = 1.099
-        self._beta = 0.018
-        self._round_depth = 3
-
     def get_red_primaries(self):
         return 0.64, 0.33
 
@@ -98,6 +93,28 @@ class Rec709(AbstractColorspace):
 
     def get_white_point(self):
         return 0.3127, 0.3290
+
+    def lin_to_gamma(self, value):
+        if value > 0.0031308:
+            return 1.055 * pow(value, 1.0 / 2.4) - 0.055
+        else:
+            return 12.92 * value
+
+    def gamma_to_lin(self, value):
+        if value > 0.04045:
+            return pow((value + 0.055) / 1.055, 2.4)
+        else:
+            return value / 12.92
+
+
+class Rec709(sRGB):
+    """rec709 colorspace
+
+    """
+    def __init__(self):
+        self._alpha = 1.099
+        self._beta = 0.018
+        self._round_depth = 3
 
     def lin_to_gamma(self, value):
         if value < self._beta:
@@ -229,6 +246,7 @@ WIDEGAMUT = WideGamut()
 REC2020_10B = Rec2020(is_ten_bits=True)
 REC2020_12B = Rec2020(is_ten_bits=False)
 ACES = ACES()
+sRGB = sRGB()
 COLORSPACES = {
     'REC709': REC709,
     'ALEXALOGCV3': ALEXALOGCV3,
@@ -236,4 +254,5 @@ COLORSPACES = {
     'REC2020_10bits': REC2020_10B,
     'REC2020_12bits': REC2020_12B,
     'ACES': ACES,
+    'sRGB': sRGB,
 }
