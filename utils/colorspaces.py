@@ -3,6 +3,7 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
+from utils import colors_helper
 from abc import ABCMeta, abstractmethod
 import math
 
@@ -140,9 +141,37 @@ class AlexaLogCV3(AbstractColorspace):
             value = (value / 0.9661776 - 0.04378604) * 0.18 - 0.00937677
         return value
 
+
+class WideGamut(AbstractColorspace):
+    """WideGamut colorspace
+
+    """
+    def __init__(self):
+        self._gamma = 2.2
+
+    def get_red_primaries(self):
+        return 0.7347, 0.2653
+
+    def get_green_primaries(self):
+        return 0.1152, 0.8264
+
+    def get_blue_primaries(self):
+        return 0.1566, 0.0177
+
+    def get_white_point(self):
+        return 0.3457, 0.3585
+
+    def lin_to_gamma(self, value):
+        return colors_helper.lin_to_gamma(value, self._gamma)
+
+    def gamma_to_lin(self, value):
+        return colors_helper.gamma_to_lin(value, self._gamma)
+
 REC709 = Rec709()
 ALEXALOGCV3 = AlexaLogCV3()
+WIDEGAMUT = WideGamut()
 COLORSPACES = {
     'REC709': REC709,
-    'ALEXALOGCV3': ALEXALOGCV3
+    'ALEXALOGCV3': ALEXALOGCV3,
+    'WIDEGAMUT': WIDEGAMUT
 }
