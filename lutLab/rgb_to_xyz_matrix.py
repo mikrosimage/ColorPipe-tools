@@ -1,4 +1,4 @@
-""" Display RGB colorspaces to XYZ conversion matrixes
+""" Display RGB colorspaces to XYZ conversion matrices and their inverses
 
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
@@ -92,6 +92,23 @@ def get_RGB_to_XYZ_matrix(xy_red, xy_green, xy_blue, xy_white):
     return RGB_to_XYZ
 
 
+def matrix_to_string(matrix, extra=""):
+    return ("{0:.10f} {1:.10f} {2:.10f} {9}\n"
+            "{3:.10f} {4:.10f} {5:.10f} {10}\n"
+            "{6:.10f} {7:.10f} {8:.10f} {11} \n").format(matrix.item(0, 0),
+                                                         matrix.item(0, 1),
+                                                         matrix.item(0, 2),
+                                                         matrix.item(1, 0),
+                                                         matrix.item(1, 1),
+                                                         matrix.item(1, 2),
+                                                         matrix.item(2, 0),
+                                                         matrix.item(2, 1),
+                                                         matrix.item(2, 2),
+                                                         extra,
+                                                         extra,
+                                                         extra)
+
+
 def display_matrix(colorspace, format):
     """Display RGB to XYZ matrix corresponding to colorspace and formatting
     as format
@@ -102,41 +119,27 @@ def display_matrix(colorspace, format):
         format (str): output format. simple, matrix, spimtx.
 
     """
-    print "{0} to XYZ matrix ({1} output):\n".format(colorspace, format)
     try:
-        colorspace = COLORSPACES[colorspace]
+        colorspace_obj = COLORSPACES[colorspace]
     except KeyError:
-        colorspace = PRIVATE_COLORSPACES[colorspace]
-    matrix = get_RGB_to_XYZ_matrix(colorspace.get_red_primaries(),
-                                   colorspace.get_green_primaries(),
-                                   colorspace.get_blue_primaries(),
-                                   colorspace.get_white_point())
+        colorspace_obj = PRIVATE_COLORSPACES[colorspace]
+    matrix = get_RGB_to_XYZ_matrix(colorspace_obj.get_red_primaries(),
+                                   colorspace_obj.get_green_primaries(),
+                                   colorspace_obj.get_blue_primaries(),
+                                   colorspace_obj.get_white_point())
     if format == 'simple':
-        print ("{0:.10f} {1:.10f} {2:.10f}\n"
-               "{3:.10f} {4:.10f} {5:.10f}\n"
-               "{6:.10f} {7:.10f} {8:.10f}\n").format(matrix.item(0, 0),
-                                                      matrix.item(0, 1),
-                                                      matrix.item(0, 2),
-                                                      matrix.item(1, 0),
-                                                      matrix.item(1, 1),
-                                                      matrix.item(1, 2),
-                                                      matrix.item(2, 0),
-                                                      matrix.item(2, 1),
-                                                      matrix.item(2, 2))
+        matrix_dump = matrix_to_string(matrix)
+        inv_matrix_dump = matrix_to_string(matrix.I)
     elif format == 'spimtx':
-        print ("{0:.10f} {1:.10f} {2:.10f} 0\n"
-               "{3:.10f} {4:.10f} {5:.10f} 0\n"
-               "{6:.10f} {7:.10f} {8:.10f} 0\n").format(matrix.item(0, 0),
-                                                        matrix.item(0, 1),
-                                                        matrix.item(0, 2),
-                                                        matrix.item(1, 0),
-                                                        matrix.item(1, 1),
-                                                        matrix.item(1, 2),
-                                                        matrix.item(2, 0),
-                                                        matrix.item(2, 1),
-                                                        matrix.item(2, 2))
+        matrix_dump = matrix_to_string(matrix, "0")
+        inv_matrix_dump = matrix_to_string(matrix.I, "0")
     else:
-        print matrix
+        matrix_dump = "{0}".format(matrix)
+        inv_matrix_dump = "{0}".format(matrix.I)
+    print "{0} to XYZ matrix ({1} output):\n".format(colorspace, format)
+    print matrix_dump
+    print "XYZ to {0} matrix ({1} output):\n".format(colorspace, format)
+    print inv_matrix_dump
 
 
 def __get_options():
