@@ -203,15 +203,37 @@ class WideGamut(AbstractColorspace):
         return colors_helper.gamma_to_lin(value, self._gamma)
 
 
+class ACES(AbstractColorspace):
+    def get_red_primaries(self):
+        return 0.73470, 0.26530
+
+    def get_green_primaries(self):
+        return 0.00000, 1.00000
+
+    def get_blue_primaries(self):
+        return 0.00010, -0.07700
+
+    def get_white_point(self):
+        return 0.32168, 0.33767
+
+    def lin_to_gamma(self, value):
+        return value
+
+    def gamma_to_lin(self, value):
+        return value
+
+
 REC709 = Rec709()
 ALEXALOGCV3 = AlexaLogCV3()
 WIDEGAMUT = WideGamut()
 REC2020_10B = Rec2020(is_ten_bits=True)
 REC2020_12B = Rec2020(is_ten_bits=False)
+ACES = ACES()
 COLORSPACES = {
     'REC709': REC709,
     'ALEXALOGCV3': ALEXALOGCV3,
     'WIDEGAMUT': WIDEGAMUT,
     'REC2020_10bits': REC2020_10B,
     'REC2020_12bits': REC2020_12B,
+    'ACES': ACES,
 }
