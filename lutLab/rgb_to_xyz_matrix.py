@@ -4,7 +4,8 @@
 
 """
 from utils.colors_helper import xy_to_XYZ
-from utils.colorspaces import REC709
+from utils.colorspaces import COLORSPACES
+from utils.private_colorspaces import PRIVATE_COLORSPACES
 import numpy
 import argparse
 
@@ -102,8 +103,10 @@ def display_matrix(colorspace, format):
 
     """
     print "{0} to XYZ matrix ({1} output):\n".format(colorspace, format)
-    if colorspace == "REC709":
-        colorspace = REC709
+    try:
+        colorspace = COLORSPACES[colorspace]
+    except KeyError:
+        colorspace = PRIVATE_COLORSPACES[colorspace]
     matrix = get_RGB_to_XYZ_matrix(colorspace.get_red_primaries(),
                                    colorspace.get_green_primaries(),
                                    colorspace.get_blue_primaries(),
@@ -142,7 +145,7 @@ def __get_options():
     parser.add_argument("-c", "--colorspace",
                         help=("Input RGB Colorspace."),
                         type=str,
-                        choices=['REC709'],
+                        choices= COLORSPACES.keys()+PRIVATE_COLORSPACES.keys(),
                         default='REC709')
     # Output format
     parser.add_argument("-f", "--format",

@@ -142,3 +142,7 @@ class AlexaLogCV3(AbstractColorspace):
 
 REC709 = Rec709()
 ALEXALOGCV3 = AlexaLogCV3()
+COLORSPACES = {
+    'REC709': REC709,
+    'ALEXALOGCV3': ALEXALOGCV3
+}
