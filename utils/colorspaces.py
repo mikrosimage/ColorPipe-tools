@@ -113,6 +113,37 @@ class Rec709(AbstractColorspace):
             return pow((value + (self._alpha - 1)) * (1/self._alpha), 1/0.45)
 
 
+class Rec2020(Rec709):
+    """Rec2020 colorspace (10 and 12 bits)
+    """
+    def __init__(self, is_ten_bits=True):
+        """ Ctor
+
+        Kwargs:
+            is_ten_bits (bool): if true, 10 bits Rec709 constants will be used,
+            else 12 bits ones are defined
+
+        """
+        Rec709.__init__(self)
+        if not is_ten_bits:
+            # define value for 12 bits per sample display
+            self._alpha = 1.0993
+            self._beta = 0.0181
+            self._round_depth = 4
+
+    def get_red_primaries(self):
+        return 0.708, 0.292
+
+    def get_green_primaries(self):
+        return 0.170, 0.797
+
+    def get_blue_primaries(self):
+        return 0.131, 0.046
+
+    def get_white_point(self):
+        return 0.3127, 0.3290
+
+
 class AlexaLogCV3(AbstractColorspace):
     """AlexaLogCV3 colorspace
 
@@ -171,11 +202,16 @@ class WideGamut(AbstractColorspace):
     def gamma_to_lin(self, value):
         return colors_helper.gamma_to_lin(value, self._gamma)
 
+
 REC709 = Rec709()
 ALEXALOGCV3 = AlexaLogCV3()
 WIDEGAMUT = WideGamut()
+REC2020_10B = Rec2020(is_ten_bits=True)
+REC2020_12B = Rec2020(is_ten_bits=False)
 COLORSPACES = {
     'REC709': REC709,
     'ALEXALOGCV3': ALEXALOGCV3,
-    'WIDEGAMUT': WIDEGAMUT
+    'WIDEGAMUT': WIDEGAMUT,
+    'REC2020_10bits': REC2020_10B,
+    'REC2020_12bits': REC2020_12B,
 }
