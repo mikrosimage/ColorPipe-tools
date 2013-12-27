@@ -82,6 +82,7 @@ def lut_to_lut(inlutfile, outlutfile=None, type='1D_CUBE',
     elif "3D" in type:
         # write
         write_function(outlutfile, cubesize, processor)
+    print "{0} was converted into {1}.".format(inlutfile, outlutfile)
 
 
 def __get_options():
