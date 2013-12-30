@@ -5,7 +5,7 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-
+__version__ = "0.1"
 ## imports
 import os
 # OpenColorIO
