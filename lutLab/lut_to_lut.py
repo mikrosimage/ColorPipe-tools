@@ -5,14 +5,18 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
+__version__ = "0.1"
 import argparse
 from utils.ocio_helper import OCIO_LUTS_FORMATS, create_ocio_processor
 from utils.csp_helper import write_2d_csp_lut
 from utils.cube_helper import write_2d_cube_lut, write_3d_cube_lut
 from utils.lut_utils import get_default_out_path, write_3d_json_file
+from utils.clcc_helper import write_3d_clcc_lut
 from PyOpenColorIO.Constants import (
     INTERP_LINEAR, INTERP_TETRAHEDRAL
 )
+from utils import debug_helper
+import sys
 
 
 class LutToLutException(Exception):
@@ -53,6 +57,10 @@ def lut_to_lut(inlutfile, outlutfile=None, type='1D_CUBE',
         ext = ".json"
         write_function = write_3d_json_file
         interp = INTERP_TETRAHEDRAL
+    elif type == '3D_CLCC':
+        ext = ".cc"
+        write_function = write_3d_clcc_lut
+        interp = INTERP_TETRAHEDRAL
     else:
         raise LutToLutException("Unsupported export format!")
     if not outlutfile:
@@ -77,6 +85,7 @@ def lut_to_lut(inlutfile, outlutfile=None, type='1D_CUBE',
     elif "3D" in type:
         # write
         write_function(outlutfile, cubesize, processor)
+    print "{0} was converted into {1}.".format(inlutfile, outlutfile)
 
 
 def __get_options():
@@ -101,7 +110,8 @@ def __get_options():
     parser.add_argument("-t", "--out-type",
                         help=("Output LUT type."),
                         type=str,
-                        choices=['1D_CSP', '1D_CUBE', '3D_CUBE', '3D_JSON'],
+                        choices=['1D_CSP', '1D_CUBE', '3D_CUBE', '3D_CLCC',
+                                 '3D_JSON'],
                         default='1D_CUBE')
     # out lut size
     parser.add_argument("-os", "--out-lut-size", help=(
@@ -114,6 +124,18 @@ def __get_options():
     # inverse
     parser.add_argument("-inv", "--inverse", help="Inverse input LUT",
                         action="store_true")
+    # version
+    parser.add_argument('-v', "--version", action='version',
+                        version='{0} - version {1}'.format(description,
+                                                           __version__))
+    # full version
+    versions = debug_helper.get_imported_modules_versions(sys.modules,
+                                                          globals())
+    versions = '{0} - version {1}\n\n{2}'.format(description,
+                                                 __version__,
+                                                 versions)
+    parser.add_argument('-V', "--full-versions",
+                        action=debug_helper.make_full_version_action(versions))
     return parser.parse_args()
 
 if __name__ == '__main__':

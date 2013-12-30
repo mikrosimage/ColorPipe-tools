@@ -1,13 +1,18 @@
+#!/usr/bin/python
+
 """ Display RGB colorspaces to XYZ conversion matrices and their inverses
 
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
+__version__ = "0.1"
 from utils.colors_helper import xy_to_XYZ
 from utils.colorspaces import COLORSPACES
 from utils.private_colorspaces import PRIVATE_COLORSPACES
 import numpy
 import argparse
+import sys
+from utils import debug_helper
 
 
 class RGBToXYZMatrixException(Exception):
@@ -165,6 +170,18 @@ def __get_options():
                         type=str,
                         choices=['matrix', 'spimtx', 'simple'],
                         default='matrix')
+    # version
+    parser.add_argument('-v', "--version", action='version',
+                        version='{0} - version {1}'.format(description,
+                                                           __version__))
+    # full version
+    versions = debug_helper.get_imported_modules_versions(sys.modules,
+                                                          globals())
+    versions = '{0} - version {1}\n\n{2}'.format(description,
+                                                 __version__,
+                                                 versions)
+    parser.add_argument('-V', "--full-versions",
+                        action=debug_helper.make_full_version_action(versions))
     return parser.parse_args()
 
 

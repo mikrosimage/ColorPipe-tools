@@ -3,6 +3,7 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
+__version__ = "0.1"
 import itertools
 from utils.lut_utils import check_arrays_length
 

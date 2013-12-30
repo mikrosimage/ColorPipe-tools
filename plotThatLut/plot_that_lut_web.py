@@ -5,7 +5,7 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-
+__version__ = "Prototype"
 from os import path
 import ntpath
 import sys
