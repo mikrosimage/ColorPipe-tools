@@ -15,6 +15,8 @@ from utils.lut_utils import get_default_out_path
 
 from scipy.interpolate import PchipInterpolator
 import numpy
+import sys
+from utils import debug_helper
 
 
 class Ext1DLutException(Exception):
@@ -141,6 +143,14 @@ def __get_options():
     parser.add_argument('-v', "--version", action='version',
                         version='{0} - version {1}'.format(description,
                                                            __version__))
+    # full version
+    versions = debug_helper.get_imported_modules_versions(sys.modules,
+                                                          globals())
+    versions = '{0} - version {1}\n\n{2}'.format(description,
+                                                 __version__,
+                                                 versions)
+    parser.add_argument('-V', "--full-versions",
+                        action=debug_helper.make_full_version_action(versions))
     return parser.parse_args()
 
 if __name__ == '__main__':

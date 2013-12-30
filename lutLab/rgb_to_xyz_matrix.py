@@ -9,6 +9,8 @@ from utils.colorspaces import COLORSPACES
 from utils.private_colorspaces import PRIVATE_COLORSPACES
 import numpy
 import argparse
+import sys
+from utils import debug_helper
 
 
 class RGBToXYZMatrixException(Exception):
@@ -170,6 +172,14 @@ def __get_options():
     parser.add_argument('-v', "--version", action='version',
                         version='{0} - version {1}'.format(description,
                                                            __version__))
+    # full version
+    versions = debug_helper.get_imported_modules_versions(sys.modules,
+                                                          globals())
+    versions = '{0} - version {1}\n\n{2}'.format(description,
+                                                 __version__,
+                                                 versions)
+    parser.add_argument('-V', "--full-versions",
+                        action=debug_helper.make_full_version_action(versions))
     return parser.parse_args()
 
 
