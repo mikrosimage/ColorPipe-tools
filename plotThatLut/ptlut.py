@@ -8,6 +8,8 @@
 __version__ = "0.1"
 import plot_that_lut
 import argparse
+from utils import debug_helper
+import sys
 
 
 def __get_options():
@@ -56,6 +58,14 @@ default=None, type=int)
     parser.add_argument('-v', "--version", action='version',
                         version='{0} - version {1}'.format(description,
                                                            __version__))
+    # full version
+    versions = debug_helper.get_imported_modules_versions(sys.modules,
+                                                          globals())
+    versions = '{0} - version {1}\n\n{2}'.format(description,
+                                                 __version__,
+                                                 versions)
+    parser.add_argument('-V', "--full-versions",
+                        action=debug_helper.make_full_version_action(versions))
     ## return args
     return parser.parse_args()
 

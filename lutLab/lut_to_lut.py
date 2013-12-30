@@ -15,6 +15,8 @@ from utils.clcc_helper import write_3d_clcc_lut
 from PyOpenColorIO.Constants import (
     INTERP_LINEAR, INTERP_TETRAHEDRAL
 )
+from utils import debug_helper
+import sys
 
 
 class LutToLutException(Exception):
@@ -126,6 +128,14 @@ def __get_options():
     parser.add_argument('-v', "--version", action='version',
                         version='{0} - version {1}'.format(description,
                                                            __version__))
+    # full version
+    versions = debug_helper.get_imported_modules_versions(sys.modules,
+                                                          globals())
+    versions = '{0} - version {1}\n\n{2}'.format(description,
+                                                 __version__,
+                                                 versions)
+    parser.add_argument('-V', "--full-versions",
+                        action=debug_helper.make_full_version_action(versions))
     return parser.parse_args()
 
 if __name__ == '__main__':
