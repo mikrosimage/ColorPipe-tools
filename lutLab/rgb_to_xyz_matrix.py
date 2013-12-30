@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 """ Display RGB colorspaces to XYZ conversion matrices and their inverses
 
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
