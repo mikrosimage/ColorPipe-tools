@@ -137,6 +137,10 @@ def __get_options():
     parser.add_argument("-d", "--display",
                         help="Display result using matplotlib",
                         action="store_true")
+    # version
+    parser.add_argument('-v', "--version", action='version',
+                        version='{0} - version {1}'.format(description,
+                                                           __version__))
     return parser.parse_args()
 
 if __name__ == '__main__':

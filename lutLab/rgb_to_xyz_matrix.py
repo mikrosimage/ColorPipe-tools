@@ -166,6 +166,10 @@ def __get_options():
                         type=str,
                         choices=['matrix', 'spimtx', 'simple'],
                         default='matrix')
+    # version
+    parser.add_argument('-v', "--version", action='version',
+                        version='{0} - version {1}'.format(description,
+                                                           __version__))
     return parser.parse_args()
 
 

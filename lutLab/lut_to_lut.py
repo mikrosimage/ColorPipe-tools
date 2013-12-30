@@ -122,6 +122,10 @@ def __get_options():
     # inverse
     parser.add_argument("-inv", "--inverse", help="Inverse input LUT",
                         action="store_true")
+    # version
+    parser.add_argument('-v', "--version", action='version',
+                        version='{0} - version {1}'.format(description,
+                                                           __version__))
     return parser.parse_args()
 
 if __name__ == '__main__':
