@@ -5,6 +5,7 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
+__version__ = "0.1"
 import argparse
 from utils.ocio_helper import (
     OCIO_3D_LUTS_FORMATS, create_ocio_processor, is_3d_lut

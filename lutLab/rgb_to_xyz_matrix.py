@@ -3,6 +3,7 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
+__version__ = "0.1"
 from utils.colors_helper import xy_to_XYZ
 from utils.colorspaces import COLORSPACES
 from utils.private_colorspaces import PRIVATE_COLORSPACES

@@ -3,6 +3,7 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
+__version__ = "0.1"
 from utils import colors_helper
 from abc import ABCMeta, abstractmethod
 import math

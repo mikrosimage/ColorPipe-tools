@@ -5,6 +5,7 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
+__version__ = "0.1"
 import argparse
 from utils.ocio_helper import OCIO_LUTS_FORMATS, create_ocio_processor
 from utils.csp_helper import write_2d_csp_lut
