@@ -56,6 +56,9 @@ def make_full_version_action(version_text):
 
     """
     class FullVersionAction(argparse.Action):
+        """Argparse action that enable multi-line version
+
+        """
         def __init__(self, option_strings, dest=None, nargs=0, default=None,
                      required=False, type=None, metavar=None,
                      help=("show version number of the program and its "
@@ -66,6 +69,6 @@ def make_full_version_action(version_text):
                 metavar=metavar, type=type, help=help)
 
         def __call__(self, parser, namespace, values, option_string=None):
-            print(version_text)
+            print version_text
             sys.exit()
     return FullVersionAction

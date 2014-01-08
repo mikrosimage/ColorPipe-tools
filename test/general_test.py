@@ -8,15 +8,19 @@ import tempfile
 import shutil
 import lut_to_lut
 import ext_1d_lut
+import rgb_to_xyz_matrix
 
 
 class GeneralTest(unittest.TestCase):
+    """General Test : plot lut 1d/3d, convert lut, extract 1d lut
+
+    """
     def setUp(self):
-        testDir = os.path.join(os.path.dirname(__file__), 'test_files')
-        self.lut1d = os.path.join(testDir, 'CineonToLin_1D.csp')
-        self.lut3d = os.path.join(testDir, 'identity.3dl')
-        self.tmpDir = os.path.join(tempfile.gettempdir(), 'testCoPipe')
-        os.mkdir(self.tmpDir)
+        test_dir = os.path.join(os.path.dirname(__file__), 'test_files')
+        self.lut1d = os.path.join(test_dir, 'CineonToLin_1D.csp')
+        self.lut3d = os.path.join(test_dir, 'identity.3dl')
+        self.tmp_dir = os.path.join(tempfile.gettempdir(), 'testCoPipe')
+        os.mkdir(self.tmp_dir)
 
     def test_lut_1d(self):
         """Open a 1D LUT and display it
@@ -37,21 +41,21 @@ class GeneralTest(unittest.TestCase):
             LUT
 
         """
-        cube_lut = os.path.join(self.tmpDir, "identity.cube")
-        lut_to_lut.lut_to_lut(self.lut1d, cube_lut, type='1D_CUBE')
-        lut_to_lut.lut_to_lut(cube_lut, type='1D_CSP')
+        cube_lut = os.path.join(self.tmp_dir, "identity.cube")
+        lut_to_lut.lut_to_lut(self.lut1d, cube_lut, lut_type='1D_CUBE')
+        lut_to_lut.lut_to_lut(cube_lut, lut_type='1D_CSP')
 
     def test_extract_lut(self):
         """Extract the 1d composante of a 3D LUT and plot the result
 
         """
-        csp_lut = os.path.join(self.tmpDir, "identity_3d_export.csp")
+        csp_lut = os.path.join(self.tmp_dir, "identity_3d_export.csp")
         ext_1d_lut.extract_1d_lut(self.lut3d, 10, csp_lut, True)
         plot_that_lut.plot_that_lut(csp_lut)
 
     def tearDown(self):
         #Remove test directory
-        shutil.rmtree(self.tmpDir)
+        shutil.rmtree(self.tmp_dir)
 
 
 if __name__ == '__main__':

@@ -9,7 +9,10 @@ from abc import ABCMeta, abstractmethod
 import math
 
 
-class AbstractColorspace:
+class AbstractColorspace(object):
+    """Abstract Color Space
+
+    """
     __metaclass__ = ABCMeta
 
     @abstractmethod
@@ -222,6 +225,9 @@ class WideGamut(AbstractColorspace):
 
 
 class ACES(AbstractColorspace):
+    """ACES Colorspace
+
+    """
     def get_red_primaries(self):
         return 0.73470, 0.26530
 

@@ -9,6 +9,12 @@ from utils.lut_utils import check_arrays_length
 
 
 class CSPHelperException(Exception):
+    """Module custom exception
+
+    Args:
+        Exception
+
+    """
     pass
 
 
@@ -45,11 +51,11 @@ def write_2d_csp_lut(filename, xvalues, yvalues, zvalues):
 
     """
     check_arrays_length(xvalues, yvalues, zvalues)
-    f = open(filename, 'w+')
-    f.write(get_1d_csp_header(len(xvalues)))
+    lutfile = open(filename, 'w+')
+    lutfile.write(get_1d_csp_header(len(xvalues)))
     for x, y, z in itertools.izip(xvalues, yvalues, zvalues):
-        f.write("{0:.6f} {1:.6f} {2:.6f}\n".format(x, y, z))
-    f.close()
+        lutfile.write("{0:.6f} {1:.6f} {2:.6f}\n".format(x, y, z))
+    lutfile.close()
 
 
 def write_1d_csp_lut(filename, values):

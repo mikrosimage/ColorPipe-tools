@@ -20,10 +20,16 @@ import sys
 
 
 class LutToLutException(Exception):
+    """Module custom exception
+
+    Args:
+        Exception
+
+    """
     pass
 
 
-def lut_to_lut(inlutfile, outlutfile=None, type='1D_CUBE',
+def lut_to_lut(inlutfile, outlutfile=None, lut_type='1D_CUBE',
                lutsize=16, cubesize=17, inverse=False):
     """Extract the tone mapping curve of a 3D LUT
 
@@ -34,30 +40,30 @@ def lut_to_lut(inlutfile, outlutfile=None, type='1D_CUBE',
         outlutfile (str): the output 1D LUT. If not define, LUT is written in
         the input LUT directory and post-fixed with "_export"
 
-        type (str): specify output LUT format. For now only 2D/3D csp and 2D
+        lut_type (str): specify output LUT format. For now only 2D/3D csp and 2D
         cube are available.
 
         lutsize (int): out LUT bit precision for 1D. Ex : 16 (bits)
 
     """
     samples_count = pow(2, lutsize)
-    if type == '1D_CUBE':
+    if lut_type == '1D_CUBE':
         ext = ".cube"
         write_function = write_2d_cube_lut
         interp = INTERP_LINEAR
-    elif type == '3D_CUBE':
+    elif lut_type == '3D_CUBE':
         ext = ".cube"
         write_function = write_3d_cube_lut
         interp = INTERP_TETRAHEDRAL
-    elif type == '1D_CSP':
+    elif lut_type == '1D_CSP':
         ext = ".csp"
         write_function = write_2d_csp_lut
         interp = INTERP_LINEAR
-    elif type == '3D_JSON':
+    elif lut_type == '3D_JSON':
         ext = ".json"
         write_function = write_3d_json_file
         interp = INTERP_TETRAHEDRAL
-    elif type == '3D_CLCC':
+    elif lut_type == '3D_CLCC':
         ext = ".cc"
         write_function = write_3d_clcc_lut
         interp = INTERP_TETRAHEDRAL
@@ -72,17 +78,17 @@ def lut_to_lut(inlutfile, outlutfile=None, type='1D_CUBE',
     red_values = []
     green_values = []
     blue_values = []
-    if "1D" in type:
+    if "1D" in lut_type:
         # process color values
-        for n in range(0, samples_count):
-            x = n/max_value
-            res = processor.applyRGB([x, x, x])
+        for code_value in range(0, samples_count):
+            norm_value = code_value/max_value
+            res = processor.applyRGB([norm_value, norm_value, norm_value])
             red_values.append(res[0])
             green_values.append(res[1])
             blue_values.append(res[2])
         # write
         write_function(outlutfile, red_values, green_values, blue_values)
-    elif "3D" in type:
+    elif "3D" in lut_type:
         # write
         write_function(outlutfile, cubesize, processor)
     print "{0} was converted into {1}.".format(inlutfile, outlutfile)
@@ -141,6 +147,6 @@ def __get_options():
 if __name__ == '__main__':
     """ Command line interface
     """
-    args = __get_options()
-    lut_to_lut(args.inlutfile, args.outlutfile, args.out_type,
-               args.out_lut_size, args.out_cube_size, args.inverse)
+    ARGS = __get_options()
+    lut_to_lut(ARGS.inlutfile, ARGS.outlutfile, ARGS.out_type,
+               ARGS.out_lut_size, ARGS.out_cube_size, ARGS.inverse)

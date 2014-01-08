@@ -8,6 +8,12 @@ import os
 
 
 class LUTException(Exception):
+    """Module custom exception
+
+    Args:
+        Exception
+
+    """
     pass
 
 
@@ -75,13 +81,13 @@ def get_3d_list_values(cubesize, processor, hexa_values=False):
     if hexa_values:
         from matplotlib.colors import rgb2hex
     # process color values
-    for b in input_range:
-        for g in input_range:
-            for r in input_range:
+    for blue in input_range:
+        for green in input_range:
+            for red in input_range:
                 # get a value between [0..1]
-                norm_r = r/max_value
-                norm_g = g/max_value
-                norm_b = b/max_value
+                norm_r = red/max_value
+                norm_g = green/max_value
+                norm_b = blue/max_value
                 # apply correction via OCIO
                 res = processor.applyRGB([norm_r, norm_g, norm_b])
                 red_values.append(res[0])
@@ -114,6 +120,6 @@ def write_3d_json_file(filepath, cubesize, processor):
     """
     processed_values = get_3d_list_values(cubesize, processor)
     import json
-    f = open(filepath, 'w+')
-    json.dump(processed_values, f)
-    f.close()
+    lutfile = open(filepath, 'w+')
+    json.dump(processed_values, lutfile)
+    lutfile.close()

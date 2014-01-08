@@ -52,7 +52,7 @@ def create_ocio_processor(lutfile, interpolation=INTERP_LINEAR, inverse=False,
     config = Config()
     # In colorspace (LUT)
     colorspace = ColorSpace(name='RawInput')
-    mainLut = FileTransform(lutfile, interpolation=interpolation,
+    main_lut = FileTransform(lutfile, interpolation=interpolation,
                             direction=direction)
     group = GroupTransform()
     # Prelut
@@ -60,7 +60,7 @@ def create_ocio_processor(lutfile, interpolation=INTERP_LINEAR, inverse=False,
         prelut = FileTransform(prelutfile, interpolation=interpolation)
         group.push_back(prelut)
     # Mainlut
-    group.push_back(mainLut)
+    group.push_back(main_lut)
     # Postlut
     if postlutfile:
         postlut = FileTransform(postlutfile, interpolation=interpolation)
@@ -74,6 +74,17 @@ def create_ocio_processor(lutfile, interpolation=INTERP_LINEAR, inverse=False,
     return config.getProcessor('RawInput', 'ProcessedOutput')
 
 
-def is_3d_lut(processor, filepath):
-    fileext = os.path.splitext(filepath)[1]
+def is_3d_lut(processor, lutfile):
+    """Use hasChannelCrosstalk function to deduce if lutfile is a 3D LUT
+
+    Args:
+        processor (PyOpenColorIO.config.Processor): OpenColorIO processor
+
+        lutfile (str): path to a LUT
+
+    Returns:
+        .bool
+
+    """
+    fileext = os.path.splitext(lutfile)[1]
     return processor.hasChannelCrosstalk() or fileext == '.spimtx'
