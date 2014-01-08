@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <title>Plot That LUT</title>
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+    <head>
+    <body>
+        <div id="content">
+            <div id="header"><h1># Plot That LUT #</h1></div>
+            <div id="text">
+                <form action="plotThatLutUpload" method="post" enctype="multipart/form-data">
+                    Choose LUT file: <input type="file" name="lutfile"/><br/>
+                    Lut Type:
+                    <input type="radio" name="lut_type" value="auto" checked=true> auto
+                    <input type="radio" name="lut_type" value="curve"> curve
+                    <input type="radio" name="lut_type" value="cube"> cube
+                    <br>
+                    Samples count:
+                    <input type="radio" name="count" value="auto" checked=true> auto
+                    <input type="radio" name="count" value="custom"> custom :
+                    <input type="text" name="custom_count" value=17 size=5>
+                    <br>
+                    <div id="advanced"> # Advanced options #<br>
+                    <input type="checkbox" name="inverse" value="1">Reverse main LUT (for 1D / 2D LUT only)<br>
+                    Choose a pre-lut : <input type="file" name="prelutfile"/>
+                    <br>
+                    Choose a post-lut : <input type="file" name="postlutfile"/>
+                    </div>
+                <br>
+                    <input type="submit"/>
+                </form>
+            </div>
+            <div id="text"><a href="/index">back</a></div>
+        </div>
+    </body>
+</html>
