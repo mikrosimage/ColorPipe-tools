@@ -14,7 +14,6 @@
 import sys, os
 sys.path.append('..')
 from plot_that_lut import *
-from plot_that_lut_web import *
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
