@@ -6,10 +6,16 @@
 __version__ = "0.1"
 
 class SpiHelperException(Exception):
+    """Module custom exception
+
+    Args:
+        Exception
+
+    """
     pass
 
 
-def write_1d_spi_lut(filename, values, input_range=[0, 1], version=1):
+def write_1d_spi_lut(filename, values, input_range=None, version=1):
     """ Write a 1D spi LUT
 
     Args:
@@ -23,14 +29,16 @@ def write_1d_spi_lut(filename, values, input_range=[0, 1], version=1):
         version (float): version of the lut
 
     """
-    f = open(filename, 'w+')
-    f.write("Version {0}\n".format(version))
-    f.write("From {0} {1}\n".format(input_range[0], input_range[1]))
-    f.write("Length {0}\n".format(len(values)))
+    if input_range==None:
+        input_range=[0, 1]
+    lutfile = open(filename, 'w+')
+    lutfile.write("Version {0}\n".format(version))
+    lutfile.write("From {0} {1}\n".format(input_range[0], input_range[1]))
+    lutfile.write("Length {0}\n".format(len(values)))
     # TODO handle more than one component
-    f.write("Components 1\n")
-    f.write("{\n")
-    for x in values:
-        f.write("\t\t{0:.8f}\n".format(x))
-    f.write("}\n")
-    f.close()
+    lutfile.write("Components 1\n")
+    lutfile.write("{\n")
+    for value in values:
+        lutfile.write("\t\t{0:.8f}\n".format(value))
+    lutfile.write("}\n")
+    lutfile.close()

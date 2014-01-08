@@ -95,7 +95,7 @@ class PlotThatLutWeb(object):
     index.exposed = True
 
     @staticmethod
-    def __copyUploadedFile(upfile):
+    def __copy_uploaded_file(upfile):
         """Copy uploaded file on the server and return its path
 
         Args:
@@ -145,13 +145,13 @@ class PlotThatLutWeb(object):
 
         """
         # copy uploaded files on the server to use it with plot_that_lut
-        backup_filename = self.__copyUploadedFile(lutfile)
+        backup_filename = self.__copy_uploaded_file(lutfile)
         backup_pre_filename = None
         backup_post_filename = None
         if prelutfile.file:
-            backup_pre_filename = self.__copyUploadedFile(prelutfile)
+            backup_pre_filename = self.__copy_uploaded_file(prelutfile)
         if postlutfile.file:
-            backup_post_filename = self.__copyUploadedFile(postlutfile)
+            backup_post_filename = self.__copy_uploaded_file(postlutfile)
         # init args
         if count == 'custom':
             tmp_count = int(custom_count)
@@ -221,7 +221,7 @@ conf = {'/css/style.css': {'tools.staticfile.on': True,
 sys.path.append(currdir)
 
 if __name__ == '__main__':
-    plot_that_lut.web_mode = True
+    plot_that_lut.WEB_MODE = True
     # CherryPy always starts with app.root when trying to map request URIs
     # to objects, so we need to mount a request handler root. A request
     # to '/' will be mapped to HelloWorld().index().

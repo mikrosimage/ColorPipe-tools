@@ -16,6 +16,12 @@ from utils import debug_helper
 
 
 class RGBToXYZMatrixException(Exception):
+    """Module custom exception
+
+    Args:
+        Exception
+
+    """
     pass
 
 
@@ -98,6 +104,16 @@ def get_RGB_to_XYZ_matrix(xy_red, xy_green, xy_blue, xy_white):
 
 
 def matrix_to_string(matrix, extra=""):
+    """Return a string version of the matrix
+
+    Args:
+        matrix (numpy.matrix (3x3)): matrix to convert
+        extra (float): additionnal 4th column value
+
+    Returns:
+        string
+
+    """
     return ("{0:.10f} {1:.10f} {2:.10f} {9}\n"
             "{3:.10f} {4:.10f} {5:.10f} {10}\n"
             "{6:.10f} {7:.10f} {8:.10f} {11} \n").format(matrix.item(0, 0),
@@ -114,14 +130,14 @@ def matrix_to_string(matrix, extra=""):
                                                          extra)
 
 
-def display_matrix(colorspace, format):
+def display_matrix(colorspace, matrix_format):
     """Display RGB to XYZ matrix corresponding to colorspace and formatting
     as format
 
     Args:
         colorspace (str): input colorspace. For now, REC709 is the only option.
 
-        format (str): output format. simple, matrix, spimtx.
+        matrix_format (str): output format. simple, matrix, spimtx.
 
     """
     try:
@@ -132,18 +148,18 @@ def display_matrix(colorspace, format):
                                    colorspace_obj.get_green_primaries(),
                                    colorspace_obj.get_blue_primaries(),
                                    colorspace_obj.get_white_point())
-    if format == 'simple':
+    if matrix_format == 'simple':
         matrix_dump = matrix_to_string(matrix)
         inv_matrix_dump = matrix_to_string(matrix.I)
-    elif format == 'spimtx':
+    elif matrix_format == 'spimtx':
         matrix_dump = matrix_to_string(matrix, "0")
         inv_matrix_dump = matrix_to_string(matrix.I, "0")
     else:
         matrix_dump = "{0}".format(matrix)
         inv_matrix_dump = "{0}".format(matrix.I)
-    print "{0} to XYZ matrix ({1} output):\n".format(colorspace, format)
+    print "{0} to XYZ matrix ({1} output):\n".format(colorspace, matrix_format)
     print matrix_dump
-    print "XYZ to {0} matrix ({1} output):\n".format(colorspace, format)
+    print "XYZ to {0} matrix ({1} output):\n".format(colorspace, matrix_format)
     print inv_matrix_dump
 
 
@@ -188,5 +204,5 @@ def __get_options():
 if __name__ == '__main__':
     """ Command line interface
     """
-    args = __get_options()
-    display_matrix(args.colorspace, args.format)
+    ARGS = __get_options()
+    display_matrix(ARGS.colorspace, ARGS.format)

@@ -9,6 +9,12 @@ from utils.lut_utils import check_arrays_length
 
 
 class CubeHelperException(Exception):
+    """Module custom exception
+
+    Args:
+        Exception
+
+    """
     pass
 
 CUBE_1D = "LUT_1D_SIZE"
@@ -42,18 +48,18 @@ def write_2d_cube_lut(filename, xvalues, yvalues=None, zvalues=None,
         yvalues = xvalues
         zvalues = xvalues
 
-    f = open(filename, 'w+')
+    lutfile = open(filename, 'w+')
     # comment
     if comment:
-        f.write("#{0}\n".format(comment))
+        lutfile.write("#{0}\n".format(comment))
     # title
-    f.write("TITLE {0}\n\n".format(title))
+    lutfile.write("TITLE {0}\n\n".format(title))
     # lut size
-    f.write("{0} {1}\n\n".format(CUBE_1D, len(xvalues)))
+    lutfile.write("{0} {1}\n\n".format(CUBE_1D, len(xvalues)))
     # values
     for x, y, z in itertools.izip(xvalues, yvalues, zvalues):
-        f.write("{0:.6f} {1:.6f} {2:.6f}\n".format(x, y, z))
-    f.close()
+        lutfile.write("{0:.6f} {1:.6f} {2:.6f}\n".format(x, y, z))
+    lutfile.close()
 
 
 def write_1d_cube_lut(filename, values, comment=None, title="Iridas LUT"):
@@ -90,27 +96,27 @@ def write_3d_cube_lut(filename, cubesize, processor,
         title (str): title of the LUT
 
     """
-    f = open(filename, 'w+')
+    lutfile = open(filename, 'w+')
     # comment
     if comment:
-        f.write("#{0}\n".format(comment))
+        lutfile.write("#{0}\n".format(comment))
     # title
-    f.write("TITLE {0}\n\n".format(title))
+    lutfile.write("TITLE {0}\n\n".format(title))
     # lut size
-    f.write("{0} {1}\n\n".format(CUBE_3D, cubesize))
+    lutfile.write("{0} {1}\n\n".format(CUBE_3D, cubesize))
     input_range = range(0, cubesize)
     max_value = cubesize - 1.0
     # process color values
-    for b in input_range:
-        for g in input_range:
-            for r in input_range:
+    for blue in input_range:
+        for green in input_range:
+            for red in input_range:
                 # get a value between [0..1]
-                norm_r = r/max_value
-                norm_g = g/max_value
-                norm_b = b/max_value
+                norm_r = red/max_value
+                norm_g = green/max_value
+                norm_b = blue/max_value
                 # apply correction via OCIO
                 res = processor.applyRGB([norm_r, norm_g, norm_b])
-                f.write("{0:.6f} {1:.6f} {2:.6f}\n".format(res[0],
+                lutfile.write("{0:.6f} {1:.6f} {2:.6f}\n".format(res[0],
                                                            res[1],
                                                            res[2]))
-    f.close()
+    lutfile.close()

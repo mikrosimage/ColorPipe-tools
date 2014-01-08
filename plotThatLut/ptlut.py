@@ -74,14 +74,14 @@ if __name__ == '__main__':
     """ Command line interface for plot_that_lut
 
     """
-    args = __get_options()
+    ARGS = __get_options()
     try:
-        plot_that_lut.plot_that_lut(args.lutfiles,
-                                    args.plot_type,
-                                    args.samples_count,
-                                    args.inverse,
-                                    args.prelutfile,
-                                    args.postlutfile,
-                                    args.markers)
+        plot_that_lut.plot_that_lut(ARGS.lutfiles,
+                                    ARGS.plot_type,
+                                    ARGS.samples_count,
+                                    ARGS.inverse,
+                                    ARGS.prelutfile,
+                                    ARGS.postlutfile,
+                                    ARGS.markers)
     except Exception, e:
         print "Watch out !\n%s" % e
