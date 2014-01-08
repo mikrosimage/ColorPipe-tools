@@ -15,9 +15,9 @@ Requirements
 - matplotlib + a backend (for exemple Qt, Gtk...)
 - OpenColorIO Python binding
 
-To use plot_that_lut_web.py :  
+To use web app : 
 
-- CherryPy
+- CherryPy (see web_app)
 
 Tested config
 -------------
@@ -28,15 +28,6 @@ Command line usage
 See command line help :   
 `ptlut.py -h`
 
-Web app usage
--------------
-You can test quickly in local by :  
-- setting up your environnement ($PYTHONPATH, ...).  
-- creating img and uploads directories.  
-- and then launching :  
-`plot_that_lut_web.py`
-
-For deeper usages, you'll have to customize your own cherryPy config.
 
 Screenshots
 -----------

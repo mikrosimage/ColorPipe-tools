@@ -71,9 +71,12 @@ def show_plot(fig, filename):
         split_filename = os.path.splitext(filename)
         filename = '{0}{1}'.format(split_filename[0],
                                    split_filename[1].replace(".", "_"))
+        #todo parametrize current_dir
         current_dir = os.path.dirname(os.path.abspath(__file__))
+        current_dir = os.path.join(os.path.dirname(current_dir), 'web_app')
         export_path = 'img/export_{0}.png'.format(filename)
         abs_export_path = '{0}/img/export_{1}.png'.format(current_dir, filename)
+        print abs_export_path
         fig.savefig(abs_export_path)
         return export_path
     else:
