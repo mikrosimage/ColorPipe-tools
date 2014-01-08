@@ -26,7 +26,7 @@ def xy_to_XYZ(xy, Y=1):
     return [X, Y, Z]
 
 
-def lin_to_gamma(self, value, gamma):
+def lin_to_gamma(value, gamma):
     """Simple lin to Gamma function
 
     Args:
@@ -41,7 +41,7 @@ def lin_to_gamma(self, value, gamma):
     return math.pow(value, 1/gamma)
 
 
-def gamma_to_lin(self, value, gamma):
+def gamma_to_lin(value, gamma):
     """Simple gamma to lin function
 
     Args:

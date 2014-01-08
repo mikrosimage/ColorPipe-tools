@@ -18,21 +18,27 @@ from utils.lut_utils import get_3d_list_values
 import matplotlib
 import itertools
 
-web_mode = False
+WEB_MODE = False
 
 
 class PlotThatLutException(Exception):
+    """Module custom exception
+
+    Args:
+        Exception
+
+    """
     pass
 
 
 def set_matplotlib_backend():
     """ Select display backend
 
-    .. todo:: Externalize this and remove web_mode global var
+    .. todo:: Externalize this and remove WEB_MODE global var
 
     """
 
-    if web_mode:
+    if WEB_MODE:
         matplotlib.use('Agg')
     else:
         matplotlib.use('Qt4Agg')
@@ -61,13 +67,16 @@ def show_plot(fig, filename):
             else a void string.
 
     """
-    if web_mode:
+    if WEB_MODE:
         split_filename = os.path.splitext(filename)
         filename = '{0}{1}'.format(split_filename[0],
                                    split_filename[1].replace(".", "_"))
-        currdir = os.path.dirname(os.path.abspath(__file__))
+        #todo parametrize current_dir
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        current_dir = os.path.join(os.path.dirname(current_dir), 'web_app')
         export_path = 'img/export_{0}.png'.format(filename)
-        abs_export_path = '{0}/img/export_{1}.png'.format(currdir, filename)
+        abs_export_path = '{0}/img/export_{1}.png'.format(current_dir, filename)
+        print abs_export_path
         fig.savefig(abs_export_path)
         return export_path
     else:
@@ -115,7 +124,6 @@ def plot_curve(lutfiles, samples_count, processors, draw_red_curve=True,
     xlabel("Input")
     ylabel("Output")
     grid(True)
-    index = 0
     markers_it = itertools.cycle(MARKERS)
     reds_it = itertools.cycle(REDS)
     greens_it = itertools.cycle(GREENS)
@@ -128,13 +136,13 @@ def plot_curve(lutfiles, samples_count, processors, draw_red_curve=True,
         blue_values = []
         input_range = []
         # process color values
-        for n in range(0, samples_count):
-            x = n/max_value
-            res = processor.applyRGB([x, x, x])
+        for code_value in range(0, samples_count):
+            norm_value = code_value/max_value
+            res = processor.applyRGB([norm_value, norm_value, norm_value])
             red_values.append(res[0])
             green_values.append(res[1])
             blue_values.append(res[2])
-            input_range.append(x)
+            input_range.append(norm_value)
         # markers
         marker = markers_it.next()
         markersize = 0
@@ -151,7 +159,6 @@ def plot_curve(lutfiles, samples_count, processors, draw_red_curve=True,
         if draw_blue_curve:
             plot(input_range, blue_values, color=blues_it.next(), marker=marker,
                  label='Blue values', linewidth=1, markersize=markersize)
-        index += 1
     return show_plot(fig, filename)
 
 
@@ -186,17 +193,17 @@ def plot_cube(lutfile, cube_size, processor):
     # init plot
     fig = figure()
     fig.canvas.set_window_title('Plot That 3D LUT')
-    ax = fig.add_subplot(111, projection='3d')
-    ax.set_xlabel('Red')
-    ax.set_ylabel('Green')
-    ax.set_zlabel('Blue')
-    ax.set_xlim(min(red_values), max(red_values))
-    ax.set_ylim(min(green_values), max(green_values))
-    ax.set_zlim(min(blue_values), max(blue_values))
+    axis = fig.add_subplot(111, projection='3d')
+    axis.set_xlabel('Red')
+    axis.set_ylabel('Green')
+    axis.set_zlabel('Blue')
+    axis.set_xlim(min(red_values), max(red_values))
+    axis.set_ylim(min(green_values), max(green_values))
+    axis.set_zlim(min(blue_values), max(blue_values))
     filename = os.path.basename(lutfile)
     title(filename)
     # plot 3D values
-    ax.scatter(red_values, green_values, blue_values, c=input_colors,
+    axis.scatter(red_values, green_values, blue_values, c=input_colors,
                marker="o")
     return show_plot(fig, filename)
 

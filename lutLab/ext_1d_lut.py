@@ -20,6 +20,12 @@ from utils import debug_helper
 
 
 class Ext1DLutException(Exception):
+    """Module custom exception
+
+    Args:
+        Exception
+
+    """
     pass
 
 
@@ -61,9 +67,9 @@ def extract_1d_lut(inlutfile, lutsize, outlutfile=None, smooth=False,
     red_values = []
     green_values = []
     blue_values = []
-    for n in range(0, count):
-        x = n/max_value
-        res = processor.applyRGB([x, x, x])
+    for code_value in range(0, count):
+        norm_value = code_value/max_value
+        res = processor.applyRGB([norm_value, norm_value, norm_value])
         red_values.append(res[0])
         green_values.append(res[1])
         blue_values.append(res[2])
@@ -156,6 +162,6 @@ def __get_options():
 if __name__ == '__main__':
     """ Command line interface
     """
-    args = __get_options()
-    extract_1d_lut(args.inlutfile, args.outlut_size, args.outlutfile,
-                   args.smooth, args.smooth_size, args.display)
+    ARGS  = __get_options()
+    extract_1d_lut(ARGS.inlutfile, ARGS.outlut_size, ARGS.outlutfile,
+                   ARGS.smooth, ARGS.smooth_size, ARGS.display)

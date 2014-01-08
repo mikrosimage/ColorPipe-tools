@@ -8,6 +8,12 @@ import math
 
 
 class ThreeDLHelperException(Exception):
+    """Module custom exception
+
+    Args:
+        Exception
+
+    """
     pass
 
 
