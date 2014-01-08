@@ -11,11 +11,6 @@ Welcome to Plot That LUT's documentation!
 
 .. automodule:: plot_that_lut
 
-:mod:`plot_that_lut_web` -- Web tool
-************************************
-
-.. automodule:: plot_that_lut_web
-
 
 Indices and tables
 ==================
