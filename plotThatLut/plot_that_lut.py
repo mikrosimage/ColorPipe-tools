@@ -75,7 +75,8 @@ def show_plot(fig, filename):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         current_dir = os.path.join(os.path.dirname(current_dir), 'web_app')
         export_path = 'img/export_{0}.png'.format(filename)
-        abs_export_path = '{0}/img/export_{1}.png'.format(current_dir, filename)
+        abs_export_path = '{0}/img/export_{1}.png'.format(current_dir,
+                                                          filename)
         print abs_export_path
         fig.savefig(abs_export_path)
         return export_path
@@ -137,7 +138,7 @@ def plot_curve(lutfiles, samples_count, processors, draw_red_curve=True,
         input_range = []
         # process color values
         for code_value in range(0, samples_count):
-            norm_value = code_value/max_value
+            norm_value = code_value / max_value
             res = processor.applyRGB([norm_value, norm_value, norm_value])
             red_values.append(res[0])
             green_values.append(res[1])
@@ -257,8 +258,9 @@ def plot_that_lut(lutfiles, plot_type=None, count=None, inverse=False,
             raise PlotThatLutException("Error: {0} file aren't supported.\n{1}"
                                        .format(fileext, supported_formats()))
         # create OCIO processor
-        processors.append(create_ocio_processor(lutfile, INTERP_LINEAR, inverse,
-                                                prelutfile, postlutfile))
+        processors.append(create_ocio_processor(lutfile, INTERP_LINEAR,
+                                                inverse, prelutfile,
+                                                postlutfile))
     # init args
     if not plot_type or plot_type == 'auto':
         # deduce plot type considering first lutfile

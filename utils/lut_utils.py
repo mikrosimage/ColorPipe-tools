@@ -85,9 +85,9 @@ def get_3d_list_values(cubesize, processor, hexa_values=False):
         for green in input_range:
             for red in input_range:
                 # get a value between [0..1]
-                norm_r = red/max_value
-                norm_g = green/max_value
-                norm_b = blue/max_value
+                norm_r = red / max_value
+                norm_g = green / max_value
+                norm_b = blue / max_value
                 # apply correction via OCIO
                 res = processor.applyRGB([norm_r, norm_g, norm_b])
                 red_values.append(res[0])

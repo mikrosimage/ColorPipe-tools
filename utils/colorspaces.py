@@ -124,14 +124,15 @@ class Rec709(sRGB):
         if value < self._beta:
             return value * 4.5
         else:
-            return pow(value, 0.45)*self._alpha - (self._alpha - 1)
+            return pow(value, 0.45) * self._alpha - (self._alpha - 1)
 
     def gamma_to_lin(self, value):
         inv_beta = round(self.lin_to_gamma(self._beta), self._round_depth)
         if value < inv_beta:
-            return value * 1/4.5
+            return value * 1 / 4.5
         else:
-            return pow((value + (self._alpha - 1)) * (1/self._alpha), 1/0.45)
+            return pow((value + (self._alpha - 1)) * (1 / self._alpha),
+                       1 / 0.45)
 
 
 class Rec2020(Rec709):

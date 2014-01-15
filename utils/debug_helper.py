@@ -23,23 +23,25 @@ def get_imported_modules_versions(modules, glob):
     """
     # Retrieve ColorPipe-tools modules
     path = os.path.dirname(os.path.dirname(__file__))
-    res = "ColorPipe-tools modules:\n------------------------------"
+    res = "ColorPipe-tools modules:\n-----------------------------"
     for name in modules:
         if (path in str(modules[name])
            and "debug_helper" not in str(modules[name])):
             try:
                 res = "{0}\n{1} - version {2}".format(res, name,
-                                                      modules[name].__version__)
+                                                      modules[name].__version__
+                                                      )
             except AttributeError:
                 pass
     # Retrieve "interesting" external modules
     module_selection = set(modules) & set(glob)
-    res = "{0}\n\nExternal modules:\n------------------------------".format(res)
+    res = "{0}\n\nExternal modules:\n-----------------------------".format(res)
     for name in module_selection:
         if "built-in" not in name and path not in str(modules[name]):
             try:
                 res = "{0}\n{1} - version {2}".format(res, name,
-                                                      modules[name].__version__)
+                                                      modules[name].__version__
+                                                      )
             except AttributeError:
                 pass
     return res

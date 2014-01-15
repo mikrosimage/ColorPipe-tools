@@ -40,8 +40,8 @@ def lut_to_lut(inlutfile, outlutfile=None, lut_type='1D_CUBE',
         outlutfile (str): the output 1D LUT. If not define, LUT is written in
         the input LUT directory and post-fixed with "_export"
 
-        lut_type (str): specify output LUT format. For now only 2D/3D csp and 2D
-        cube are available.
+        lut_type (str): specify output LUT format. For now only 2D/3D csp and
+        2D cube are available.
 
         lutsize (int): out LUT bit precision for 1D. Ex : 16 (bits)
 
@@ -81,7 +81,7 @@ def lut_to_lut(inlutfile, outlutfile=None, lut_type='1D_CUBE',
     if "1D" in lut_type:
         # process color values
         for code_value in range(0, samples_count):
-            norm_value = code_value/max_value
+            norm_value = code_value / max_value
             res = processor.applyRGB([norm_value, norm_value, norm_value])
             red_values.append(res[0])
             green_values.append(res[1])

@@ -21,8 +21,8 @@ def xy_to_XYZ(xy, Y=1):
 
     """
     x, y = xy
-    X = (x*Y)/y
-    Z = ((1-x-y)*Y)/y
+    X = (x * Y) / y
+    Z = ((1 - x - y) * Y) / y
     return [X, Y, Z]
 
 
@@ -38,7 +38,7 @@ def lin_to_gamma(value, gamma):
         .float
 
     """
-    return math.pow(value, 1/gamma)
+    return math.pow(value, 1 / gamma)
 
 
 def gamma_to_lin(value, gamma):

@@ -46,8 +46,8 @@ def extract_1d_lut(inlutfile, lutsize, outlutfile=None, smooth=False,
         interpolation. See also smooth_size.
 
         smooth_size (int): only used when smooth is true. Specify how many
-        points are sampled using OpenColorIO processor. The result curve is then
-        smoothed and resample to fit input lutsize.
+        points are sampled using OpenColorIO processor.
+        The result curve is then smoothed and resample to fit input lutsize.
         So the smaller this value is, the smoother the curve will be.
 
     """
@@ -68,14 +68,14 @@ def extract_1d_lut(inlutfile, lutsize, outlutfile=None, smooth=False,
     green_values = []
     blue_values = []
     for code_value in range(0, count):
-        norm_value = code_value/max_value
+        norm_value = code_value / max_value
         res = processor.applyRGB([norm_value, norm_value, norm_value])
         red_values.append(res[0])
         green_values.append(res[1])
         blue_values.append(res[2])
     if smooth:
         # get full range
-        xnew = numpy.arange(0, max_value, float(count-1)/(pow(2, lutsize)))
+        xnew = numpy.arange(0, max_value, float(count - 1) / (pow(2, lutsize)))
         # get a monotonic cubic function from subsampled curve
         red_cubic_monotonic_func = PchipInterpolator(numpy.arange(0, count),
                                                      red_values)
@@ -162,6 +162,6 @@ def __get_options():
 if __name__ == '__main__':
     """ Command line interface
     """
-    ARGS  = __get_options()
+    ARGS = __get_options()
     extract_1d_lut(ARGS.inlutfile, ARGS.outlut_size, ARGS.outlutfile,
                    ARGS.smooth, ARGS.smooth_size, ARGS.display)
