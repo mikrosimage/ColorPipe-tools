@@ -248,12 +248,50 @@ class ACES(AbstractColorspace):
         return value
 
 
+class ACESlog(ACES):
+    """ACES LOG colorspace
+
+    """
+    def __init__(self, is_integer=False):
+        self.is_integer = is_integer
+        self.unity = 32768
+        self.xperstop = 2048
+        self.denorm_trans = math.pow(2.0, -15)
+        self.denorm_fake0 = math.pow(2.0, -16)
+
+    def encode_gradation(self, value):
+        if value < 0:
+            res = 0
+        elif value < self.denorm_trans:
+            # log2(2.0^-16 + ACES * 0.5) * 2048 + 32768
+            res = (math.log(self.denorm_fake0 + value * 0.5, 2) * self.xperstop
+                   + self.unity)
+        else:
+            # log2(ACES) * 2048 + 32768
+            res = math.log(value, 2) * self.xperstop + self.unity
+        if self.is_integer:
+            return min(math.floor(res) + 0.5, 65535)
+        else:
+            return res
+
+    def decode_gradation(self, value):
+        if value < self.xperstop:
+            # (2^((ACESlog - 32768) / 2048) - 2^-16) * 2
+            return ((math.pow(2, (value - self.unity) / self.xperstop)
+                     - self.denorm_fake0) * 2.0)
+        else:
+            # 2^((ACESlog - 32768) / 2048)
+            return math.pow(2, (value - self.unity) / self.xperstop)
+
+
 REC709 = Rec709()
 ALEXALOGCV3 = AlexaLogCV3()
 WIDEGAMUT = WideGamut()
 REC2020_10B = Rec2020(is_ten_bits=True)
 REC2020_12B = Rec2020(is_ten_bits=False)
 ACES = ACES()
+ACESLOG_32f = ACESlog(is_integer=False)
+ACESLOG_16i = ACESlog(is_integer=True)
 sRGB = sRGB()
 COLORSPACES = {
     'REC709': REC709,
