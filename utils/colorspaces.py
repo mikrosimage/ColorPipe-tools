@@ -373,4 +373,8 @@ COLORSPACES = {
     'REC2020_12bits': REC2020_12B,
     'ACES': ACES,
     'sRGB': sRGB,
+    'ACESlog_32f': ACESLOG_32f,
+    'ACESlog_16i': ACESLOG_16i,
+    'ACESproxy_10': ACESPROXY_10i,
+    'ACESproxy_12': ACESPROXY_12i,
 }
