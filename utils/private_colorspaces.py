@@ -27,11 +27,11 @@ from utils.colorspaces import AbstractColorspace
 #         # See DCI specifications
 #         pass
 
-#     def lin_to_gamma(self, value):
+#     def encode_gradation(self, value):
 #         # See DCI specifications
 #         pass
 
-#     def gamma_to_lin(self, value):
+#     def decode_gradation(self, value):
 #         # See DCI specifications
 #         pass
 

@@ -56,8 +56,8 @@ class AbstractColorspace(object):
         pass
 
     @abstractmethod
-    def lin_to_gamma(self, value):
-        """Convert value from lin to gamma
+    def encode_gradation(self, value):
+        """Gradation encoding function
 
         Args:
             value (float): value to transform
@@ -69,8 +69,8 @@ class AbstractColorspace(object):
         pass
 
     @abstractmethod
-    def gamma_to_lin(self, value):
-        """Convert value from lin to gamma
+    def decode_gradation(self, value):
+        """Gradation decoding function
 
         Args:
             value (float): value to transform
@@ -98,13 +98,13 @@ class sRGB(AbstractColorspace):
     def get_white_point(self):
         return 0.3127, 0.3290
 
-    def lin_to_gamma(self, value):
+    def encode_gradation(self, value):
         if value > 0.0031308:
             return 1.055 * pow(value, 1.0 / 2.4) - 0.055
         else:
             return 12.92 * value
 
-    def gamma_to_lin(self, value):
+    def decode_gradation(self, value):
         if value > 0.04045:
             return pow((value + 0.055) / 1.055, 2.4)
         else:
@@ -120,14 +120,14 @@ class Rec709(sRGB):
         self._beta = 0.018
         self._round_depth = 3
 
-    def lin_to_gamma(self, value):
+    def encode_gradation(self, value):
         if value < self._beta:
             return value * 4.5
         else:
             return pow(value, 0.45) * self._alpha - (self._alpha - 1)
 
-    def gamma_to_lin(self, value):
-        inv_beta = round(self.lin_to_gamma(self._beta), self._round_depth)
+    def decode_gradation(self, value):
+        inv_beta = round(self.encode_gradation(self._beta), self._round_depth)
         if value < inv_beta:
             return value * 1 / 4.5
         else:
@@ -182,7 +182,7 @@ class AlexaLogCV3(AbstractColorspace):
     def get_white_point(self):
         return 0.3127, 0.3290
 
-    def lin_to_gamma(self, value):
+    def encode_gradation(self, value):
         if value > 0.010591:
             value = (0.247190 * math.log10(5.555556 * value + 0.052272)
                      + 0.385537)
@@ -190,7 +190,7 @@ class AlexaLogCV3(AbstractColorspace):
             value = 5.367655 * value + 0.092809
         return value
 
-    def gamma_to_lin(self, value):
+    def decode_gradation(self, value):
         if value > 0.1496582:
             value = (math.pow(10.0, (value - 0.385537) / 0.2471896) * 0.18
                      - 0.00937677)
@@ -218,10 +218,10 @@ class WideGamut(AbstractColorspace):
     def get_white_point(self):
         return 0.3457, 0.3585
 
-    def lin_to_gamma(self, value):
+    def encode_gradation(self, value):
         return colors_helper.lin_to_gamma(value, self._gamma)
 
-    def gamma_to_lin(self, value):
+    def decode_gradation(self, value):
         return colors_helper.gamma_to_lin(value, self._gamma)
 
 
@@ -241,10 +241,10 @@ class ACES(AbstractColorspace):
     def get_white_point(self):
         return 0.32168, 0.33767
 
-    def lin_to_gamma(self, value):
+    def encode_gradation(self, value):
         return value
 
-    def gamma_to_lin(self, value):
+    def decode_gradation(self, value):
         return value
 
 
