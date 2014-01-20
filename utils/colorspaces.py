@@ -284,6 +284,76 @@ class ACESlog(ACES):
             return math.pow(2, (value - self.unity) / self.xperstop)
 
 
+class ACESproxy(ACES):
+    """ACESproxy colorspace
+    """
+    def __init__(self, cv_min, cv_max, steps_per_stop, mid_cv_offset,
+                 mid_log_offset):
+        """ACESproxy general implementation
+
+            Args:
+                cv_min (int): minimum code value available for representation
+                of ACES image data
+
+                cv_max (int): maximum code value available for representation
+                of ACES image data
+
+                steps_per_stop (int): number of code values representing a
+                change of 1 stop in exposure
+
+                mid_cv_offset (int): integer code value representing the
+                assigned midpoint of the exposure scale for a particular
+                bit-depth encoding. (e.g. the point to which a mid-grey
+                exposure value would be mapped)
+
+                mid_log_offset (float): base2 logarithmic value representing
+                the assigned midpoint of the exposure scale in log space,
+                [e.g. MidLogOffset = log2( 2^(-2.5) ) = -2.5 ]
+
+        """
+        self.cv_min = cv_min
+        self.cv_max = cv_max
+        self.steps_per_stop = steps_per_stop
+        self.mid_cv_offset = mid_cv_offset
+        self.mid_log_offset = mid_log_offset
+
+    def float_to_cv(self, value):
+        """Math function returning MAX(cv_min, MIN(cv_max, ROUND(value)))
+        """
+        return max(self.cv_min, min(self.cv_max, round(value)))
+
+    def encode_gradation(self, value):
+        if value <= 0:
+            return self.cv_min
+        else:
+            return self.float_to_cv((math.log(value, 2) - self.mid_log_offset)
+                                    *
+                                    self.steps_per_stop + self.mid_cv_offset
+                                    )
+
+    def decode_gradation(self, value):
+        return math.pow(2, (value - self.mid_cv_offset) / self.steps_per_stop
+                        + self.mid_log_offset)
+
+
+class ACESproxy10(ACESproxy):
+    """10 bit int implementation of ACESproxy
+
+    """
+    def __init__(self):
+        ACESproxy.__init__(self, cv_min=0, cv_max=1023, steps_per_stop=50,
+                           mid_cv_offset=425, mid_log_offset=-2.5)
+
+
+class ACESproxy12(ACESproxy):
+    """12 bit int implementation of ACESproxy
+
+    """
+    def __init__(self):
+        ACESproxy.__init__(self, cv_min=0, cv_max=4095, steps_per_stop=200,
+                           mid_cv_offset=1700, mid_log_offset=-2.5)
+
+
 REC709 = Rec709()
 ALEXALOGCV3 = AlexaLogCV3()
 WIDEGAMUT = WideGamut()
@@ -292,6 +362,8 @@ REC2020_12B = Rec2020(is_ten_bits=False)
 ACES = ACES()
 ACESLOG_32f = ACESlog(is_integer=False)
 ACESLOG_16i = ACESlog(is_integer=True)
+ACESPROXY_10i = ACESproxy10()
+ACESPROXY_12i = ACESproxy12()
 sRGB = sRGB()
 COLORSPACES = {
     'REC709': REC709,
