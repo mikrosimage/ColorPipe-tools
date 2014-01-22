@@ -5,7 +5,7 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-__version__ = "0.1"
+__version__ = "0.2"
 from utils.colors_helper import xy_to_XYZ
 from utils.colorspaces import COLORSPACES
 from utils.private_colorspaces import PRIVATE_COLORSPACES
@@ -135,7 +135,7 @@ def display_matrix(colorspace, matrix_format):
     as format
 
     Args:
-        colorspace (str): input colorspace. For now, REC709 is the only option.
+        colorspace (str): input colorspace.
 
         matrix_format (str): output format. simple, matrix, spimtx.
 
