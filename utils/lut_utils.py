@@ -3,7 +3,7 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-__version__ = "0.1"
+__version__ = "0.2"
 import os
 
 
@@ -123,3 +123,17 @@ def write_3d_json_file(filepath, cubesize, processor):
     lutfile = open(filepath, 'w+')
     json.dump(processed_values, lutfile)
     lutfile.close()
+
+
+def check_extension(filepath, extension):
+    """Raise an exception if filepath doesn't match extention
+
+    Args:
+        filepath (str): path
+
+        extension (str): extension. Ex: .csp
+
+    """
+    if not filepath.lower().endswith(extension.lower()):
+        raise LUTException(("File path \'{0}\' doesn't match "
+                            "extension \'{1}\'").format(filepath, extension))
