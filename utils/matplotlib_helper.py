@@ -4,6 +4,7 @@
                   `Marie FETIVEAU <github.com/mfe>`_
 
 """
+__version__ = "0.1"
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
