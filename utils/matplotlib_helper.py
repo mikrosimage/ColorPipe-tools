@@ -74,6 +74,22 @@ SPECTRUM_LOCUS_64 = os.path.join(SPECTRUM_DATA_PATH,
                                  'spectrum_locus_xyz1964.txt')
 
 
+def load_xy_from_file(data_path):
+    """Use numpy to load coordinates from file
+
+    Args:
+        data_path (str): path to a file containing xy data
+
+    Returns:
+        .[float, float]
+
+    """
+    data = np.loadtxt(data_path)
+    x = data[:, 4]
+    y = data[:, 5]
+    return [x, y]
+
+
 def plot_spectrum_locus(data_path, label):
     """Plot standard spectrum locus
 
@@ -81,9 +97,7 @@ def plot_spectrum_locus(data_path, label):
         data_path (str): path to a file containing xyz data
 
     """
-    data = np.loadtxt(data_path)
-    x = data[:, 4]
-    y = data[:, 5]
+    x, y = load_xy_from_file(data_path)
     plt.plot(x, y, 'k-', label=label)
     plt.plot(x[[0, x.size - 1]], y[[0, y.size - 1]], 'k-')
 
