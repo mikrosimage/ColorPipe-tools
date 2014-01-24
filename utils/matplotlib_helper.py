@@ -82,8 +82,8 @@ def plot_spectrum_locus(data_path, label):
 
     """
     data = np.loadtxt(data_path)
-    x = data[:, 1] / (data[:, 1] + data[:, 2] + data[:, 3])
-    y = data[:, 2] / (data[:, 1] + data[:, 2] + data[:, 3])
+    x = data[:, 4]
+    y = data[:, 5]
     plt.plot(x, y, 'k-', label=label)
     plt.plot(x[[0, x.size - 1]], y[[0, y.size - 1]], 'k-')
 
