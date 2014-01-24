@@ -7,6 +7,7 @@
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
+from utils import colors_helper as coh
 import os
 
 WEB_MODE = False
@@ -90,14 +91,13 @@ def load_xy_from_file(data_path):
     return [x, y]
 
 
-def plot_spectrum_locus(data_path, label):
+def plot_spectrum_locus(x, y, label):
     """Plot standard spectrum locus
 
     Args:
         data_path (str): path to a file containing xyz data
 
     """
-    x, y = load_xy_from_file(data_path)
     plt.plot(x, y, 'k-', label=label)
     plt.plot(x[[0, x.size - 1]], y[[0, y.size - 1]], 'k-')
 
@@ -106,18 +106,40 @@ def plot_spectrum_locus_31():
     """Plot CIE1931 spectrum locus
 
     """
-    plot_spectrum_locus(SPECTRUM_LOCUS_31, "spectrum locus CIE1931")
+    x, y = load_xy_from_file(SPECTRUM_LOCUS_31)
+    plot_spectrum_locus(x, y, "spectrum locus CIE1931")
 
 
 def plot_spectrum_locus_64():
     """Plot CIE1964 spectrum locus
 
     """
-    plot_spectrum_locus(SPECTRUM_LOCUS_64, "spectrum locus CIE1964")
+    x, y = load_xy_from_file(SPECTRUM_LOCUS_64)
+    plot_spectrum_locus(x, y, "spectrum locus CIE1964")
+
+
+def plot_spectrum_locus_76():
+    """Plot CIE1976 spectrum locus
+
+    """
+    # Load CIE 1931 data
+    x_list, y_list = load_xy_from_file(SPECTRUM_LOCUS_31)
+    up_list = []
+    vp_list = []
+    # Convert data from xy to u'v"
+    for x, y in zip(x_list, y_list):
+        up, vp = coh.xy_to_upvp([x, y])
+        up_list.append(up)
+        vp_list.append(vp)
+    up_list = np.array(up_list)
+    vp_list = np.array(vp_list)
+    # Plot resulting data
+    plot_spectrum_locus(up_list, vp_list, "spectrum locus CIE1976")
 
 
 def plot_colorspace_gamut(colorspace, color=None, draw_lines=True,
-                          lines_color='black', fill=False):
+                          lines_color='black', fill=False,
+                          upvp_conversion=False):
     """Plot colorspace primaries triangle
 
     Args:
@@ -130,10 +152,16 @@ def plot_colorspace_gamut(colorspace, color=None, draw_lines=True,
 
         fill (bool): fill triangle
 
+        upvp_coords (bool): if true, convert x,y values into u'v' values
+
     """
     red_x, red_y = colorspace.get_red_primaries()
     green_x, green_y = colorspace.get_green_primaries()
     blue_x, blue_y = colorspace.get_blue_primaries()
+    if upvp_conversion:
+        red_x, red_y = coh.xy_to_upvp([red_x, red_y])
+        green_x, green_y = coh.xy_to_upvp([green_x, green_y])
+        blue_x, blue_y = coh.xy_to_upvp([blue_x, blue_y])
     plot_triangle(np.array([red_x, green_x, blue_x]),
                   np.array([red_y, green_y, blue_y]),
                   color, draw_lines, lines_color, fill,
