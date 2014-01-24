@@ -11,8 +11,9 @@ import os
 import ntpath
 import traceback
 import plot_that_lut
+from utils import matplotlib_helper as mplh
 
-plot_that_lut.WEB_MODE = True
+mplh.WEB_MODE = True
 
 MY_LOOKUP = TemplateLookup(directories=['html'])
 
@@ -34,7 +35,7 @@ class Application(object):
         """PlotThatLUT index page
 
         """
-        mytemplate=MY_LOOKUP.get_template("PlotThatLut/index.html")
+        mytemplate = MY_LOOKUP.get_template("PlotThatLut/index.html")
         return mytemplate.render()
 
     @cherrypy.expose
@@ -105,7 +106,7 @@ class Application(object):
             ).format(error)
             print traceback.format_exc()
         # call template
-        mytemplate=MY_LOOKUP.get_template("PlotThatLut/plot.html")
+        mytemplate = MY_LOOKUP.get_template("PlotThatLut/plot.html")
         return mytemplate.render(label=label, image=result)
 
     @staticmethod
@@ -135,7 +136,7 @@ class Application(object):
         return backup_filename
 
 #Application root
-APP_ROOT=Application()
+APP_ROOT = Application()
 
 #Set up root configuration
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))

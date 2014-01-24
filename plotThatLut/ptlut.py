@@ -83,5 +83,5 @@ if __name__ == '__main__':
                                     ARGS.prelutfile,
                                     ARGS.postlutfile,
                                     ARGS.markers)
-    except Exception, e:
-        print "Watch out !\n%s" % e
+    except Exception, exc:
+        print "Watch out !\n%s" % exc

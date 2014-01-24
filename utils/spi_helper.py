@@ -5,6 +5,7 @@
 """
 __version__ = "0.1"
 
+
 class SpiHelperException(Exception):
     """Module custom exception
 
@@ -29,8 +30,8 @@ def write_1d_spi_lut(filename, values, input_range=None, version=1):
         version (float): version of the lut
 
     """
-    if input_range==None:
-        input_range=[0, 1]
+    if input_range == None:
+        input_range = [0, 1]
     lutfile = open(filename, 'w+')
     lutfile.write("Version {0}\n".format(version))
     lutfile.write("From {0} {1}\n".format(input_range[0], input_range[1]))

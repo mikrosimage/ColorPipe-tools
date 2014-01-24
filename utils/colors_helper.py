@@ -21,9 +21,24 @@ def xy_to_XYZ(xy, Y=1):
 
     """
     x, y = xy
-    X = (x*Y)/y
-    Z = ((1-x-y)*Y)/y
+    X = (x * Y) / y
+    Z = ((1 - x - y) * Y) / y
     return [X, Y, Z]
+
+
+def xy_to_upvp(xy):
+    """Convert xy to u'v'
+
+    Args:
+        xy ([float, float]): x, y input values
+
+    Returns:
+        .[float, float]
+    """
+    x, y = xy
+    up = 4 * x / (-2 * x + 12 * y + 3)
+    vp = 9 * y / (-2 * x + 12 * y + 3)
+    return [up, vp]
 
 
 def lin_to_gamma(value, gamma):
@@ -38,7 +53,7 @@ def lin_to_gamma(value, gamma):
         .float
 
     """
-    return math.pow(value, 1/gamma)
+    return math.pow(value, 1 / gamma)
 
 
 def gamma_to_lin(value, gamma):

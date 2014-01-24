@@ -88,9 +88,9 @@ def write_3d_clcc_lut(filename, cubesize, processor,
         for green in input_range:
             for red in input_range:
                 # get a value between [0..1]
-                norm_r = red/max_value
-                norm_g = green/max_value
-                norm_b = blue/max_value
+                norm_r = red / max_value
+                norm_g = green / max_value
+                norm_b = blue / max_value
                 # apply correction via OCIO
                 res = processor.applyRGB([norm_r, norm_g, norm_b])
                 lutfile.write("{0:.10f},{1:.10f},{2:.10f}\n".format(res[0],

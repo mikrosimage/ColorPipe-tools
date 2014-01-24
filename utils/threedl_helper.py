@@ -33,7 +33,7 @@ def get_shaper_lut(cube_size, bit_depth):
     step = max_value / (cube_size - 1)
     shaper_lut = []
     for i in range(0, cube_size):
-        shaper_lut.append(int(i*step))
+        shaper_lut.append(int(i * step))
     return shaper_lut
 
 
