@@ -39,7 +39,8 @@ def plot_points(x, y, point_type='o', color='gray'):
     plt.plot(x, y, point_type, color=color)
 
 
-def plot_triangle(x, y, color=None, draw_lines=True, fill=False):
+def plot_triangle(x, y, color=None, draw_lines=True, lines_color='black',
+                  fill=False, label=""):
     """Plot an rgb triangle in xy
 
     Args:
@@ -57,7 +58,7 @@ def plot_triangle(x, y, color=None, draw_lines=True, fill=False):
         plt.fill(x, y, color='grey', alpha='0.5')
     if draw_lines:
         index_val = np.hstack([np.arange(x.size), 0])
-        plt.plot(x[index_val], y[index_val], '-k')
+        plt.plot(x[index_val], y[index_val], color=lines_color, label=label)
 
     if color:
         plt.plot(x[0], y[0], 'o', x[1], y[1], 'o', x[2], y[2], 'o',
@@ -73,7 +74,7 @@ SPECTRUM_LOCUS_64 = os.path.join(SPECTRUM_DATA_PATH,
                                  'spectrum_locus_xyz1964.txt')
 
 
-def plot_spectrum_locus(data_path):
+def plot_spectrum_locus(data_path, label):
     """Plot standard spectrum locus
 
     Args:
@@ -83,25 +84,26 @@ def plot_spectrum_locus(data_path):
     data = np.loadtxt(data_path)
     x = data[:, 1] / (data[:, 1] + data[:, 2] + data[:, 3])
     y = data[:, 2] / (data[:, 1] + data[:, 2] + data[:, 3])
-    plt.plot(x, y, 'k-')
-    plt.plot(x[[0, x.size - 1]], y[[0, y.size - 1]], 'k:')
+    plt.plot(x, y, 'k-', label=label)
+    plt.plot(x[[0, x.size - 1]], y[[0, y.size - 1]], 'k-')
 
 
 def plot_spectrum_locus_31():
     """Plot CIE1931 spectrum locus
 
     """
-    plot_spectrum_locus(SPECTRUM_LOCUS_31)
+    plot_spectrum_locus(SPECTRUM_LOCUS_31, "spectrum locus CIE1931")
 
 
 def plot_spectrum_locus_64():
     """Plot CIE1964 spectrum locus
 
     """
-    plot_spectrum_locus(SPECTRUM_LOCUS_64)
+    plot_spectrum_locus(SPECTRUM_LOCUS_64, "spectrum locus CIE1964")
 
 
-def plot_colorspace_gamut(colorspace, color=None, draw_lines=True, fill=False):
+def plot_colorspace_gamut(colorspace, color=None, draw_lines=True,
+                          lines_color='black', fill=False):
     """Plot colorspace primaries triangle
 
     Args:
@@ -120,4 +122,5 @@ def plot_colorspace_gamut(colorspace, color=None, draw_lines=True, fill=False):
     blue_x, blue_y = colorspace.get_blue_primaries()
     plot_triangle(np.array([red_x, green_x, blue_x]),
                   np.array([red_y, green_y, blue_y]),
-                  color, draw_lines, fill)
+                  color, draw_lines, lines_color, fill,
+                  colorspace.__class__.__name__)
