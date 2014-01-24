@@ -4,9 +4,24 @@
                   `Marie FETIVEAU <github.com/mfe>`_
 
 """
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+
+WEB_MODE = False
+
+
+def set_matplotlib_backend():
+    """ Select display backend
+
+    .. todo:: Externalize this and remove WEB_MODE global var
+
+    """
+    if WEB_MODE:
+        matplotlib.use('Agg')
+    else:
+        matplotlib.use('Qt4Agg')
 
 
 def plot_points(x, y, point_type='o', color='gray'):

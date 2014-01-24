@@ -11,8 +11,9 @@ import os
 import ntpath
 import traceback
 import plot_that_lut
+from utils import matplotlib_helper as mplh
 
-plot_that_lut.WEB_MODE = True
+mplh.WEB_MODE = True
 
 MY_LOOKUP = TemplateLookup(directories=['html'])
 

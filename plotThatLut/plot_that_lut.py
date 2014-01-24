@@ -17,8 +17,7 @@ from utils.lut_utils import get_3d_list_values
 # matplotlib
 import matplotlib
 import itertools
-
-WEB_MODE = False
+from utils import matplotlib_helper as mplh
 
 
 class PlotThatLutException(Exception):
@@ -29,19 +28,6 @@ class PlotThatLutException(Exception):
 
     """
     pass
-
-
-def set_matplotlib_backend():
-    """ Select display backend
-
-    .. todo:: Externalize this and remove WEB_MODE global var
-
-    """
-
-    if WEB_MODE:
-        matplotlib.use('Agg')
-    else:
-        matplotlib.use('Qt4Agg')
 
 
 DEFAULT_SAMPLE = 256
@@ -67,7 +53,7 @@ def show_plot(fig, filename):
             else a void string.
 
     """
-    if WEB_MODE:
+    if mplh.WEB_MODE:
         split_filename = os.path.splitext(filename)
         filename = '{0}{1}'.format(split_filename[0],
                                    split_filename[1].replace(".", "_"))
@@ -244,7 +230,7 @@ def plot_that_lut(lutfiles, plot_type=None, count=None, inverse=False,
     """
     if not isinstance(lutfiles, list):
         lutfiles = [lutfiles]
-    set_matplotlib_backend()
+    mplh.set_matplotlib_backend()
     processors = []
     for lutfile in lutfiles:
         # check if LUT format is supported
