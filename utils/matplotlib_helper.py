@@ -12,6 +12,11 @@ from utils import colors_helper as coh
 import os
 
 WEB_MODE = False
+MARKERS = ['o', '*', 'H', 'D', '8', 's', 'p', 'h', 'd']
+REDS = ['r', 'c', '#990000', '#660000']
+GREENS = ['g', 'm', '#009900', '#006600']
+BLUES = ['b', 'y', '#000099', '#000066']
+COLORS = ['c', 'm', 'y', '#FF8200', '#8C00FF', '#EF8AF2', '#71B3F5']
 
 
 def set_matplotlib_backend():

@@ -33,11 +33,6 @@ class PlotThatLutException(Exception):
 DEFAULT_SAMPLE = 256
 DEFAULT_CUBE_SIZE = 17
 
-MARKERS = ['o', '*', 'H', 'D', '8', 's', 'p', 'h', 'd']
-REDS = ['r', 'c', '#990000', '#660000']
-GREENS = ['g', 'm', '#009900', '#006600']
-BLUES = ['b', 'y', '#000099', '#000066']
-
 
 def show_plot(fig, filename):
     """Plot the figure depending on the backend
@@ -111,10 +106,10 @@ def plot_curve(lutfiles, samples_count, processors, draw_red_curve=True,
     xlabel("Input")
     ylabel("Output")
     grid(True)
-    markers_it = itertools.cycle(MARKERS)
-    reds_it = itertools.cycle(REDS)
-    greens_it = itertools.cycle(GREENS)
-    blues_it = itertools.cycle(BLUES)
+    markers_it = itertools.cycle(mplh.MARKERS)
+    reds_it = itertools.cycle(mplh.REDS)
+    greens_it = itertools.cycle(mplh.GREENS)
+    blues_it = itertools.cycle(mplh.BLUES)
     for lutfile, processor in itertools.izip(lutfiles, processors):
         # init vars
         max_value = samples_count - 1.0
