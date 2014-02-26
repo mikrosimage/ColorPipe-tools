@@ -3,13 +3,14 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-__version__ = "0.1"
+__version__ = "0.2"
 import argparse
 import matplotlib.pyplot as plt
 from utils import matplotlib_helper as mplh
 from utils.colorspaces import COLORSPACES
 from utils.private_colorspaces import PRIVATE_COLORSPACES
 import itertools
+import sys
 
 
 class PlotThatChromaException(Exception):
@@ -22,7 +23,7 @@ class PlotThatChromaException(Exception):
     pass
 
 
-def plot_that_chroma(colorspaces):
+def plot_that_chroma(colorspaces, points, display_spectrum=False):
     """Plot chromaticities
 
     Args:
@@ -38,7 +39,6 @@ def plot_that_chroma(colorspaces):
         # Init option
         colors_it = itertools.cycle(mplh.COLORS)
         for colorspace in colorspaces:
-            print colorspace
             try:
                 merged_dict = dict(COLORSPACES, **PRIVATE_COLORSPACES)
                 colorspace_obj = merged_dict[colorspace]
@@ -47,6 +47,11 @@ def plot_that_chroma(colorspaces):
                                               format(colorspace))
             mplh.plot_colorspace_gamut(colorspace_obj,
                                        lines_color=colors_it.next())
+    if points:
+        for point in points:
+            mplh.plot_points(point[0], point[1])
+    if display_spectrum:
+        mplh.plot_spectrum_locus_31()
     plt.legend(loc=4)
     plt.show()
 
@@ -67,8 +72,20 @@ def __get_options():
                         type=str, action='append', dest='colorspaces',
                         choices=sorted(COLORSPACES.keys() +
                                         PRIVATE_COLORSPACES.keys()))
-    return parser.parse_args()
+    # Points
+    parser.add_argument("-p", "--point", type=float, nargs=2,
+                        metavar=('x', 'y'), action='append',
+                        dest='points', help='Display an xy point')
+    # Spectrum locus
+    parser.add_argument("-spectrum", "--spectrum-locus", action="store_true",
+                        help="Display spectrum locus")
+    return parser
 
 if __name__ == '__main__':
-    ARGS = __get_options()
-    plot_that_chroma(ARGS.colorspaces)
+    PARSER = __get_options()
+    ARGS = PARSER.parse_args()
+    if len(sys.argv) < 2:
+        print "No option found !"
+        PARSER.print_help()
+    else:
+        plot_that_chroma(ARGS.colorspaces, ARGS.points, ARGS.spectrum_locus)
