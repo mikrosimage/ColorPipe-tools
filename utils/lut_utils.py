@@ -137,3 +137,18 @@ def check_extension(filepath, extension):
     if not filepath.lower().endswith(extension.lower()):
         raise LUTException(("File path \'{0}\' doesn't match "
                             "extension \'{1}\'").format(filepath, extension))
+
+
+def int_scale_range(values, out_value, in_value=1.0):
+    """Scale a range of values
+
+    Args:
+        values (array): range to convert
+
+        out_value (int): max out value
+
+    kwargs:
+        in_value (int): input range max value
+
+    """
+    return [int(value / float(in_value) * out_value) for value in values]
