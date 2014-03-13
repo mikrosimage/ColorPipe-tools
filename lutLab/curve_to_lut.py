@@ -83,7 +83,7 @@ def curve_to_lut(colorspace, outlutpath, lut_type='1D_CUBE',
                                        "or {0}").format(error))
     # get colorspace function
     try:
-        colorspace_obj = (COLORSPACES.items() +
+        colorspace_obj = dict(COLORSPACES.items() +
                           PRIVATE_COLORSPACES.items())[colorspace]
     except KeyError:
         raise CurveToLUTException(("Unsupported {0} "
