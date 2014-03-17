@@ -4,13 +4,14 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-__version__ = "0.1"
+__version__ = "0.2"
 from utils.colorspaces import COLORSPACES
 from utils.private_colorspaces import PRIVATE_COLORSPACES
 import argparse
 from utils.csp_helper import write_1d_csp_lut
 from utils.cube_helper import write_1d_cube_lut
 from utils.spi_helper import write_1d_spi_lut
+from utils.scratch_helper import write_1d_scratch_lut
 from utils import debug_helper
 from utils.lut_utils import check_extension, LUTException
 import sys
@@ -67,6 +68,9 @@ def curve_to_lut(colorspace, outlutpath, lut_type='1D_CUBE',
         write_function = lambda lutfile, values: write_1d_spi_lut(lutfile,
                                                                   values,
                                                                   lut_range)
+    elif lut_type == '1D_SCRATCH':
+        ext = ".lut"
+        write_function = write_1d_scratch_lut
     else:
         raise CurveToLUTException(("Unsupported export "
                                    "format: {0}").format(lut_type))
@@ -83,7 +87,7 @@ def curve_to_lut(colorspace, outlutpath, lut_type='1D_CUBE',
                                        "or {0}").format(error))
     # get colorspace function
     try:
-        colorspace_obj = (COLORSPACES.items() +
+        colorspace_obj = dict(COLORSPACES.items() +
                           PRIVATE_COLORSPACES.items())[colorspace]
     except KeyError:
         raise CurveToLUTException(("Unsupported {0} "
@@ -125,7 +129,8 @@ def __get_options():
                                                       ), type=str)
     # type
     parser.add_argument("-t", "--out-type", help=("Output LUT type."),
-                        type=str, choices=['1D_CSP', '1D_CUBE', '1D_SPI'],
+                        type=str, choices=['1D_CSP', '1D_CUBE', '1D_SPI',
+                                           '1D_SCRATCH'],
                         default='1D_CUBE')
     # in range
     parser.add_argument("-ir", "--in-range", help=("In range value."),

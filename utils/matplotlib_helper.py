@@ -4,18 +4,24 @@
                   `Marie FETIVEAU <github.com/mfe>`_
 
 """
-__version__ = "0.1"
+__version__ = "0.2"
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from utils import colors_helper as coh
+from utils.colorspaces import sRGB
 import os
 
 WEB_MODE = False
+MARKERS = ['o', '*', 'H', 'D', '8', 's', 'p', 'h', 'd']
+REDS = ['r', 'c', '#990000', '#660000']
+GREENS = ['g', 'm', '#009900', '#006600']
+BLUES = ['b', 'y', '#000099', '#000066']
+COLORS = ['c', 'm', 'y', '#FF8200', '#8C00FF', '#EF8AF2', '#71B3F5']
 
 
 def set_matplotlib_backend():
-    """ Select display backend
+    """Select display backend
 
     .. todo:: Externalize this and remove WEB_MODE global var
 
@@ -26,7 +32,12 @@ def set_matplotlib_backend():
         matplotlib.use('Qt4Agg')
 
 
-def plot_points(x, y, point_type='o', color='gray'):
+def get_matplotlib_color(x, y):
+    R, G, B = coh.xy_to_RGB([x, y], sRGB, clamp=True)
+    return (R, G, B)
+
+
+def plot_points(x, y, point_type='o', color='auto'):
     """Plot an xy points
 
     Args:
@@ -35,9 +46,15 @@ def plot_points(x, y, point_type='o', color='gray'):
     kwargs:
         type (str): matplotlib type. Ex: 'o', 'r+'
 
-        color (str): matplotlib color. Ex: green, cyan
+        color (str): matplotlib color. Ex: green, cyan. If 'auto', color is
+        computed from x,y coords
 
     """
+    if color == 'auto':
+        if isinstance(x, list):
+            color = 'gray'
+        else:
+            color = get_matplotlib_color(x, y)
     plt.plot(x, y, point_type, color=color)
 
 
