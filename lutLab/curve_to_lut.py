@@ -1,10 +1,10 @@
 #!/usr/bin/python
-"""Convert colorspace gradation curve into 1D LUT
+"""Convert colorspace or gamma gradation curve into 1D LUT
 
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-__version__ = "0.2"
+__version__ = "0.3"
 from utils.colorspaces import COLORSPACES
 from utils.private_colorspaces import PRIVATE_COLORSPACES
 import argparse
@@ -14,6 +14,7 @@ from utils.spi_helper import write_1d_spi_lut
 from utils.scratch_helper import write_1d_scratch_lut
 from utils import debug_helper
 from utils.lut_utils import check_extension, LUTException
+from utils.colors_helper import lin_to_gamma, gamma_to_lin
 import sys
 from numpy import linspace
 import os
@@ -37,12 +38,15 @@ class Direction(object):
     DECODE = "decode"
 
 
-def curve_to_lut(colorspace, outlutpath, lut_type='1D_CUBE',
+def curve_to_lut(colorspace, gamma, outlutpath, lut_type='1D_CUBE',
                  lut_range=None, lutsize=16, direction=Direction.ENCODE):
     """Export a LUT from a colorspace gradation function
 
     Args:
-        colorspace (str): input colorspace
+        colorspace (str): input colorspace. Mutually exclusive with gamma.
+        See list of colorspaces in utils.colorspaces
+
+        gamma (float): input gamma. Mutually exclusive with colorspace.
 
         lut_type (str): 1D_CUBE, 1D_CSP, 1D_SPI
 
@@ -86,16 +90,32 @@ def curve_to_lut(colorspace, outlutpath, lut_type='1D_CUBE',
             raise CurveToLUTException(("Directory doesn't exist "
                                        "or {0}").format(error))
     # get colorspace function
-    try:
-        colorspace_obj = dict(COLORSPACES.items() +
-                          PRIVATE_COLORSPACES.items())[colorspace]
-    except KeyError:
-        raise CurveToLUTException(("Unsupported {0} "
-                                   "Colorspace!").format(colorspace))
-    if direction == Direction.DECODE:
-        gradation = colorspace_obj.decode_gradation
+    if colorspace is None and gamma is None:
+        raise AttributeError("A colorspace or a gamma should be specified")
+    if colorspace is not None and gamma is not None:
+        raise AttributeError("Choose between a colorspace or a gamma")
+    elif gamma is not None:
+        # gamma mode
+        if direction == Direction.DECODE:
+            gradation = lambda value: gamma_to_lin(value, gamma)
+            message = "Gamma {0} to lin".format(gamma)
+        else:
+            gradation = lambda value: lin_to_gamma(value, gamma)
+            message = "Lin to gamma {0}".format(gamma)
     else:
-        gradation = colorspace_obj.encode_gradation
+        # colorspace mode
+        try:
+            colorspace_obj = dict(COLORSPACES.items() +
+                              PRIVATE_COLORSPACES.items())[colorspace]
+        except KeyError:
+            raise CurveToLUTException(("Unsupported {0} "
+                                       "Colorspace!").format(colorspace))
+        if direction == Direction.DECODE:
+            gradation = colorspace_obj.decode_gradation
+            message = "{0} to lin".format(colorspace)
+        else:
+            gradation = colorspace_obj.encode_gradation
+            message = "Lin to {0}".format(colorspace)
     # create range
     input_range = linspace(lut_range[0], lut_range[1], samples_count)
     output_range = []
@@ -103,7 +123,7 @@ def curve_to_lut(colorspace, outlutpath, lut_type='1D_CUBE',
         y = gradation(x)
         output_range.append(y)
     write_function(outlutfile, output_range)
-    print "{0} was converted into {1}.".format(colorspace, outlutfile)
+    print "{0} was written to {1}.".format(message, outlutfile)
 
 
 def __get_options():
@@ -114,14 +134,19 @@ def __get_options():
 
     """
     ## Define parser
-    description = 'Create lut file corresponding to a colorspace gradation'
+    description = ('Create lut file corresponding to a colorspace or gamma '
+                   'gradation')
     parser = argparse.ArgumentParser(description=description)
     # RGB colorspace
-    parser.add_argument("colorspace",
+    action = parser.add_mutually_exclusive_group(required=True)
+    action.add_argument("--colorspace",
                         help=("Input RGB Colorspace."),
                         type=str,
                         choices=sorted(COLORSPACES.keys() +
                                         PRIVATE_COLORSPACES.keys()))
+    action.add_argument("--gamma",
+                        help="Input pure gamma gradation",
+                        type=float)
     # output lut
     parser.add_argument("outlutpath", help=("path to the output LUT."
                                                       " Can be a file or a "
@@ -165,8 +190,8 @@ def __get_options():
 if __name__ == '__main__':
     ARGS = __get_options()
     try:
-        curve_to_lut(ARGS.colorspace, ARGS.outlutpath, ARGS.out_type,
-                     [ARGS.in_range, ARGS.out_range], ARGS.out_lut_size,
-                     ARGS.direction)
+        curve_to_lut(ARGS.colorspace, ARGS.gamma, ARGS.outlutpath,
+                     ARGS.out_type, [ARGS.in_range, ARGS.out_range],
+                     ARGS.out_lut_size, ARGS.direction)
     except (CurveToLUTException, LUTException) as error:
         print "Curve to LUT: {0}".format(error)
