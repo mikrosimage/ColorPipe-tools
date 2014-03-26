@@ -66,7 +66,9 @@ def curve_to_lut(colorspace, gamma, outlutpath, lut_type='1D_CUBE',
         write_function = write_1d_cube_lut
     elif lut_type == '1D_CSP':
         ext = ".csp"
-        write_function = write_1d_csp_lut
+        write_function = lambda lutfile, values: write_1d_csp_lut(lutfile,
+                                                                  values,
+                                                                  lut_range)
     elif lut_type == '1D_SPI':
         ext = ".spi1d"
         write_function = lambda lutfile, values: write_1d_spi_lut(lutfile,
