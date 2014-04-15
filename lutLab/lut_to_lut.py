@@ -9,7 +9,7 @@ __version__ = "0.1"
 import argparse
 from utils.ocio_helper import OCIO_LUTS_FORMATS, create_ocio_processor
 from utils.csp_helper import write_2d_csp_lut
-from utils.cube_helper import write_2d_cube_lut, write_3d_cube_lut
+# from utils.cube_helper import CUBE_HELPER
 from utils.lut_utils import get_default_out_path, write_3d_json_file
 from utils.clcc_helper import write_3d_clcc_lut
 from PyOpenColorIO.Constants import (
@@ -47,15 +47,16 @@ def lut_to_lut(inlutfile, outlutfile=None, lut_type='1D_CUBE',
 
     """
     samples_count = pow(2, lutsize)
-    if lut_type == '1D_CUBE':
-        ext = ".cube"
-        write_function = write_2d_cube_lut
-        interp = INTERP_LINEAR
-    elif lut_type == '3D_CUBE':
-        ext = ".cube"
-        write_function = write_3d_cube_lut
-        interp = INTERP_TETRAHEDRAL
-    elif lut_type == '1D_CSP':
+# WIP
+#     if lut_type == '1D_CUBE':
+#         ext = ".cube"
+#         write_function = write_2d_cube_lut
+#         interp = INTERP_LINEAR
+#     elif lut_type == '3D_CUBE':
+#         ext = ".cube"
+#         write_function = write_3d_cube_lut
+#         interp = INTERP_TETRAHEDRAL
+    if lut_type == '1D_CSP':
         ext = ".csp"
         write_function = write_2d_csp_lut
         interp = INTERP_LINEAR
