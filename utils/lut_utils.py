@@ -3,8 +3,9 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-__version__ = "0.3"
+__version__ = "0.4"
 import os
+import ntpath
 
 
 class LUTException(Exception):
@@ -152,3 +153,12 @@ def int_scale_range(values, out_value, in_value=1.0):
 
     """
     return [int(value / float(in_value) * out_value) for value in values]
+
+
+def get_file_shortname(file_path):
+    """ Get file name (without ext and path)
+
+    Returns:
+        .str
+    """
+    return os.path.splitext(ntpath.basename(file_path))[0]
