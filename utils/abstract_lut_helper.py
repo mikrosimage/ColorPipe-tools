@@ -91,7 +91,7 @@ class AbstractLUTHelper(object):
         return self._get_pattern(preset).format(rgb.r, rgb.g, rgb.b)
 
     @staticmethod
-    def _get_1d_data(processor, preset):
+    def _get_1d_data(processor, preset, preset_helper=presets.PRESET_HELPER):
         """ Process 1D/2D data considering LUT params
 
         Args:
@@ -103,8 +103,8 @@ class AbstractLUTHelper(object):
             .[Rgb]
 
         """
-        presets.check_preset(preset)
-        if not presets.is_1d_or_2d_preset(preset):
+        preset_helper.check_preset(preset)
+        if not preset_helper.is_1d_or_2d_preset(preset):
             raise AbstractLUTException(("Preset isn't valid for 1D / 2D LUT:"
                                         " {0}").format(preset))
         input_range = preset[presets.IN_RANGE]
@@ -124,7 +124,7 @@ class AbstractLUTHelper(object):
         return data
 
     @staticmethod
-    def _get_3d_data(processor, preset):
+    def _get_3d_data(processor, preset, preset_helper=presets.PRESET_HELPER):
         """ Process 3D data considering LUT params
 
         Args:
@@ -136,8 +136,8 @@ class AbstractLUTHelper(object):
             .[Rgb]
 
         """
-        presets.check_preset(preset)
-        if not presets.is_3d_preset(preset):
+        preset_helper.check_preset(preset)
+        if not preset_helper.is_3d_preset(preset):
             raise AbstractLUTException(("Preset isn't valid for 3D LUT:"
                                         " {0}").format(preset))
         cube_size = preset[presets.CUBE_SIZE]

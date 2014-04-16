@@ -56,23 +56,23 @@ class AbstractLUTTest(unittest.TestCase):
 
         """
         outlutfile = os.path.join(self.tmp_dir, "test.cube")
-        default_preset = presets.get_default_preset()
-        presets.check_preset(default_preset)
+        default_preset = presets.PRESET_HELPER.get_default_preset()
+        presets.PRESET_HELPER.check_preset(default_preset)
         # test missing attr
         cust_preset = {}
         self.failUnlessRaises(presets.PresetException,
-                              presets.check_preset, cust_preset)
+                              presets.PRESET_HELPER.check_preset, cust_preset)
         for attr in presets.BASIC_ATTRS:
             cust_preset[attr] = default_preset[attr]
             self.failUnlessRaises(presets.PresetException,
-                              presets.check_preset, cust_preset)
+                              presets.PRESET_HELPER.check_preset, cust_preset)
         ## test specific attr
         # change type to 1D
         cust_preset[presets.TYPE] = '1D'
         self.failUnlessRaises(presets.PresetException,
-                              presets.check_preset, cust_preset)
+                              presets.PRESET_HELPER.check_preset, cust_preset)
         cust_preset[presets.OUT_BITDEPTH] = 12
-        presets.check_preset(cust_preset)
+        presets.PRESET_HELPER.check_preset(cust_preset)
         # try to write a 3D LUT with a 1D preset
         self.failUnlessRaises(alh.AbstractLUTException,
                               CUBE_HELPER.write_3d_lut,
@@ -82,9 +82,9 @@ class AbstractLUTTest(unittest.TestCase):
         # change type to 2D
         cust_preset[presets.TYPE] = '3D'
         self.failUnlessRaises(presets.PresetException,
-                              presets.check_preset, cust_preset)
+                              presets.PRESET_HELPER.check_preset, cust_preset)
         cust_preset[presets.CUBE_SIZE] = 17
-        presets.check_preset(cust_preset)
+        presets.PRESET_HELPER.check_preset(cust_preset)
         # try to write a 1D LUT with a 3D preset
         self.failUnlessRaises(alh.AbstractLUTException,
                       CUBE_HELPER.write_1d_lut,
@@ -95,26 +95,26 @@ class AbstractLUTTest(unittest.TestCase):
         # cube size
         cust_preset[presets.CUBE_SIZE] = 129
         self.failUnlessRaises(presets.PresetException,
-                              presets.check_preset, cust_preset)
+                              presets.PRESET_HELPER.check_preset, cust_preset)
         cust_preset[presets.CUBE_SIZE] = default_preset[presets.CUBE_SIZE]
         # range
         tests = 'test', ['a', 'a'], [0.0, 0.5, 1.0], 0.1
         for test in tests:
             cust_preset[presets.IN_RANGE] = test
             self.failUnlessRaises(presets.PresetException,
-                                  presets.check_preset, cust_preset)
+                                  presets.PRESET_HELPER.check_preset,
+                                  cust_preset)
         cust_preset[presets.IN_RANGE] = 0.1, 1
-        presets.check_preset(cust_preset)
+        presets.PRESET_HELPER.check_preset(cust_preset)
         cust_preset[presets.IN_RANGE] = (0.1, 1)
-        presets.check_preset(cust_preset)
+        presets.PRESET_HELPER.check_preset(cust_preset)
 
     def test_complete_attributes(self):
         """ Test preset complete function
 
         """
         cust_preset = {}
-        presets.complete_preset(cust_preset)
-        presets.check_preset(cust_preset)
+        presets.PRESET_HELPER.complete_preset(cust_preset)
 
     def tearDown(self):
         #Remove test directory
