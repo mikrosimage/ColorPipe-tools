@@ -24,8 +24,6 @@ class CubeHelperException(Exception):
 CUBE_1D = "LUT_1D_SIZE"
 CUBE_3D = "LUT_3D_SIZE"
 
-FLOAT_BOUNDARY = 100.0
-
 
 class CubeLutHelper(AbstractLUTHelper):
     """Cube LUT helper
@@ -115,7 +113,7 @@ class CubeLutHelper(AbstractLUTHelper):
             message = self._get_range_message(output_range)
             print_error_message(message)
             raise CubeHelperException(message)
-        elif output_range[1] > FLOAT_BOUNDARY:
+        elif output_range[1] > presets.FLOAT_BOUNDARY:
             message = ("{0} seems too big !\n"
                        "Please check this, if the LUT isn't what you expected"
                        ).format(self._get_range_message(output_range))
