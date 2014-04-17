@@ -5,11 +5,15 @@ import unittest
 import os
 import shutil
 import tempfile
-from utils.ocio_helper import create_ocio_processor
 from PyOpenColorIO.Constants import INTERP_LINEAR, INTERP_TETRAHEDRAL
-from utils.cube_helper import CUBE_HELPER
 from utils import lut_presets as presets
 import utils.abstract_lut_helper as alh
+from utils.colorspaces import REC709, SGAMUTSLOG, ALEXALOGCV3
+from utils.csp_helper import CSP_HELPER
+from utils.cube_helper import CUBE_HELPER
+from utils.ocio_helper import create_ocio_processor
+
+DISPLAY = False
 
 
 class AbstractLUTTest(unittest.TestCase):
@@ -28,28 +32,46 @@ class AbstractLUTTest(unittest.TestCase):
                                                  interpolation=INTERP_LINEAR)
         self.processor_3d = create_ocio_processor(lut3d,
                                             interpolation=INTERP_TETRAHEDRAL)
+        self.helpers_to_test = [
+                                (CUBE_HELPER, '.cube'),
+                                (CSP_HELPER, '.csp'),
+                                ]
 
     def test_default_1d_lut(self):
-        """ Test a default cube 1d LUT export
+        """ Test a default 1d LUT export
 
         """
-        outlutfile = os.path.join(self.tmp_dir, "default_1D.cube")
-        args_1d = CUBE_HELPER.get_default_preset()
-        CUBE_HELPER.write_1d_lut(self.processor_1d, outlutfile, args_1d)
-        # create a processor and try it
-        proc = create_ocio_processor(outlutfile, interpolation=INTERP_LINEAR)
-        proc.applyRGB([0, 0, 0])
+        outlutfiles = []
+        for helper, ext in self.helpers_to_test:
+            outlutfile = os.path.join(self.tmp_dir, "default_1D" + ext)
+            args_1d = helper.get_default_preset()
+            helper.write_1d_lut(self.processor_1d.applyRGB, outlutfile,
+                                args_1d)
+            # create a processor and try it
+            proc = create_ocio_processor(outlutfile,
+                                         interpolation=INTERP_LINEAR)
+            proc.applyRGB([0, 0, 0])
+            outlutfiles.append(outlutfile)
+        if DISPLAY:
+            import plot_that_lut
+            plot_that_lut.plot_that_lut(outlutfiles)
 
     def test_default_3d_lut(self):
-        """ Test a default cube 3d LUT export
+        """ Test a default 3d LUT export
 
         """
-        outlutfile = os.path.join(self.tmp_dir, "default_3D.cube")
-        args_3d = CUBE_HELPER.get_default_preset()
-        CUBE_HELPER.write_3d_lut(self.processor_3d, outlutfile, args_3d)
-        # create a processor and try it
-        proc = create_ocio_processor(outlutfile, interpolation=INTERP_LINEAR)
-        proc.applyRGB([0, 0, 0])
+        for helper, ext in self.helpers_to_test:
+            outlutfile = os.path.join(self.tmp_dir, "default_3D" + ext)
+            args_3d = helper.get_default_preset()
+            helper.write_3d_lut(self.processor_3d.applyRGB, outlutfile,
+                                args_3d)
+            # create a processor and try it
+            proc = create_ocio_processor(outlutfile,
+                                         interpolation=INTERP_LINEAR)
+            proc.applyRGB([0, 0, 0])
+            if DISPLAY:
+                import plot_that_lut
+                plot_that_lut.plot_that_lut(outlutfile)
 
     def test_check_attributes(self):
         """ Test preset check function
@@ -109,12 +131,63 @@ class AbstractLUTTest(unittest.TestCase):
         cust_preset[presets.IN_RANGE] = (0.1, 1)
         presets.PRESET_HELPER.check_preset(cust_preset)
 
+    def test_float_luts(self):
+        """ Test float LUT transparency
+
+        """
+        colorspace_to_test = [REC709, SGAMUTSLOG, ALEXALOGCV3]
+        delta = 0.00001
+        for colorspace in colorspace_to_test:
+            # define file name
+            name = colorspace.__class__.__name__
+            encode_filename = "linTo{0}_1D.csp".format(name)
+            decode_filename = "{0}ToLin_1D.csp".format(name)
+            encode_filepath = os.path.join(self.tmp_dir, encode_filename)
+            decode_filepath = os.path.join(self.tmp_dir, decode_filename)
+            # set preset
+            args_1d = CSP_HELPER.get_default_preset()
+            args_1d[presets.OUT_BITDEPTH] = 16
+            decode_min = colorspace.decode_gradation(0)
+            decode_max = colorspace.decode_gradation(1)
+            encode_min = colorspace.encode_gradation(decode_min)
+            encode_max = colorspace.encode_gradation(decode_max)
+            args_1d[presets.IN_RANGE] = [decode_min, decode_max]
+
+            # write encode LUT
+            CSP_HELPER.write_2d_lut(colorspace.encode_gradation,
+                                    encode_filepath,
+                                    args_1d)
+            # write decode LUT
+            args_1d[presets.IN_RANGE] = [encode_min, encode_max]
+            CSP_HELPER.write_2d_lut(colorspace.decode_gradation,
+                                    decode_filepath,
+                                    args_1d)
+            # test transparency
+            proc = create_ocio_processor(encode_filepath,
+                                         postlutfile=decode_filepath,
+                                         interpolation=INTERP_LINEAR)
+            test_values = [[decode_min] * 3,
+                           [decode_max] * 3,
+                           [0] * 3,
+                           [0.5] * 3,
+                           [1] * 3]
+            for rgb in test_values:
+                res = proc.applyRGB(rgb)
+                abs_value = abs(rgb[0] - res[0])
+                self.assert_(abs_value < delta,
+                             "{0} transparency test failed : {1:8f} >"
+                             " acceptable delta ({2:8f})".format(name,
+                                                              abs_value,
+                                                              delta)
+                             )
+
     def test_complete_attributes(self):
         """ Test preset complete function
 
         """
         cust_preset = {}
-        presets.PRESET_HELPER.complete_preset(cust_preset)
+        cust_preset = presets.PRESET_HELPER.complete_preset(cust_preset)
+        presets.PRESET_HELPER.check_preset(cust_preset)
 
     def tearDown(self):
         #Remove test directory
