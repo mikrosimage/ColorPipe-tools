@@ -212,11 +212,11 @@ class AlexaLogCV3(AbstractColorspace):
         return 0.3127, 0.3290
 
     def _encode_gradation(self, value):
-        if value > 0.010591:
-            value = (0.247190 * math.log10(5.555556 * value + 0.052272)
+        if value > 0.0106232378792:
+            value = (0.2471896 * math.log10((value + 0.00937677) / 0.18)
                      + 0.385537)
         else:
-            value = 5.367655 * value + 0.092809
+            value = 0.9661776 * ((value + 0.00937677) / 0.18 + 0.04378604)
         return value
 
     def _decode_gradation(self, value):
