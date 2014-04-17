@@ -195,7 +195,7 @@ class PresetHelper(object):
             preset (dict): preset to validate
 
         """
-        self.__validate_preset(preset, FILL_MODE)
+        return self.__validate_preset(preset, FILL_MODE)
 
     @staticmethod
     def is_3d_preset(preset):
