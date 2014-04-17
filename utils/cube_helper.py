@@ -46,11 +46,11 @@ class CubeLutHelper(AbstractLUTHelper):
     def get_default_preset(self):
         return self.default_preset
 
-    def _write_1d_2d_lut(self, processor, file_path, preset, line_function):
+    def _write_1d_2d_lut(self, process_function, file_path, preset, line_function):
         # Test output range
         self._check_output_range(preset)
         # Get data
-        data = self._get_1d_data(processor, preset)
+        data = self._get_1d_data(process_function, preset)
         title = preset['title']
         lutfile = open(file_path, 'w+')
         # skip comment because not supported by every soft
@@ -66,13 +66,13 @@ class CubeLutHelper(AbstractLUTHelper):
         lutfile.close()
         print_success_message(self.get_export_message(file_path))
 
-    def write_1d_lut(self, processor, file_path, preset):
+    def write_1d_lut(self, process_function, file_path, preset):
         print_warning_message("1D LUT is not supported in Cube format"
                               " --> Switch to 2D LUT.")
-        self.write_2d_lut(processor, file_path, preset)
+        self.write_2d_lut(process_function, file_path, preset)
 
-    def write_3d_lut(self, processor, file_path, preset):
-        data = self._get_3d_data(processor, preset)
+    def write_3d_lut(self, process_function, file_path, preset):
+        data = self._get_3d_data(process_function, preset)
         title = preset['title']
         cube_size = preset['cube_size']
         lutfile = open(file_path, 'w+')

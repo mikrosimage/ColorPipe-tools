@@ -3,7 +3,7 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-__version__ = "0.1"
+__version__ = "0.2"
 from abc import ABCMeta, abstractmethod
 from collections import namedtuple
 from numpy import linspace
@@ -91,11 +91,15 @@ class AbstractLUTHelper(object):
         return self._get_pattern(preset).format(rgb.r, rgb.g, rgb.b)
 
     @staticmethod
-    def _get_1d_data(processor, preset, preset_helper=presets.PRESET_HELPER):
+    def _get_1d_data(process_function, preset,
+                     preset_helper=presets.PRESET_HELPER):
         """ Process 1D/2D data considering LUT params
 
         Args:
-            processor (PyOpenColorIO.config.Processor): OpenColorIO processor
+            process_function (func): could be a processor.applyRGB
+            (PyOpenColorIO.config.Processor) or a function that took a range
+            of values and return the modified values. Ex: colorspace gradation
+            functions
 
             preset (dict): lut generic and sampling informations
 
@@ -116,7 +120,7 @@ class AbstractLUTHelper(object):
                                       samples_count)
         data = []
         for code_value in compute_range:
-            res = processor.applyRGB([code_value, code_value, code_value])
+            res = process_function([code_value, code_value, code_value])
             res = [(x * output_range[1]) + output_range[0] for x in res]
             if is_int:
                 res = [int(x) for x in res]
@@ -124,11 +128,15 @@ class AbstractLUTHelper(object):
         return data
 
     @staticmethod
-    def _get_3d_data(processor, preset, preset_helper=presets.PRESET_HELPER):
+    def _get_3d_data(process_function, preset,
+                     preset_helper=presets.PRESET_HELPER):
         """ Process 3D data considering LUT params
 
         Args:
-            processor (PyOpenColorIO.config.Processor): OpenColorIO processor
+            process_function (func): could be a processor.applyRGB
+            (PyOpenColorIO.config.Processor) or a function that took a range
+            of values and return the modified values. Ex: colorspace gradation
+            functions
 
             preset (dict): lut generic and sampling informations
 
@@ -154,7 +162,7 @@ class AbstractLUTHelper(object):
         for blue in compute_range:
             for green in compute_range:
                 for red in compute_range:
-                    res = processor.applyRGB([red, green, blue])
+                    res = process_function([red, green, blue])
                     res = [(x * output_range[1]) + output_range[0]
                            for x in res]
                     if is_int:
@@ -163,11 +171,15 @@ class AbstractLUTHelper(object):
         return data
 
     @abstractmethod
-    def _write_1d_2d_lut(self, processor, file_path, preset, line_function):
+    def _write_1d_2d_lut(self, process_function, file_path, preset,
+                         line_function):
         """ Write 1d / 2d LUT in output file
 
         Args:
-            processor (PyOpenColorIO.config.Processor): OpenColorIO processor
+            process_function (func): could be a processor.applyRGB
+            (PyOpenColorIO.config.Processor) or a function that took a range
+            of values and return the modified values. Ex: colorspace gradation
+            functions
 
             preset (dict): lut generic and sampling informations
 
@@ -178,34 +190,43 @@ class AbstractLUTHelper(object):
         """
         pass
 
-    def write_2d_lut(self, processor, file_path, preset):
+    def write_2d_lut(self, process_function, file_path, preset):
         """ Write 2d LUT in output file
 
         Args:
-            processor (PyOpenColorIO.config.Processor): OpenColorIO processor
+            process_function (func): could be a processor.applyRGB
+            (PyOpenColorIO.config.Processor) or a function that took a range
+            of values and return the modified values. Ex: colorspace gradation
+            functions
 
             preset (dict): lut generic and sampling informations
         """
-        self._write_1d_2d_lut(processor, file_path, preset,
+        self._write_1d_2d_lut(process_function, file_path, preset,
                               self._get_rgb_value_line)
 
-    def write_1d_lut(self, processor, file_path, preset):
+    def write_1d_lut(self, process_function, file_path, preset):
         """ Write 2d LUT in output file
 
         Args:
-            processor (PyOpenColorIO.config.Processor): OpenColorIO processor
+            process_function (func): could be a processor.applyRGB
+            (PyOpenColorIO.config.Processor) or a function that took a range
+            of values and return the modified values. Ex: colorspace gradation
+            functions
 
             preset (dict): lut generic and sampling informations
         """
-        self._write_1d_2d_lut(processor, file_path, preset,
+        self._write_1d_2d_lut(process_function, file_path, preset,
                               self._get_r_value_line)
 
     @abstractmethod
-    def write_3d_lut(self, processor, file_path, preset):
+    def write_3d_lut(self, process_function, file_path, preset):
         """ Write 3d LUT in output file
 
         Args:
-            processor (PyOpenColorIO.config.Processor): OpenColorIO processor
+            process_function (func): could be a processor.applyRGB
+            (PyOpenColorIO.config.Processor) or a function that took a range
+            of values and return the modified values. Ex: colorspace gradation
+            functions
 
             preset (dict): lut generic and sampling informations
         """
