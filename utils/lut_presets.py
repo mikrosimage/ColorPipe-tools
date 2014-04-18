@@ -64,6 +64,8 @@ FLOAT_BOUNDARY = 100.0
 RAISE_MODE = 'raise'
 FILL_MODE = 'fill'
 
+MISSING_ATTR_MESSAGE = "Preset must have '{0}' attribute"
+
 
 class PresetHelper(object):
     """
@@ -113,13 +115,12 @@ class PresetHelper(object):
 
         """
         # check if basic attribute are present
-        missing_attr_msg = "Preset must have '{0}' attribute"
         if default_preset is None:
             default_preset = self.get_default_preset()
         for attr in BASIC_ATTRS:
             if attr not in preset:
                 if mode == RAISE_MODE:
-                    raise PresetException(missing_attr_msg.format(attr))
+                    raise PresetException(MISSING_ATTR_MESSAGE.format(attr))
                 preset[attr] = default_preset[attr]
         # check if type is correct
         if not preset[TYPE] in TYPE_CHOICE:
