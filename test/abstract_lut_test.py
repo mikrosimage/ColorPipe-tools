@@ -11,6 +11,9 @@ import utils.abstract_lut_helper as alh
 from utils.colorspaces import REC709, SGAMUTSLOG, ALEXALOGCV3
 from utils.csp_helper import CSP_HELPER
 from utils.cube_helper import CUBE_HELPER
+from utils.threedl_helper import (THREEDL_HELPER, THREEDL_PRESET_HELPER,
+                                  ThreeDLHelperException, SHAPER, MESH)
+
 from utils.ocio_helper import create_ocio_processor
 
 DISPLAY = False
@@ -32,17 +35,22 @@ class AbstractLUTTest(unittest.TestCase):
                                                  interpolation=INTERP_LINEAR)
         self.processor_3d = create_ocio_processor(lut3d,
                                             interpolation=INTERP_TETRAHEDRAL)
-        self.helpers_to_test = [
-                                (CUBE_HELPER, '.cube'),
-                                (CSP_HELPER, '.csp'),
-                                ]
+        self.helpers_1d_to_test = [
+                                   (CUBE_HELPER, '.cube'),
+                                   (CSP_HELPER, '.csp'),
+                                   ]
+        self.helpers_3d_to_test = [
+                                   (CUBE_HELPER, '.cube'),
+                                   (CSP_HELPER, '.csp'),
+                                   (THREEDL_HELPER, '.3dl'),
+                                   ]
 
     def test_default_1d_lut(self):
         """ Test a default 1d LUT export
 
         """
         outlutfiles = []
-        for helper, ext in self.helpers_to_test:
+        for helper, ext in self.helpers_1d_to_test:
             outlutfile = os.path.join(self.tmp_dir, "default_1D" + ext)
             args_1d = helper.get_default_preset()
             helper.write_1d_lut(self.processor_1d.applyRGB, outlutfile,
@@ -51,6 +59,7 @@ class AbstractLUTTest(unittest.TestCase):
             proc = create_ocio_processor(outlutfile,
                                          interpolation=INTERP_LINEAR)
             proc.applyRGB([0, 0, 0])
+            proc.applyRGB([1, 1, 1])
             outlutfiles.append(outlutfile)
         if DISPLAY:
             import plot_that_lut
@@ -60,15 +69,17 @@ class AbstractLUTTest(unittest.TestCase):
         """ Test a default 3d LUT export
 
         """
-        for helper, ext in self.helpers_to_test:
+        for helper, ext in self.helpers_3d_to_test:
             outlutfile = os.path.join(self.tmp_dir, "default_3D" + ext)
             args_3d = helper.get_default_preset()
-            helper.write_3d_lut(self.processor_3d.applyRGB, outlutfile,
+            helper.write_3d_lut(self.processor_3d.applyRGB,
+                                outlutfile,
                                 args_3d)
             # create a processor and try it
             proc = create_ocio_processor(outlutfile,
                                          interpolation=INTERP_LINEAR)
             proc.applyRGB([0, 0, 0])
+            proc.applyRGB([1, 1, 1])
             if DISPLAY:
                 import plot_that_lut
                 plot_that_lut.plot_that_lut(outlutfile)
@@ -115,7 +126,7 @@ class AbstractLUTTest(unittest.TestCase):
                       cust_preset)
         ## test value type
         # cube size
-        cust_preset[presets.CUBE_SIZE] = 129
+        cust_preset[presets.CUBE_SIZE] = presets.CUBE_SIZE_MAX_VALUE + 1
         self.failUnlessRaises(presets.PresetException,
                               presets.PRESET_HELPER.check_preset, cust_preset)
         cust_preset[presets.CUBE_SIZE] = default_preset[presets.CUBE_SIZE]
@@ -152,7 +163,6 @@ class AbstractLUTTest(unittest.TestCase):
             encode_min = colorspace.encode_gradation(decode_min)
             encode_max = colorspace.encode_gradation(decode_max)
             args_1d[presets.IN_RANGE] = [decode_min, decode_max]
-
             # write encode LUT
             CSP_HELPER.write_2d_lut(colorspace.encode_gradation,
                                     encode_filepath,
@@ -180,6 +190,40 @@ class AbstractLUTTest(unittest.TestCase):
                                                               abs_value,
                                                               delta)
                              )
+
+    def test_3dl_preset(self):
+        """ Test 3dl preset
+
+        """
+        outlutfile = os.path.join(self.tmp_dir, "test.3dl")
+        preset = presets.PRESET_HELPER.get_default_preset()
+        # test type must be 3D
+        self.failUnlessRaises(presets.PresetException,
+                              THREEDL_PRESET_HELPER.check_preset,
+                              preset
+                              )
+        preset[presets.TYPE] = '3D'
+        # test shaper attr exists
+        self.failUnlessRaises(presets.PresetException,
+                              THREEDL_PRESET_HELPER.check_preset,
+                              preset
+                              )
+        preset[SHAPER] = True
+        # test mesh attr exists
+        self.failUnlessRaises(presets.PresetException,
+                              THREEDL_PRESET_HELPER.check_preset,
+                              preset
+                              )
+        preset[MESH] = True
+        # test preset is ok
+        THREEDL_PRESET_HELPER.check_preset(preset)
+        # test ranges are int
+        outlutfile = os.path.join(self.tmp_dir, "test.3dl")
+        self.failUnlessRaises(ThreeDLHelperException,
+                              THREEDL_HELPER.write_3d_lut,
+                              self.processor_3d.applyRGB,
+                              outlutfile,
+                              preset)
 
     def test_complete_attributes(self):
         """ Test preset complete function
