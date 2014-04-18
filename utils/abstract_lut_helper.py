@@ -120,7 +120,10 @@ class AbstractLUTHelper(object):
                                       samples_count)
         data = []
         for code_value in compute_range:
-            res = process_function([code_value, code_value, code_value])
+            norm_value = code_value
+            if is_int:
+                norm_value = (code_value - input_range[0]) / input_range[1]
+            res = process_function([norm_value, norm_value, norm_value])
             res = [(x * output_range[1]) + output_range[0] for x in res]
             if is_int:
                 res = [int(x) for x in res]
@@ -162,7 +165,14 @@ class AbstractLUTHelper(object):
         for blue in compute_range:
             for green in compute_range:
                 for red in compute_range:
-                    res = process_function([red, green, blue])
+                    norm_red = red
+                    norm_green = green
+                    norm_blue = blue
+                    if is_int:
+                        norm_red = (red - input_range[0]) / input_range[1]
+                        norm_green = (green - input_range[0]) / input_range[1]
+                        norm_blue = (blue - input_range[0]) / input_range[1]
+                    res = process_function([norm_red, norm_green, norm_blue])
                     res = [(x * output_range[1]) + output_range[0]
                            for x in res]
                     if is_int:
