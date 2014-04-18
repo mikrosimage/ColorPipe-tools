@@ -101,7 +101,7 @@ class PresetHelper(object):
                 return False
         return True
 
-    def __validate_preset(self, preset, mode=RAISE_MODE):
+    def _validate_preset(self, preset, mode=RAISE_MODE, default_preset=None):
         """ Check preset. When an irregularity is found, if mode is 'raise'
         an exception is thrown, else preset is completed with default values
 
@@ -114,7 +114,8 @@ class PresetHelper(object):
         """
         # check if basic attribute are present
         missing_attr_msg = "Preset must have '{0}' attribute"
-        default_preset = self.get_default_preset()
+        if default_preset is None:
+            default_preset = self.get_default_preset()
         for attr in BASIC_ATTRS:
             if attr not in preset:
                 if mode == RAISE_MODE:
@@ -178,16 +179,16 @@ class PresetHelper(object):
         # return updated preset
         return preset
 
-    def check_preset(self, preset):
+    def check_preset(self, preset, default_preset=None):
         """ Check preset. When an irregularity is found, an exception is thrown
 
         Args:
             preset (dict): preset to validate
 
         """
-        self.__validate_preset(preset, RAISE_MODE)
+        self._validate_preset(preset, RAISE_MODE, default_preset)
 
-    def complete_preset(self, preset):
+    def complete_preset(self, preset, default_preset=None):
         """ Check preset. When an irregularity is found, preset is completed
         with default values
 
@@ -195,7 +196,7 @@ class PresetHelper(object):
             preset (dict): preset to validate
 
         """
-        return self.__validate_preset(preset, FILL_MODE)
+        return self._validate_preset(preset, FILL_MODE, default_preset)
 
     @staticmethod
     def is_3d_preset(preset):
