@@ -232,8 +232,9 @@ class AbstractLUTHelper(object):
         """
         pass
 
+    @staticmethod
     @abstractmethod
-    def get_default_preset(self):
+    def get_default_preset():
         """ Return default preset
             See utils.lut_presets module
         """

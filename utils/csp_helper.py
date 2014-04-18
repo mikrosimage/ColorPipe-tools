@@ -26,8 +26,9 @@ class CSPLutHelper(AbstractLUTHelper):
     """CST LUT helper
 
     """
-    def __init__(self):
-        self.default_preset = {
+    @staticmethod
+    def get_default_preset():
+        return {
                 presets.TYPE: "default",
                 presets.EXT: ".csp",
                 presets.IN_RANGE: [0.0, 1.0],
@@ -39,9 +40,6 @@ class CSPLutHelper(AbstractLUTHelper):
                                  "{0}").format(__version__),
                 presets.VERSION: "1"
                 }
-
-    def get_default_preset(self):
-        return self.default_preset
 
     def __generic_write_lut(self, process_function, file_path, preset,
                             line_function, header_function, data_function):
