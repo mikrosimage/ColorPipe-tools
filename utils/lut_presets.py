@@ -39,6 +39,7 @@ class PresetException(Exception):
 # Attributes
 TYPE = 'type'
 TYPE_CHOICE = ['default', '1D', '2D', '3D']
+EXPORT_CHOICE = ['1D', '2D', '3D']
 EXT = 'extension'
 VERSION = 'version'
 TITLE = 'title'
@@ -120,3 +121,31 @@ def is_1d_or_2d_preset(preset):
         or preset[TYPE] == '2D'):
         return True
     return False
+
+
+def convert_string_to_number(string):
+    """ Convert a string number into a float or an int
+
+    """
+    try:
+        return int(string)
+    except ValueError:
+        return float(string)
+
+
+def convert_string_range(arange):
+    """ Convert a string number range into a float or an int
+
+    """
+    return [convert_string_to_number(value) for value in arange]
+
+
+def string_preset(preset):
+    """ Print preset
+
+    """
+    string = '{\n'
+    for attr in preset.keys():
+        string = "{0}  {1}: {2},\n".format(string, attr, preset[attr])
+    string += '}\n'
+    return string
