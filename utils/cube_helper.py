@@ -10,6 +10,7 @@ from utils.color_log_helper import (print_error_message,
                                     print_success_message
                                     )
 from utils import lut_presets as presets
+from utils.lut_presets import RAISE_MODE
 
 
 class CubeHelperException(Exception):
@@ -44,13 +45,15 @@ class CubeLutHelper(AbstractLUTHelper):
                 presets.VERSION: "1"
                 }
 
-    def _write_1d_2d_lut(self, process_function, file_path, preset, line_function):
+    def _write_1d_2d_lut(self, process_function, file_path, preset,
+                         line_function):
         # Test output range
         self._check_output_range(preset)
         # Get data
         data = self._get_1d_data(process_function, preset)
         title = preset['title']
         lutfile = open(file_path, 'w+')
+        # TODO add metadata
         # skip comment because not supported by every soft
         # title
         if title is None:
@@ -116,5 +119,12 @@ class CubeLutHelper(AbstractLUTHelper):
                        "Please check this, if the LUT isn't what you expected"
                        ).format(self._get_range_message(output_range))
             print_warning_message(message)
+
+    @staticmethod
+    def _validate_preset(preset, mode=RAISE_MODE, default_preset=None):
+        if default_preset is None:
+            default_preset = CubeLutHelper.get_default_preset()
+        # check basic arguments
+        return AbstractLUTHelper._validate_preset(preset, mode, default_preset)
 
 CUBE_HELPER = CubeLutHelper()

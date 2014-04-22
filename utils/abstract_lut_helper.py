@@ -9,6 +9,12 @@ from collections import namedtuple
 from numpy import linspace
 from utils.lut_utils import get_file_shortname
 from utils import lut_presets as presets
+from utils.lut_presets import (TYPE, IN_RANGE, OUT_RANGE, OUT_BITDEPTH,
+                               CUBE_SIZE, BASIC_ATTRS, RAISE_MODE, FILL_MODE,
+                               TYPE_CHOICE, BITDEPTH_MAX_VALUE,
+                               BITDEPTH_MIN_VALUE, CUBE_SIZE_MAX_VALUE,
+                               CUBE_SIZE_MIN_VALUE, PresetException,
+                               MISSING_ATTR_MESSAGE)
 
 # RGB triplet object
 Rgb = namedtuple('Rgb', 'r g b')
@@ -90,9 +96,7 @@ class AbstractLUTHelper(object):
         """
         return self._get_pattern(preset).format(rgb.r, rgb.g, rgb.b)
 
-    @staticmethod
-    def _get_1d_data(process_function, preset,
-                     preset_helper=presets.PRESET_HELPER):
+    def _get_1d_data(self, process_function, preset):
         """ Process 1D/2D data considering LUT params
 
         Args:
@@ -107,8 +111,8 @@ class AbstractLUTHelper(object):
             .[Rgb]
 
         """
-        preset_helper.check_preset(preset)
-        if not preset_helper.is_1d_or_2d_preset(preset):
+        self.check_preset(preset)
+        if not presets.is_1d_or_2d_preset(preset):
             raise AbstractLUTException(("Preset isn't valid for 1D / 2D LUT:"
                                         " {0}").format(preset))
         input_range = preset[presets.IN_RANGE]
@@ -130,9 +134,7 @@ class AbstractLUTHelper(object):
             data.append(Rgb(res[0], res[1], res[2]))
         return data
 
-    @staticmethod
-    def _get_3d_data(process_function, preset,
-                     preset_helper=presets.PRESET_HELPER):
+    def _get_3d_data(self, process_function, preset):
         """ Process 3D data considering LUT params
 
         Args:
@@ -147,8 +149,8 @@ class AbstractLUTHelper(object):
             .[Rgb]
 
         """
-        preset_helper.check_preset(preset)
-        if not preset_helper.is_3d_preset(preset):
+        self.check_preset(preset)
+        if not presets.is_3d_preset(preset):
             raise AbstractLUTException(("Preset isn't valid for 3D LUT:"
                                         " {0}").format(preset))
         cube_size = preset[presets.CUBE_SIZE]
@@ -261,6 +263,104 @@ class AbstractLUTHelper(object):
         return "a new LUT was written in {1}".format(
                                                 get_file_shortname(file_path),
                                                 file_path)
+
+    @staticmethod
+    def _validate_preset(preset, mode=RAISE_MODE, default_preset=None):
+        """ Check preset. When an irregularity is found, if mode is 'raise'
+        an exception is thrown, else preset is completed with default values
+
+        Args:
+            preset (dict): preset to validate
+
+        Kwargs:
+            mode (str): raise or fill. Default is raise.
+
+        """
+        # check if basic attribute are present
+        if default_preset is None:
+            default_preset = presets.get_default_preset()
+        for attr in BASIC_ATTRS:
+            if attr not in preset:
+                if mode == RAISE_MODE:
+                    raise PresetException(MISSING_ATTR_MESSAGE.format(attr))
+                preset[attr] = default_preset[attr]
+        # check if type is correct
+        if not preset[TYPE] in TYPE_CHOICE:
+            if mode == RAISE_MODE:
+                raise PresetException(("{0} is not a valid type: "
+                                      "{1}").format(preset[TYPE], TYPE_CHOICE))
+            preset[TYPE] = default_preset[TYPE]
+        ## check if type specific attr are set
+        # default type
+        if preset[TYPE] == 'default' and (OUT_BITDEPTH not in preset
+                                          or CUBE_SIZE not in preset):
+            if mode == RAISE_MODE:
+                raise PresetException(("A default preset must define '{0} and "
+                                       "'{1}' attributes").format(OUT_BITDEPTH,
+                                                                  CUBE_SIZE))
+            if OUT_BITDEPTH not in preset:
+                preset[OUT_BITDEPTH] = default_preset[OUT_BITDEPTH]
+            if CUBE_SIZE not in preset:
+                preset[CUBE_SIZE] = default_preset[CUBE_SIZE]
+            preset[TYPE] = default_preset[TYPE]
+        # 1D / 2D type
+        if preset[TYPE] == '1D' or preset[TYPE] == '2D':
+            if OUT_BITDEPTH not in preset:
+                if mode == RAISE_MODE:
+                    raise PresetException(("A 1D/2D preset must define '{0}"
+                                           "attribute").format(OUT_BITDEPTH))
+                preset[OUT_BITDEPTH] = default_preset[OUT_BITDEPTH]
+            elif (not isinstance(preset[OUT_BITDEPTH], int)
+                  or preset[OUT_BITDEPTH] < BITDEPTH_MIN_VALUE
+                  or preset[OUT_BITDEPTH] > BITDEPTH_MAX_VALUE):
+                if mode == RAISE_MODE:
+                    raise PresetException(("Invalid bit depth: {0}"
+                                           ).format(preset[OUT_BITDEPTH]))
+                preset[OUT_BITDEPTH] = default_preset[OUT_BITDEPTH]
+        # 3D type
+        if preset[TYPE] == '3D':
+            if CUBE_SIZE not in preset:
+                if mode == RAISE_MODE:
+                    raise PresetException(("A 3D preset must define '{0}"
+                                           "attribute").format(CUBE_SIZE))
+                preset[CUBE_SIZE] = default_preset[CUBE_SIZE]
+            elif (not isinstance(preset[CUBE_SIZE], int)
+                  or preset[CUBE_SIZE] < CUBE_SIZE_MIN_VALUE
+                  or preset[CUBE_SIZE] > CUBE_SIZE_MAX_VALUE):
+                if mode == RAISE_MODE:
+                    raise PresetException(("Invalid cube size: {0}"
+                                           ).format(preset[CUBE_SIZE]))
+                preset[CUBE_SIZE] = default_preset[CUBE_SIZE]
+        # Check ranges
+        ranges = IN_RANGE, OUT_RANGE
+        for arange in ranges:
+            if not presets.is_range(preset[arange]):
+                if mode == RAISE_MODE:
+                    raise PresetException(("Invalid range: {0}"
+                                           ).format(preset[arange]))
+                preset[arange] = default_preset[arange]
+        # return updated preset
+        return preset
+
+    def check_preset(self, preset, default_preset=None):
+        """ Check preset. When an irregularity is found, an exception is thrown
+
+        Args:
+            preset (dict): preset to validate
+
+        """
+        self._validate_preset(preset, RAISE_MODE, default_preset)
+
+    def complete_preset(self, preset, default_preset=None):
+        """ Check preset. When an irregularity is found, preset is completed
+        with default values
+
+        Args:
+            preset (dict): preset to validate
+
+        """
+        return self._validate_preset(preset, FILL_MODE,
+                                                  default_preset)
 
     @staticmethod
     def is_int(test_range):

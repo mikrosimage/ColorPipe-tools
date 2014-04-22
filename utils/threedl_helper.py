@@ -7,7 +7,7 @@ __version__ = "0.1"
 import math
 from utils.abstract_lut_helper import AbstractLUTHelper
 from utils import lut_presets as presets
-from utils.lut_presets import PresetHelper, RAISE_MODE, TYPE, PresetException
+from utils.lut_presets import RAISE_MODE, TYPE, PresetException
 from utils.color_log_helper import (print_error_message,
                                     print_warning_message,
                                     print_success_message
@@ -25,38 +25,6 @@ class ThreeDLHelperException(Exception):
 
 SHAPER = 'shaper lut'
 MESH = 'mesh'
-
-
-class ThreedlLutPresetHelper(PresetHelper):
-    """3DL Preset check functions
-
-    """
-    def _validate_preset(self, preset, mode=RAISE_MODE, default_preset=None):
-        if default_preset is None:
-            default_preset = ThreedlLutPresetHelper.get_default_preset()
-        # check basic arguments
-        PresetHelper._validate_preset(self, preset, mode, default_preset)
-        # type must be 3D, there's no 1d/2d 3dl
-        if not preset[TYPE] == '3D':
-            if mode == RAISE_MODE:
-                raise PresetException(("'{0}' is not a valid type for 3dl LUT."
-                                       "Choose '3D'"
-                                      ).format(preset[TYPE]))
-            preset[presets.TYPE] = default_preset[presets.TYPE]
-        # check shaper and mesh attributes
-        specific_attr = [SHAPER, MESH]
-        for attr in specific_attr:
-            if attr not in preset:
-                if mode == RAISE_MODE:
-                    message = presets.MISSING_ATTR_MESSAGE.format(attr)
-                    raise PresetException(message)
-                preset[TYPE] = default_preset[TYPE]
-            if not isinstance(preset[attr], bool):
-                if mode == RAISE_MODE:
-                    raise PresetException("{0} 3dl attribute must be a boolean"
-                                          ).format(attr)
-
-THREEDL_PRESET_HELPER = ThreedlLutPresetHelper()
 
 
 class ThreedlLutHelper(AbstractLUTHelper):
@@ -79,14 +47,6 @@ class ThreedlLutHelper(AbstractLUTHelper):
                 SHAPER: True,
                 MESH: True
                 }
-
-    @staticmethod
-    def _get_3d_data(process_function, preset,
-                     preset_helper=presets.PRESET_HELPER):
-        # use 3dl specific default preset for check
-        return AbstractLUTHelper._get_3d_data(process_function,
-                                              preset,
-                                              THREEDL_PRESET_HELPER)
 
     def _write_1d_2d_lut(self, process_function, file_path, preset,
                          line_function):
@@ -204,5 +164,33 @@ class ThreedlLutHelper(AbstractLUTHelper):
         """
         shaper_lut = ThreedlLutHelper.get_shaper_lut(cube_size, bit_depth)
         return " ".join(str(value) for value in shaper_lut)
+
+    @staticmethod
+    def _validate_preset(preset, mode=RAISE_MODE, default_preset=None):
+        if default_preset is None:
+            default_preset = ThreedlLutHelper.get_default_preset()
+        # check basic arguments
+        AbstractLUTHelper._validate_preset(preset, mode, default_preset)
+        # type must be 3D, there's no 1d/2d 3dl
+        if not preset[TYPE] == '3D':
+            if mode == RAISE_MODE:
+                raise PresetException(("'{0}' is not a valid type for 3dl LUT."
+                                       "Choose '3D'"
+                                      ).format(preset[TYPE]))
+            preset[presets.TYPE] = default_preset[presets.TYPE]
+        # check shaper and mesh attributes
+        specific_attr = [SHAPER, MESH]
+        for attr in specific_attr:
+            if attr not in preset:
+                if mode == RAISE_MODE:
+                    message = presets.MISSING_ATTR_MESSAGE.format(attr)
+                    raise PresetException(message)
+                preset[TYPE] = default_preset[TYPE]
+            if not isinstance(preset[attr], bool):
+                if mode == RAISE_MODE:
+                    raise PresetException("{0} 3dl attribute must be a boolean"
+                                          ).format(attr)
+        # return updated preset
+        return preset
 
 THREEDL_HELPER = ThreedlLutHelper()

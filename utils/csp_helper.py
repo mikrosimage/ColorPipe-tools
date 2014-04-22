@@ -6,6 +6,7 @@
 __version__ = "0.2"
 from utils.abstract_lut_helper import AbstractLUTHelper
 from utils import lut_presets as presets
+from utils.lut_presets import RAISE_MODE
 from utils.color_log_helper import (print_error_message,
                                     print_warning_message,
                                     print_success_message
@@ -179,5 +180,12 @@ class CSPLutHelper(AbstractLUTHelper):
                        "Please check this, if the LUT isn't what you expected"
                        ).format(self._get_range_message(str_range, range))
                 print_warning_message(message)
+
+    @staticmethod
+    def _validate_preset(preset, mode=RAISE_MODE, default_preset=None):
+        if default_preset is None:
+            default_preset = CSP_HELPER.get_default_preset()
+        # check basic arguments
+        return AbstractLUTHelper._validate_preset(preset, mode, default_preset)
 
 CSP_HELPER = CSPLutHelper()
