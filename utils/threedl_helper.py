@@ -23,7 +23,7 @@ class ThreeDLHelperException(Exception):
     """
     pass
 
-SHAPER = 'shaper lut'
+SHAPER = 'shaper'
 MESH = 'mesh'
 
 
@@ -45,7 +45,7 @@ class ThreedlLutHelper(AbstractLUTHelper):
                 presets.VERSION: "1",
                 # specific parameters
                 SHAPER: True,
-                MESH: True
+                MESH: False
                 }
 
     def _write_1d_2d_lut(self, process_function, file_path, preset,
@@ -185,7 +185,7 @@ class ThreedlLutHelper(AbstractLUTHelper):
                 if mode == RAISE_MODE:
                     message = presets.MISSING_ATTR_MESSAGE.format(attr)
                     raise PresetException(message)
-                preset[TYPE] = default_preset[TYPE]
+                preset[attr] = default_preset[attr]
             if not isinstance(preset[attr], bool):
                 if mode == RAISE_MODE:
                     raise PresetException("{0} 3dl attribute must be a boolean"
