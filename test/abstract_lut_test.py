@@ -15,6 +15,7 @@ from utils.cube_helper import CUBE_HELPER
 from utils.threedl_helper import THREEDL_HELPER, SHAPER, MESH
 from utils.spi_helper import SPI_HELPER
 from utils.ascii_helper import ASCII_HELPER, AsciiHelperException
+from utils.clcc_helper import CLCC_HELPER
 
 from utils.ocio_helper import create_ocio_processor
 
@@ -43,10 +44,11 @@ class AbstractLUTTest(unittest.TestCase):
                                    (CSP_HELPER, '.csp'),
                                    ]
         self.helpers_3d_to_test = [
-                                   (CUBE_HELPER, '.cube'),
-                                   [SPI_HELPER, '.spi3d'],
-                                   (CSP_HELPER, '.csp'),
-                                   (THREEDL_HELPER, '.3dl'),
+                                   (CUBE_HELPER, '.cube', True),
+                                   [SPI_HELPER, '.spi3d', True],
+                                   (CSP_HELPER, '.csp', True),
+                                   (THREEDL_HELPER, '.3dl', True),
+                                   (CLCC_HELPER, '.cc', False),
                                    ]
 
     def test_default_1d_lut(self):
@@ -73,20 +75,21 @@ class AbstractLUTTest(unittest.TestCase):
         """ Test a default 3d LUT export
 
         """
-        for helper, ext in self.helpers_3d_to_test:
+        for helper, ext, ocio_compatible in self.helpers_3d_to_test:
             outlutfile = os.path.join(self.tmp_dir, "default_3D" + ext)
             args_3d = helper.get_default_preset()
             helper.write_3d_lut(self.processor_3d.applyRGB,
                                 outlutfile,
                                 args_3d)
-            # create a processor and try it
-            proc = create_ocio_processor(outlutfile,
-                                         interpolation=INTERP_LINEAR)
-            proc.applyRGB([0, 0, 0])
-            proc.applyRGB([1, 1, 1])
-            if DISPLAY:
-                import plot_that_lut
-                plot_that_lut.plot_that_lut(outlutfile)
+            if ocio_compatible:
+                # create a processor and try it
+                proc = create_ocio_processor(outlutfile,
+                                             interpolation=INTERP_LINEAR)
+                proc.applyRGB([0, 0, 0])
+                proc.applyRGB([1, 1, 1])
+                if DISPLAY:
+                    import plot_that_lut
+                    plot_that_lut.plot_that_lut(outlutfile)
 
     def test_check_attributes(self):
         """ Test preset check function
