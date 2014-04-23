@@ -257,9 +257,15 @@ class AbstractLUTTest(unittest.TestCase):
         """ Test preset complete function
 
         """
+        default_preset = ASCII_HELPER.get_default_preset()
         cust_preset = {}
-        cust_preset = CUBE_HELPER.complete_preset(cust_preset)
-        CUBE_HELPER.check_preset(cust_preset)
+        cust_preset = ASCII_HELPER.complete_preset(cust_preset)
+        expression = set(default_preset).issubset(set(cust_preset))
+        self.assert_(expression,
+                     ("Something went wrong in preset completion :\n"
+                      "Completed preset:\n{0}\nDefault one:\n{1}"
+                      ).format(cust_preset, default_preset))
+        ASCII_HELPER.check_preset(cust_preset)
 
     def tearDown(self):
         #Remove test directory

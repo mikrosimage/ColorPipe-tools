@@ -175,11 +175,4 @@ class CSPLutHelper(AbstractLUTHelper):
                                      self._get_range_message(str_range,
                                                              arange))
 
-    @staticmethod
-    def _validate_preset(preset, mode=RAISE_MODE, default_preset=None):
-        if default_preset is None:
-            default_preset = CSP_HELPER.get_default_preset()
-        # check basic arguments
-        return AbstractLUTHelper._validate_preset(preset, mode, default_preset)
-
 CSP_HELPER = CSPLutHelper()

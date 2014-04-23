@@ -279,8 +279,7 @@ class AbstractLUTHelper(object):
                                                 get_file_shortname(file_path),
                                                 file_path)
 
-    @staticmethod
-    def _validate_preset(preset, mode=RAISE_MODE, default_preset=None):
+    def _validate_preset(self, preset, mode=RAISE_MODE, default_preset=None):
         """ Check preset. When an irregularity is found, if mode is 'raise'
         an exception is thrown, else preset is completed with default values
 
@@ -293,7 +292,7 @@ class AbstractLUTHelper(object):
         """
         # check if basic attribute are present
         if default_preset is None:
-            default_preset = presets.get_default_preset()
+            default_preset = self.get_default_preset()
         for attr in BASIC_ATTRS:
             if attr not in preset:
                 if mode == RAISE_MODE:

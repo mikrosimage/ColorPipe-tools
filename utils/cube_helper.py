@@ -7,7 +7,6 @@ __version__ = "0.3"
 from utils.abstract_lut_helper import AbstractLUTHelper
 from utils.color_log_helper import print_warning_message, print_success_message
 from utils import lut_presets as presets
-from utils.lut_presets import RAISE_MODE
 
 
 class CubeHelperException(Exception):
@@ -109,12 +108,5 @@ class CubeLutHelper(AbstractLUTHelper):
         output_range = preset[presets.OUT_RANGE]
         presets.check_range_is_float(output_range,
                                      self._get_range_message(output_range))
-
-    @staticmethod
-    def _validate_preset(preset, mode=RAISE_MODE, default_preset=None):
-        if default_preset is None:
-            default_preset = CubeLutHelper.get_default_preset()
-        # check basic arguments
-        return AbstractLUTHelper._validate_preset(preset, mode, default_preset)
 
 CUBE_HELPER = CubeLutHelper()

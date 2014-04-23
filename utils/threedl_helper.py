@@ -149,12 +149,11 @@ class ThreedlLutHelper(AbstractLUTHelper):
         shaper_lut = ThreedlLutHelper.get_shaper_lut(cube_size, bit_depth)
         return " ".join(str(value) for value in shaper_lut)
 
-    @staticmethod
-    def _validate_preset(preset, mode=RAISE_MODE, default_preset=None):
+    def _validate_preset(self, preset, mode=RAISE_MODE, default_preset=None):
         if default_preset is None:
             default_preset = ThreedlLutHelper.get_default_preset()
         # check basic arguments
-        AbstractLUTHelper._validate_preset(preset, mode, default_preset)
+        AbstractLUTHelper._validate_preset(self, preset, mode, default_preset)
         # type must be 3D, there's no 1d/2d 3dl
         if not preset[TYPE] == '3D':
             if mode == RAISE_MODE:
