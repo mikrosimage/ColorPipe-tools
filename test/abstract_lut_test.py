@@ -13,6 +13,7 @@ from utils.colorspaces import REC709, SGAMUTSLOG, ALEXALOGCV3
 from utils.csp_helper import CSP_HELPER
 from utils.cube_helper import CUBE_HELPER
 from utils.threedl_helper import THREEDL_HELPER, SHAPER, MESH
+from utils.spi_helper import SPI_HELPER
 
 from utils.ocio_helper import create_ocio_processor
 
@@ -37,10 +38,12 @@ class AbstractLUTTest(unittest.TestCase):
                                             interpolation=INTERP_TETRAHEDRAL)
         self.helpers_1d_to_test = [
                                    (CUBE_HELPER, '.cube'),
+                                   [SPI_HELPER, '.spi1d'],
                                    (CSP_HELPER, '.csp'),
                                    ]
         self.helpers_3d_to_test = [
                                    (CUBE_HELPER, '.cube'),
+                                   [SPI_HELPER, '.spi3d'],
                                    (CSP_HELPER, '.csp'),
                                    (THREEDL_HELPER, '.3dl'),
                                    ]
@@ -146,50 +149,53 @@ class AbstractLUTTest(unittest.TestCase):
         """ Test float LUT transparency
 
         """
+        helpers_float_to_test = [(CSP_HELPER, '.csp'),
+                                 (SPI_HELPER, '.spi1d')]
         colorspace_to_test = [REC709, SGAMUTSLOG, ALEXALOGCV3]
         delta = 0.00001
-        for colorspace in colorspace_to_test:
-            # define file name
-            name = colorspace.__class__.__name__
-            encode_filename = "linTo{0}_1D.csp".format(name)
-            decode_filename = "{0}ToLin_1D.csp".format(name)
-            encode_filepath = os.path.join(self.tmp_dir, encode_filename)
-            decode_filepath = os.path.join(self.tmp_dir, decode_filename)
-            # set preset
-            args_1d = CSP_HELPER.get_default_preset()
-            args_1d[presets.OUT_BITDEPTH] = 16
-            decode_min = colorspace.decode_gradation(0)
-            decode_max = colorspace.decode_gradation(1)
-            encode_min = colorspace.encode_gradation(decode_min)
-            encode_max = colorspace.encode_gradation(decode_max)
-            args_1d[presets.IN_RANGE] = [decode_min, decode_max]
-            # write encode LUT
-            CSP_HELPER.write_2d_lut(colorspace.encode_gradation,
-                                    encode_filepath,
-                                    args_1d)
-            # write decode LUT
-            args_1d[presets.IN_RANGE] = [encode_min, encode_max]
-            CSP_HELPER.write_2d_lut(colorspace.decode_gradation,
-                                    decode_filepath,
-                                    args_1d)
-            # test transparency
-            proc = create_ocio_processor(encode_filepath,
-                                         postlutfile=decode_filepath,
-                                         interpolation=INTERP_LINEAR)
-            test_values = [[decode_min] * 3,
-                           [decode_max] * 3,
-                           [0] * 3,
-                           [0.5] * 3,
-                           [1] * 3]
-            for rgb in test_values:
-                res = proc.applyRGB(rgb)
-                abs_value = abs(rgb[0] - res[0])
-                self.assert_(abs_value < delta,
-                             "{0} transparency test failed : {1:8f} >"
-                             " acceptable delta ({2:8f})".format(name,
-                                                              abs_value,
-                                                              delta)
-                             )
+        for helper, ext in helpers_float_to_test:
+            for colorspace in colorspace_to_test:
+                # define file name
+                name = colorspace.__class__.__name__
+                encode_filename = "linTo{0}_1D{1}".format(name, ext)
+                decode_filename = "{0}ToLin_1D{1}".format(name, ext)
+                encode_filepath = os.path.join(self.tmp_dir, encode_filename)
+                decode_filepath = os.path.join(self.tmp_dir, decode_filename)
+                # set preset
+                args_1d = CSP_HELPER.get_default_preset()
+                args_1d[presets.OUT_BITDEPTH] = 16
+                decode_min = colorspace.decode_gradation(0)
+                decode_max = colorspace.decode_gradation(1)
+                encode_min = colorspace.encode_gradation(decode_min)
+                encode_max = colorspace.encode_gradation(decode_max)
+                args_1d[presets.IN_RANGE] = [decode_min, decode_max]
+                # write encode LUT
+                helper.write_2d_lut(colorspace.encode_gradation,
+                                        encode_filepath,
+                                        args_1d)
+                # write decode LUT
+                args_1d[presets.IN_RANGE] = [encode_min, encode_max]
+                helper.write_2d_lut(colorspace.decode_gradation,
+                                        decode_filepath,
+                                        args_1d)
+                # test transparency
+                proc = create_ocio_processor(encode_filepath,
+                                             postlutfile=decode_filepath,
+                                             interpolation=INTERP_LINEAR)
+                test_values = [[decode_min] * 3,
+                               [decode_max] * 3,
+                               [0] * 3,
+                               [0.5] * 3,
+                               [1] * 3]
+                for rgb in test_values:
+                    res = proc.applyRGB(rgb)
+                    abs_value = abs(rgb[0] - res[0])
+                    self.assert_(abs_value < delta,
+                                 "{0} transparency test failed : {1:8f} >"
+                                 " acceptable delta ({2:8f})".format(name,
+                                                                  abs_value,
+                                                                  delta)
+                                 )
 
     def test_3dl_preset(self):
         """ Test 3dl preset

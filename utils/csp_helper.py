@@ -66,6 +66,9 @@ class CSPLutHelper(AbstractLUTHelper):
         self._check_range(preset)
         # Get data
         data = data_function(process_function, preset)
+        if data_function == self._get_3d_data:
+            # 3D function return both input and output values
+            data = data[1]
         lutfile = open(file_path, 'w+')
         lutfile.write(header_function(preset))
         # data

@@ -59,7 +59,7 @@ class ThreedlLutHelper(AbstractLUTHelper):
                                        self. _get_range_message(str_range,
                                                                 arange))
         # get data
-        data = self._get_3d_data(process_function, preset)
+        data = self._get_3d_data(process_function, preset)[1]
         # get attribute
         lutfile = open(file_path, 'w+')
         cube_size = preset[presets.CUBE_SIZE]

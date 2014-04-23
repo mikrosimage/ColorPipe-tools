@@ -70,7 +70,7 @@ class CubeLutHelper(AbstractLUTHelper):
         self.write_2d_lut(process_function, file_path, preset)
 
     def write_3d_lut(self, process_function, file_path, preset):
-        data = self._get_3d_data(process_function, preset)
+        data = self._get_3d_data(process_function, preset)[1]
         title = preset['title']
         cube_size = preset['cube_size']
         lutfile = open(file_path, 'w+')

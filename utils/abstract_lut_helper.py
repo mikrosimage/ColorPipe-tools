@@ -83,18 +83,25 @@ class AbstractLUTHelper(object):
         """
         return self._get_pattern_1d(preset).format(rgb.r)
 
-    def _get_rgb_value_line(self, preset, rgb):
+    def _get_rgb_value_line(self, preset, rgb, in_rgb=None):
         """ Get string pattern for a 2D / 3D LUT
+
         Args:
             preset (dict): lut generic and sampling informations
 
-            rgb Rgb): values
+            rgb (Rgb): values
+
+        Kwargs:
+            in_rgb: input triplets, required by some LUT formats
 
         Returns:
             .str
 
         """
-        return self._get_pattern(preset).format(rgb.r, rgb.g, rgb.b)
+        line = self._get_pattern(preset).format(rgb.r, rgb.g, rgb.b)
+        if not in_rgb is None:
+            return "{0} {1} {2} {3}".format(in_rgb.r, in_rgb.g, in_rgb.b, line)
+        return line
 
     def _get_1d_data(self, process_function, preset):
         """ Process 1D/2D data considering LUT params
@@ -146,7 +153,7 @@ class AbstractLUTHelper(object):
             preset (dict): lut generic and sampling informations
 
         Returns:
-            .[Rgb]
+            .[input Rgb], [output Rgb]
 
         """
         self.check_preset(preset)
@@ -164,8 +171,12 @@ class AbstractLUTHelper(object):
                                  input_range[1],
                                  cube_size)
         data = []
+        in_data = []
+        b_index = 0
         for blue in compute_range:
+            g_index = 0
             for green in compute_range:
+                r_index = 0
                 for red in compute_range:
                     norm_red = red
                     norm_green = green
@@ -179,8 +190,12 @@ class AbstractLUTHelper(object):
                            for x in res]
                     if is_int:
                         res = [int(x) for x in res]
+                    in_data.append(Rgb(r_index, g_index, b_index))
                     data.append(Rgb(res[0], res[1], res[2]))
-        return data
+                    r_index += 1
+                g_index += 1
+            b_index += 1
+        return in_data, data
 
     @abstractmethod
     def _write_1d_2d_lut(self, process_function, file_path, preset,
