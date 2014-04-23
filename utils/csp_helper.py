@@ -3,14 +3,11 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-__version__ = "0.2"
+__version__ = "0.3"
 from utils.abstract_lut_helper import AbstractLUTHelper
 from utils import lut_presets as presets
 from utils.lut_presets import RAISE_MODE
-from utils.color_log_helper import (print_error_message,
-                                    print_warning_message,
-                                    print_success_message
-                                    )
+from utils.color_log_helper import print_warning_message, print_success_message
 
 
 class CSPHelperException(Exception):
@@ -171,15 +168,9 @@ class CSPLutHelper(AbstractLUTHelper):
         """
         for str_range in ['input_range', 'output_range']:
             arange = preset[str_range]
-            if self.is_int(arange):
-                message = self._get_range_message(str_range, arange)
-                print_error_message(message)
-                raise CSPHelperException(message)
-            elif arange[1] > presets.FLOAT_BOUNDARY:
-                message = ("{0} seems too big !\n"
-                       "Please check this, if the LUT isn't what you expected"
-                       ).format(self._get_range_message(str_range, range))
-                print_warning_message(message)
+            presets.check_range_is_float(arange,
+                                     self._get_range_message(str_range,
+                                                             arange))
 
     @staticmethod
     def _validate_preset(preset, mode=RAISE_MODE, default_preset=None):

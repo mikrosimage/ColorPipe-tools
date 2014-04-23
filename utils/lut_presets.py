@@ -26,8 +26,9 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-__version__ = "0.1"
+__version__ = "0.2"
 import collections
+from utils.color_log_helper import print_error_message, print_warning_message
 
 
 class PresetException(Exception):
@@ -121,6 +122,80 @@ def is_1d_or_2d_preset(preset):
         or preset[TYPE] == '2D'):
         return True
     return False
+
+
+def is_int(arange):
+    """ Check if a range is int
+
+    Args:
+        test_range ([int/float, int/float]): range to test
+
+    Returns:
+        .boolean
+
+    """
+    if (isinstance(arange[0], int)
+        and isinstance(arange[1], int)):
+        return True
+    return False
+
+
+def _get_range_float_message(arange):
+    """ Get range warning/error message
+
+    Returns:
+        .str
+
+    """
+    return ("Range is expected to be float."
+            " Ex: [0.0, 1.0] or [-0.25, 2.0].\nYour range {0}"
+            ).format(arange)
+
+
+def _get_range_int_message(arange):
+    """ Get range warning/error message
+
+    Returns:
+        .str
+
+    """
+    return ("Range is expected to be int."
+            " Ex: [0, 1023] or [0, 65535].\nYour range {1}"
+            ).format(arange)
+
+
+def check_range_is_float(arange, message=None):
+    """ Check output range. Some LUT are float.
+        Print a warning or raise an error
+
+    """
+    if message is None:
+        message = _get_range_float_message(arange)
+    if is_int(arange):
+        print_error_message(message)
+        raise PresetException(message)
+    elif arange[1] > FLOAT_BOUNDARY:
+        message = ("{0} seems too big !\n"
+                   "Please check this, if the LUT isn't what you expected"
+                   ).format(message)
+        print_warning_message(message)
+
+
+def check_range_is_int(arange, message=None):
+    """ Check input / output range. Some LUT are int.
+        Print a warning or raise an error
+
+    """
+    if message is None:
+        message = _get_range_int_message(arange)
+    if not is_int(arange):
+        print_error_message(message)
+        raise PresetException(message)
+    elif arange[1] < BITDEPTH_MAX_VALUE:
+        message = ("{0} seems too low !\n"
+               "Please check this, if the LUT isn't what you expected"
+               ).format(message)
+        print_warning_message(message)
 
 
 def convert_string_to_number(string):

@@ -6,9 +6,8 @@ import shutil
 import os
 import tempfile
 from lutLab.lut_to_lut import lut_to_lut
-from utils.csp_helper import CSPHelperException
-from utils.threedl_helper import ThreeDLHelperException
 from utils.lut_utils import LUTException
+from utils.lut_presets import PresetException
 
 
 class LUTToLUTTest(unittest.TestCase):
@@ -31,7 +30,7 @@ class LUTToLUTTest(unittest.TestCase):
         outlutfile = os.path.join(self.tmp_dir, "saturation_export.csp")
         lut_to_lut(self.lut3d, "3D", "csp", outlutfile)
         # test wrong int range
-        self.failUnlessRaises(CSPHelperException, lut_to_lut, self.lut3d,
+        self.failUnlessRaises(PresetException, lut_to_lut, self.lut3d,
                               "3D", "csp", outlutfile, output_range=[0, 1024])
 
     def test_export_3dl(self):
@@ -41,7 +40,7 @@ class LUTToLUTTest(unittest.TestCase):
         outlutfile = os.path.join(self.tmp_dir, "CineonToLin_export.3dl")
         lut_to_lut(self.lut1d, "3D", "3dl", outlutfile)
         # test wrong float range
-        self.failUnlessRaises(ThreeDLHelperException, lut_to_lut, self.lut3d,
+        self.failUnlessRaises(PresetException, lut_to_lut, self.lut3d,
                               "3D", "3dl", outlutfile, input_range=[0.0, 1.0])
         # test wrong extension
         self.failUnlessRaises(LUTException, lut_to_lut, self.lut3d,

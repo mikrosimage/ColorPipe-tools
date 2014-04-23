@@ -3,7 +3,7 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-__version__ = "0.2"
+__version__ = "0.3"
 from abc import ABCMeta, abstractmethod
 from collections import namedtuple
 from numpy import linspace
@@ -44,7 +44,7 @@ class AbstractLUTHelper(object):
             .str
 
         """
-        is_int = AbstractLUTHelper.is_output_int(preset)
+        is_int = presets.is_int(preset[OUT_RANGE])
         if is_int:
             pattern = "{0}\n"
         else:
@@ -62,7 +62,7 @@ class AbstractLUTHelper(object):
             .str
 
         """
-        is_int = AbstractLUTHelper.is_output_int(preset)
+        is_int = presets.is_int(preset[OUT_RANGE])
         if is_int:
             pattern = "{0} {1} {2}\n"
         else:
@@ -118,7 +118,7 @@ class AbstractLUTHelper(object):
         input_range = preset[presets.IN_RANGE]
         output_range = preset[presets.OUT_RANGE]
         samples_count = pow(2,  preset[presets.OUT_BITDEPTH])
-        is_int = AbstractLUTHelper.is_output_int(preset)
+        is_int = presets.is_int(preset[OUT_RANGE])
         compute_range = linspace(input_range[0],
                                       input_range[1],
                                       samples_count)
@@ -361,41 +361,6 @@ class AbstractLUTHelper(object):
         """
         return self._validate_preset(preset, FILL_MODE,
                                                   default_preset)
-
-    @staticmethod
-    def is_int(test_range):
-        """ Check if a range is int
-
-        Args:
-            test_range ([int/float, int/float]): range to test
-
-        Returns:
-            .boolean
-
-        """
-        is_int = False
-        if (isinstance(test_range[0], int)
-            and isinstance(test_range[1], int)):
-            is_int = True
-        return is_int
-
-    @staticmethod
-    def is_intput_int(preset):
-        """ Check if a in range is int
-        Returns:
-            .boolean
-
-        """
-        return AbstractLUTHelper.is_int(preset[presets.IN_RANGE])
-
-    @staticmethod
-    def is_output_int(preset):
-        """ Check if a out range is int
-        Returns:
-            .boolean
-
-        """
-        return AbstractLUTHelper.is_int(preset[presets.OUT_RANGE])
 
     @staticmethod
     def get_generated_title(file_path, preset):

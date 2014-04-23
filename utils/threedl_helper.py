@@ -3,15 +3,12 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-__version__ = "0.1"
+__version__ = "0.2"
 import math
 from utils.abstract_lut_helper import AbstractLUTHelper
 from utils import lut_presets as presets
 from utils.lut_presets import RAISE_MODE, TYPE, PresetException
-from utils.color_log_helper import (print_error_message,
-                                    print_warning_message,
-                                    print_success_message
-                                    )
+from utils.color_log_helper import print_error_message, print_success_message
 
 
 class ThreeDLHelperException(Exception):
@@ -56,7 +53,11 @@ class ThreedlLutHelper(AbstractLUTHelper):
 
     def write_3d_lut(self, process_function, file_path, preset):
         # check ranges are int
-        self._check_range(preset)
+        for str_range in [presets.IN_RANGE, presets.OUT_RANGE]:
+            arange = preset[str_range]
+            presets.check_range_is_int(arange,
+                                       self. _get_range_message(str_range,
+                                                                arange))
         # get data
         data = self._get_3d_data(process_function, preset)
         # get attribute
@@ -110,23 +111,6 @@ class ThreedlLutHelper(AbstractLUTHelper):
         return ("3dl {0} is expected to be int."
                 " Ex: [0, 1023] or [0, 65535].\nYour range {1}"
                 ).format(range_name, arange)
-
-    def _check_range(self, preset):
-        """ Check input / output range. 3dl LUT are int.
-            Print a warning or raise an error
-
-        """
-        for str_range in ['input_range', 'output_range']:
-            arange = preset[str_range]
-            if not self.is_int(arange):
-                message = self._get_range_message(str_range, arange)
-                print_error_message(message)
-                raise ThreeDLHelperException(message)
-            elif arange[1] < presets.BITDEPTH_MAX_VALUE:
-                message = ("{0} seems too low !\n"
-                       "Please check this, if the LUT isn't what you expected"
-                       ).format(self._get_range_message(str_range, range))
-                print_warning_message(message)
 
     @staticmethod
     def get_shaper_lut(cube_size, bit_depth):

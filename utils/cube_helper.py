@@ -3,12 +3,9 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-__version__ = "0.2"
+__version__ = "0.3"
 from utils.abstract_lut_helper import AbstractLUTHelper
-from utils.color_log_helper import (print_error_message,
-                                    print_warning_message,
-                                    print_success_message
-                                    )
+from utils.color_log_helper import print_warning_message, print_success_message
 from utils import lut_presets as presets
 from utils.lut_presets import RAISE_MODE
 
@@ -106,19 +103,12 @@ class CubeLutHelper(AbstractLUTHelper):
 
     def _check_output_range(self, preset):
         """ Check output range. Cube LUT are float.
-            Print a warning or raise an error
+        Print a warning or raise an error
 
         """
-        output_range = preset['output_range']
-        if self.is_output_int(preset):
-            message = self._get_range_message(output_range)
-            print_error_message(message)
-            raise CubeHelperException(message)
-        elif output_range[1] > presets.FLOAT_BOUNDARY:
-            message = ("{0} seems too big !\n"
-                       "Please check this, if the LUT isn't what you expected"
-                       ).format(self._get_range_message(output_range))
-            print_warning_message(message)
+        output_range = preset[presets.OUT_RANGE]
+        presets.check_range_is_float(output_range,
+                                     self._get_range_message(output_range))
 
     @staticmethod
     def _validate_preset(preset, mode=RAISE_MODE, default_preset=None):

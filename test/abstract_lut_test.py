@@ -7,13 +7,12 @@ import shutil
 import tempfile
 from PyOpenColorIO.Constants import INTERP_LINEAR, INTERP_TETRAHEDRAL
 from utils import lut_presets as presets
+from utils.lut_presets import PresetException
 import utils.abstract_lut_helper as alh
 from utils.colorspaces import REC709, SGAMUTSLOG, ALEXALOGCV3
 from utils.csp_helper import CSP_HELPER
 from utils.cube_helper import CUBE_HELPER
-from utils.threedl_helper import (THREEDL_HELPER, ThreeDLHelperException,
-                                  SHAPER, MESH)
-from utils.abstract_lut_helper import AbstractLUTHelper
+from utils.threedl_helper import THREEDL_HELPER, SHAPER, MESH
 
 from utils.ocio_helper import create_ocio_processor
 
@@ -219,7 +218,7 @@ class AbstractLUTTest(unittest.TestCase):
         THREEDL_HELPER.check_preset(preset)
         # test ranges are int
         outlutfile = os.path.join(self.tmp_dir, "test.3dl")
-        self.failUnlessRaises(ThreeDLHelperException,
+        self.failUnlessRaises(PresetException,
                               THREEDL_HELPER.write_3d_lut,
                               self.processor_3d.applyRGB,
                               outlutfile,
