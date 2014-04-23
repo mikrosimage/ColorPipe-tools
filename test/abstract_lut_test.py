@@ -7,13 +7,14 @@ import shutil
 import tempfile
 from PyOpenColorIO.Constants import INTERP_LINEAR, INTERP_TETRAHEDRAL
 from utils import lut_presets as presets
-from utils.lut_presets import PresetException
+from utils.lut_presets import PresetException, OUT_BITDEPTH
 import utils.abstract_lut_helper as alh
 from utils.colorspaces import REC709, SGAMUTSLOG, ALEXALOGCV3
 from utils.csp_helper import CSP_HELPER
 from utils.cube_helper import CUBE_HELPER
 from utils.threedl_helper import THREEDL_HELPER, SHAPER, MESH
 from utils.spi_helper import SPI_HELPER
+from utils.ascii_helper import ASCII_HELPER, AsciiHelperException
 
 from utils.ocio_helper import create_ocio_processor
 
@@ -229,6 +230,28 @@ class AbstractLUTTest(unittest.TestCase):
                               self.processor_3d.applyRGB,
                               outlutfile,
                               preset)
+
+    def test_ascii_lut(self):
+        """ Test ascii 1D / 2D export
+
+        """
+        colorspace = REC709
+        # 2D LUT
+        outlutfile = os.path.join(self.tmp_dir, "default_2D.lut")
+        preset = ASCII_HELPER.get_default_preset()
+        ASCII_HELPER.write_2d_lut(colorspace.decode_gradation,
+                                        outlutfile,
+                                        preset)
+        # 1D LUT
+        outlutfile = os.path.join(self.tmp_dir, "default_1D.lut")
+        preset = ASCII_HELPER.get_default_preset()
+        ASCII_HELPER.write_1d_lut(colorspace.decode_gradation,
+                                        outlutfile,
+                                        preset)
+        # test out bit depth inadequate with output range
+        preset[OUT_BITDEPTH] = 12
+        self.failUnlessRaises(AsciiHelperException, ASCII_HELPER.write_1d_lut,
+                              colorspace.decode_gradation, outlutfile, preset)
 
     def test_complete_attributes(self):
         """ Test preset complete function
