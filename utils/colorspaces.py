@@ -92,7 +92,7 @@ class AbstractColorspace(object):
             .float
 
         """
-        if not isinstance(values, collections.Iterable):
+        if not isinstance(values, (list, tuple)):
             return self._encode_gradation(values)
         return [self._encode_gradation(value) for value in values]
 
@@ -106,7 +106,7 @@ class AbstractColorspace(object):
             .float
 
         """
-        if not isinstance(values, collections.Iterable):
+        if not isinstance(values, (list, tuple)):
             return self._decode_gradation(values)
         return [self._decode_gradation(value) for value in values]
 

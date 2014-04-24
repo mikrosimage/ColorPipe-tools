@@ -15,6 +15,13 @@ from utils.clcc_helper import CLCC_HELPER
 from utils.spi_helper import SPI_HELPER
 from utils.json_helper import JSON_HELPER
 
+import warnings
+warnings.filterwarnings(
+    'ignore',
+    message='BaseException.message has been deprecated as of Python 2.6',
+    category=DeprecationWarning,
+    module='argparse')
+
 
 class ExportLutException(Exception):
     """Module custom exception
@@ -27,6 +34,7 @@ class ExportLutException(Exception):
 
 
 # Argparse options
+
 
 def add_inlutfile_option(parser):
     """ Add inlutfile argument
@@ -41,18 +49,28 @@ def add_inlutfile_option(parser):
                         type=str)
 
 
-def add_outlutfile_option(parser):
+def add_outlutfile_option(parser, required=False):
     """ Add outlutfile argument
 
     Args:
         parser (argparse.ArgumentParser): parser on which option will be add
 
+    Kwargs:
+        required (bool): true if the option is required
+
     """
-    parser.add_argument("-out",
-                        "--outlutfile",
-                        help="path to the output LUT",
-                        type=str,
-                        default=None)
+    help_msg = "path to the output LUT or to the output directory"
+    if required:
+        parser.add_argument("outlutfile",
+                            help=help_msg,
+                            type=str,
+                            default=None)
+    else:
+        parser.add_argument("-out",
+                            "--outlutfile",
+                            help=help_msg,
+                            type=str,
+                            default=None)
 
 
 def add_out_type_option(parser):
@@ -196,7 +214,6 @@ def add_export_lut_options(parser):
         parser (argparse.ArgumentParser): parser on which option will be add
 
     """
-    add_outlutfile_option(parser)
     add_out_type_option(parser)
     add_out_format_option(parser)
     add_range_option(parser)

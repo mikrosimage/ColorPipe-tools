@@ -7,6 +7,8 @@
 """
 __version__ = "0.2"
 import argparse
+import os
+import ntpath
 from PyOpenColorIO.Constants import INTERP_LINEAR, INTERP_TETRAHEDRAL
 from utils import debug_helper
 import sys
@@ -19,7 +21,8 @@ from utils.export_tool_helper import (add_export_lut_options,
                                       add_inverse_option,
                                       add_verbose_option,
                                       add_inlutfile_option,
-                                      get_preset_and_write_function)
+                                      get_preset_and_write_function,
+    add_outlutfile_option)
 
 
 class LutToLutException(Exception):
@@ -70,10 +73,14 @@ def lut_to_lut(inlutfile, out_type, out_format, outlutfile=None,
                                                            output_range,
                                                            out_bit_depth,
                                                            out_cube_size)
+    ext = preset[presets.EXT]
     if not outlutfile:
-        outlutfile = get_default_out_path(inlutfile, preset[presets.EXT])
+        outlutfile = get_default_out_path(inlutfile, ext)
+    elif os.path.isdir(outlutfile):
+        filename = os.path.splitext(ntpath.basename(inlutfile))[0] + ext
+        outlutfile = os.path.join(outlutfile, filename)
     else:
-        check_extension(outlutfile, preset[presets.EXT])
+        check_extension(outlutfile, ext)
     if verbose:
         print "{0} will be converted into {1}.".format(inlutfile, outlutfile)
         print "Final setting:\n{0}".format(presets.string_preset(preset))
@@ -106,7 +113,8 @@ def __get_options():
     parser = argparse.ArgumentParser(description=description)
     # input lut
     add_inlutfile_option(parser)
-    # out lut file, type, format, ranges,  out bit depth, out cube size
+    add_outlutfile_option(parser)
+    # type, format, ranges,  out bit depth, out cube size
     add_export_lut_options(parser)
     # inverse (1d arg)
     add_inverse_option(parser)
