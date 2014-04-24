@@ -153,7 +153,7 @@ class ThreedlLutHelper(AbstractLUTHelper):
         if default_preset is None:
             default_preset = ThreedlLutHelper.get_default_preset()
         # type must be 3D, there's no 1d/2d 3dl
-        if not preset[TYPE] == '3D':
+        if presets.TYPE in preset and not preset[TYPE] == '3D':
             if mode == RAISE_MODE:
                 raise PresetException(("'{0}' is not a valid type for 3dl LUT."
                                        "Choose '3D'"

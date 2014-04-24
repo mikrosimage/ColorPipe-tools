@@ -124,7 +124,9 @@ class AsciiLutHelper(AbstractLUTHelper):
                          default_preset=None):
         default_preset = self.get_default_preset()
         # type must be 1D/2D, there's no 3D ascii LUT
-        if not (preset[presets.TYPE] == '1D' or preset[presets.TYPE] == '2D'):
+        if (presets.TYPE in preset
+            and (not (preset[presets.TYPE] == '1D'
+                  or preset[presets.TYPE] == '2D'))):
             if mode == presets.RAISE_MODE:
                 raise AsciiHelperException(("'{0}' is not a valid type for "
                                             "ascii LUT. Choose '1D' or '2D'"

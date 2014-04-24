@@ -79,7 +79,7 @@ class JsonLutHelper(AbstractLUTHelper):
                          default_preset=None):
         default_preset = self.get_default_preset()
         # type must be 3D, there's no 1d/2d json
-        if not preset[presets.TYPE] == '3D':
+        if presets.TYPE in preset and not preset[presets.TYPE] == '3D':
             if mode == presets.RAISE_MODE:
                 raise JsonHelperException(("'{0}' is not a valid type for son "
                                            "LUT. Choose '3D'"
