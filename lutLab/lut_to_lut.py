@@ -19,8 +19,13 @@ from utils import debug_helper
 import sys
 import utils.lut_presets as presets
 from utils.lut_utils import get_default_out_path, check_extension
-from utils.ocio_helper import (OCIO_LUTS_FORMATS, create_ocio_processor,
+from utils.ocio_helper import (create_ocio_processor,
                                is_3d_lut)
+from utils.export_tool_helper import (add_export_lut_options,
+                                      add_version_option,
+                                      add_inverse_option,
+                                      add_verbose_option,
+                                      add_inlutfile_option)
 
 
 class LutToLutException(Exception):
@@ -118,80 +123,17 @@ def __get_options():
     description = 'Convert a LUT into another format'
     parser = argparse.ArgumentParser(description=description)
     # input lut
-    parser.add_argument("inlutfile",
-                        help=(
-                              "path to a LUT.\n Available input formats : {0}"
-                              ).format(str(OCIO_LUTS_FORMATS)),
-                        type=str)
-    # output lut
-    parser.add_argument("-out",
-                        "--outlutfile",
-                        help="path to the output LUT",
-                        type=str,
-                        default=None)
-    # type
-    parser.add_argument("out_type",
-                        help=("Output LUT type.\nBeware: every format doesn't "
-                              "support each type. See format help."),
-                        type=str,
-                        choices=presets.EXPORT_CHOICE,
-                        default='3D')
-    # format
-    parser.add_argument("out_format",
-                        help=("Output LUT format.\nBeware: 3dl, clcc, json are"
-                              " 3D only and lut is 1D/2D only."),
-                        type=str,
-                        choices=['3dl', 'csp', 'cube', 'lut', 'spi', 'clcc',
-                                 'json'],
-                        default='cube')
-    # ranges
-    parser.add_argument("-ir",
-                        "--input-range",
-                        help="Input range. Ex: 0.0 1.0 or 0 4095",
-                          nargs='+')
-    parser.add_argument("-or",
-                        "--output-range",
-                        help="Output range. Ex: 0.0 1.0 or 0 4095",
-                        nargs='+')
-    # # 1D arg
-    # out lut size
-    parser.add_argument("-os",
-                        "--out-bit-depth",
-                        help=("Output lut bit precision (1D only). "
-                              "Ex : 10, 16, 32."),
-                        default=16,
-                        type=int)
-    # inverse
-    parser.add_argument("-inv",
-                        "--inverse",
-                        help="Inverse input LUT (1D only)",
-                        action="store_true")
-    # # 3D arg
-    # out cube size
-    parser.add_argument("-ocs",
-                        "--out-cube-size",
-                        help="Output cube size (3D only). Ex : 17, 32.",
-                        default=17,
-                        type=int)
+    add_inlutfile_option(parser)
+    # out lut file, type, format, ranges,  out bit depth, out cube size
+    add_export_lut_options(parser)
+    # inverse (1d arg)
+    add_inverse_option(parser)
     # version
-    parser.add_argument('-v',
-                        "--version",
-                        action='version',
-                        version='{0} - version {1}'.format(description,
-                                                           __version__))
-    # full version
-    versions = debug_helper.get_imported_modules_versions(sys.modules,
-                                                          globals())
-    versions = '{0} - version {1}\n\n{2}'.format(description,
-                                                 __version__,
-                                                 versions)
-    parser.add_argument('-V',
-                        "--full-versions",
-                        action=debug_helper.make_full_version_action(versions))
+    full_version = debug_helper.get_imported_modules_versions(sys.modules,
+                                                              globals())
+    add_version_option(parser, description, __version__, full_version)
     # verbose
-    parser.add_argument('--verbose',
-                        action='store_true',
-                        help='Print log')
+    add_verbose_option(parser)
     return parser.parse_args()
 
 
