@@ -80,7 +80,7 @@ class LUTToLUTTest(unittest.TestCase):
         """
         outlutfile = os.path.join(self.tmp_dir, "CineonToLin_export.spi1d")
         # test 1D/2D export
-        lut_to_lut(self.lut1d, "1D", "spi", outlutfile)
+        lut_to_lut(self.lut1d, "1D", "spi", outlutfile, inverse=True)
         lut_to_lut(self.lut1d, "2D", "spi", outlutfile)
         # test wrong int range
         self.failUnlessRaises(PresetException, lut_to_lut, self.lut1d,
