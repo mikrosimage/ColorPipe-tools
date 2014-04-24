@@ -7,6 +7,23 @@ __version__ = "0.1"
 import utils.lut_presets as presets
 from utils.ocio_helper import OCIO_LUTS_FORMATS
 from utils.debug_helper import make_full_version_action
+from utils.threedl_helper import THREEDL_HELPER
+from utils.csp_helper import CSP_HELPER
+from utils.cube_helper import CUBE_HELPER
+from utils.ascii_helper import ASCII_HELPER
+from utils.clcc_helper import CLCC_HELPER
+from utils.spi_helper import SPI_HELPER
+from utils.json_helper import JSON_HELPER
+
+
+class ExportLutException(Exception):
+    """Module custom exception
+
+    Args:
+        Exception
+
+    """
+    pass
 
 
 # Argparse options
@@ -187,3 +204,82 @@ def add_export_lut_options(parser):
     add_out_bitdepth_option(parser)
     # 3D arg
     add_out_cube_size_option(parser)
+
+
+def get_preset_and_write_function(out_type, out_format,
+                          input_range=None, output_range=None,
+                          out_bit_depth=None, out_cube_size=None):
+    """ Get preset and write function considering args
+
+    Args:
+        out_type (str): 1D, 2D or 3D
+
+        out_format (str): '3dl', 'csp', 'cube', 'lut', 'spi', 'clcc', 'json'...
+
+    Kwargs:
+        input_range ([int/float, int/float]): input range.
+        Ex: [0.0, 1.0] or [0, 4095]
+
+        output_range ([int/float, int/float]): output range.
+        Ex: [0.0, 1.0] or [0, 4095]
+
+        out_bit_depth (int): output lut bit precision (1D only).
+        Ex : 10, 16, 32.
+
+        out_cube_size (int): output cube size (3D only). Ex : 17, 32.
+
+    Returns:
+        (preset, write function)
+
+    """
+    preset = {}
+    # out type (1D, 2D, 3D)
+    preset[presets.TYPE] = out_type
+    # out format (csp, 3dl...)
+    if out_format == '3dl':
+        preset[presets.EXT] = '.3dl'
+        helper = THREEDL_HELPER
+    elif out_format == 'cube':
+        preset[presets.EXT] = '.cube'
+        helper = CUBE_HELPER
+    elif out_format == 'csp':
+        preset[presets.EXT] = '.csp'
+        helper = CSP_HELPER
+    elif out_format == 'lut':
+        preset[presets.EXT] = '.lut'
+        helper = ASCII_HELPER
+    elif out_format == 'spi':
+        if out_type == '3D':
+            preset[presets.EXT] = '.spi3d'
+        else:
+            preset[presets.EXT] = '.spi1d'
+        helper = SPI_HELPER
+    elif out_format == 'clcc':
+        preset[presets.EXT] = '.cc'
+        helper = CLCC_HELPER
+    elif out_format == 'json':
+        preset[presets.EXT] = '.json'
+        helper = JSON_HELPER
+    else:
+        raise ExportLutException(("Unsupported export "
+                                 "format : {0}").format(out_format))
+    # check args
+    if not input_range is None:
+        preset[presets.IN_RANGE] = input_range
+    if not output_range is None:
+        preset[presets.OUT_RANGE] = output_range
+    if not out_bit_depth is None:
+        preset[presets.OUT_BITDEPTH] = out_bit_depth
+    if not out_cube_size is None:
+        preset[presets.CUBE_SIZE] = out_cube_size
+
+    # fill missing args if necessary
+    preset = helper.complete_preset(preset)
+    # get write function
+    if out_type == '3D':
+        write_function = helper.write_3d_lut
+    elif out_type == '1D':
+        write_function = helper.write_1d_lut
+    elif out_type == '2D':
+        write_function = helper.write_2d_lut
+    return preset, write_function
