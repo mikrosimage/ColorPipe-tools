@@ -120,4 +120,18 @@ class AsciiLutHelper(AbstractLUTHelper):
                 " Ex: [0, 1023] or [0, 65535].\nYour range {1}"
                 ).format(range_name, arange)
 
+    def _validate_preset(self, preset, mode=presets.RAISE_MODE,
+                         default_preset=None):
+        default_preset = self.get_default_preset()
+        # type must be 1D/2D, there's no 3D ascii LUT
+        if not (preset[presets.TYPE] == '1D' or preset[presets.TYPE] == '2D'):
+            if mode == presets.RAISE_MODE:
+                raise AsciiHelperException(("'{0}' is not a valid type for "
+                                            "ascii LUT. Choose '1D' or '2D'"
+                                           ).format(preset[presets.TYPE]))
+            preset[presets.TYPE] = default_preset[presets.TYPE]
+        # check basic arguments
+        return AbstractLUTHelper._validate_preset(self, preset, mode,
+                                                  default_preset)
+
 ASCII_HELPER = AsciiLutHelper()

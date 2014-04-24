@@ -118,4 +118,18 @@ class CLCCHelper(AbstractLUTHelper):
         presets.check_range_is_float(output_range,
                                      self._get_range_message(output_range))
 
+    def _validate_preset(self, preset, mode=presets.RAISE_MODE,
+                         default_preset=None):
+        default_preset = self.get_default_preset()
+        # type must be 3D, there's no 1d/2d cc
+        if not preset[presets.TYPE] == '3D':
+            if mode == presets.RAISE_MODE:
+                raise CLCCHelperException(("'{0}' is not a valid type for 3dl "
+                                           "LUT. Choose '3D'"
+                                           ).format(preset[presets.TYPE]))
+            preset[presets.TYPE] = default_preset[presets.TYPE]
+        # check basic arguments
+        return AbstractLUTHelper._validate_preset(self, preset, mode,
+                                                  default_preset)
+
 CLCC_HELPER = CLCCHelper()

@@ -152,8 +152,6 @@ class ThreedlLutHelper(AbstractLUTHelper):
     def _validate_preset(self, preset, mode=RAISE_MODE, default_preset=None):
         if default_preset is None:
             default_preset = ThreedlLutHelper.get_default_preset()
-        # check basic arguments
-        AbstractLUTHelper._validate_preset(self, preset, mode, default_preset)
         # type must be 3D, there's no 1d/2d 3dl
         if not preset[TYPE] == '3D':
             if mode == RAISE_MODE:
@@ -161,6 +159,9 @@ class ThreedlLutHelper(AbstractLUTHelper):
                                        "Choose '3D'"
                                       ).format(preset[TYPE]))
             preset[presets.TYPE] = default_preset[presets.TYPE]
+        # check basic arguments
+        preset = AbstractLUTHelper._validate_preset(self, preset, mode,
+                                                    default_preset)
         # check shaper and mesh attributes
         specific_attr = [SHAPER, MESH]
         for attr in specific_attr:
