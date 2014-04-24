@@ -96,7 +96,7 @@ class ThreedlLutHelper(AbstractLUTHelper):
         lutfile.close()
         print_success_message(self.get_export_message(file_path))
 
-    def _get_rgb_value_line(self, preset, rgb):
+    def _get_rgb_value_line(self, preset, rgb, in_rgb=None):
         # 3dl layout is bgr
         return self._get_pattern(preset).format(rgb.b, rgb.g, rgb.r)
 
