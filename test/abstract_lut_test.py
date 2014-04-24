@@ -16,6 +16,7 @@ from utils.threedl_helper import THREEDL_HELPER, SHAPER, MESH
 from utils.spi_helper import SPI_HELPER
 from utils.ascii_helper import ASCII_HELPER, AsciiHelperException
 from utils.clcc_helper import CLCC_HELPER
+from utils.json_helper import JSON_HELPER
 
 from utils.ocio_helper import create_ocio_processor
 
@@ -49,6 +50,7 @@ class AbstractLUTTest(unittest.TestCase):
                                    (CSP_HELPER, '.csp', True),
                                    (THREEDL_HELPER, '.3dl', True),
                                    (CLCC_HELPER, '.cc', False),
+                                   (JSON_HELPER, '.json', False)
                                    ]
 
     def test_default_1d_lut(self):

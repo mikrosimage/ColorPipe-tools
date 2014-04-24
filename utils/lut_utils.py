@@ -72,6 +72,8 @@ def get_3d_list_values(cubesize, processor, hexa_values=False):
         .dict containing cubesize and red, green, blue, input color values
         as lists
 
+    TODO Use by plot_that_lut, to remove someday
+
     """
     input_range = range(0, cubesize)
     max_value = cubesize - 1.0
@@ -106,24 +108,6 @@ def get_3d_list_values(cubesize, processor, hexa_values=False):
             'blue_values': blue_values,
             'input_colors': input_colors
             }
-
-
-def write_3d_json_file(filepath, cubesize, processor):
-    """Export cube into a json file
-
-    Args:
-        filepath (str): out LUT path
-
-        cubesize (int): cube size. Ex: 17, 32...
-
-        processor (PyOpenColorIO.config.Processor): an OpenColorIO processor
-
-    """
-    processed_values = get_3d_list_values(cubesize, processor)
-    import json
-    lutfile = open(filepath, 'w+')
-    json.dump(processed_values, lutfile)
-    lutfile.close()
 
 
 def check_extension(filepath, extension):
