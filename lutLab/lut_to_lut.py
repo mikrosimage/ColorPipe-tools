@@ -10,6 +10,10 @@ import argparse
 from utils.threedl_helper import THREEDL_HELPER
 from utils.csp_helper import CSP_HELPER
 from utils.cube_helper import CUBE_HELPER
+from utils.ascii_helper import ASCII_HELPER
+from utils.clcc_helper import CLCC_HELPER
+from utils.spi_helper import SPI_HELPER
+from utils.json_helper import JSON_HELPER
 from PyOpenColorIO.Constants import INTERP_LINEAR, INTERP_TETRAHEDRAL
 from utils import debug_helper
 import sys
@@ -49,6 +53,21 @@ def lut_to_lut(inlutfile, out_type, out_format, outlutfile=None,
     elif out_format == 'csp':
         preset[presets.EXT] = '.csp'
         helper = CSP_HELPER
+    elif out_format == 'lut':
+        preset[presets.EXT] = '.lut'
+        helper = ASCII_HELPER
+    elif out_format == 'spi':
+        if out_type == '3D':
+            preset[presets.EXT] = '.spi3d'
+        else:
+            preset[presets.EXT] = '.spi1d'
+        helper = SPI_HELPER
+    elif out_format == 'clcc':
+        preset[presets.EXT] = '.cc'
+        helper = CLCC_HELPER
+    elif out_format == 'json':
+        preset[presets.EXT] = '.json'
+        helper = JSON_HELPER
     else:
         raise LutToLutException(("Unsupported export "
                                  "format : {0}").format(out_format))
@@ -99,48 +118,65 @@ def __get_options():
     description = 'Convert a LUT into another format'
     parser = argparse.ArgumentParser(description=description)
     # input lut
-    parser.add_argument("inlutfile", help=(
-        "path to a LUT.\n{0}"
-    ).format(str(OCIO_LUTS_FORMATS)), type=str)
+    parser.add_argument("inlutfile",
+                        help=(
+                              "path to a LUT.\n Available input formats : {0}"
+                              ).format(str(OCIO_LUTS_FORMATS)),
+                        type=str)
     # output lut
-    parser.add_argument("-out", "--outlutfile", help=(
-        "path to the output LUT"
-    ), type=str, default=None)
+    parser.add_argument("-out",
+                        "--outlutfile",
+                        help="path to the output LUT",
+                        type=str,
+                        default=None)
     # type
     parser.add_argument("out_type",
-                        help=("Output LUT type."),
+                        help=("Output LUT type.\nBeware: every format doesn't "
+                              "support each type. See format help."),
                         type=str,
                         choices=presets.EXPORT_CHOICE,
                         default='3D')
     # format
     parser.add_argument("out_format",
-                        help=("Output LUT format."),
+                        help=("Output LUT format.\nBeware: 3dl, clcc, json are"
+                              " 3D only and lut is 1D/2D only."),
                         type=str,
-                        choices=['3dl', 'csp', 'cube'],
+                        choices=['3dl', 'csp', 'cube', 'lut', 'spi', 'clcc',
+                                 'json'],
                         default='cube')
     # ranges
-    parser.add_argument("-ir", "--input-range", help=("Input range. "
-        "Ex: 0.0 1.0 or 0 4095"),
+    parser.add_argument("-ir",
+                        "--input-range",
+                        help="Input range. Ex: 0.0 1.0 or 0 4095",
                           nargs='+')
-    parser.add_argument("-or", "--output-range", help=("Output range. "
-        "Ex: 0.0 1.0 or 0 4095"),
-                          nargs='+')
+    parser.add_argument("-or",
+                        "--output-range",
+                        help="Output range. Ex: 0.0 1.0 or 0 4095",
+                        nargs='+')
     # # 1D arg
     # out lut size
-    parser.add_argument("-os", "--out-bit-depth", help=(
-        "Output lut bit precision (1D only). Ex : 10, 16, 32."
-    ), default=16, type=int)
+    parser.add_argument("-os",
+                        "--out-bit-depth",
+                        help=("Output lut bit precision (1D only). "
+                              "Ex : 10, 16, 32."),
+                        default=16,
+                        type=int)
     # inverse
-    parser.add_argument("-inv", "--inverse",
+    parser.add_argument("-inv",
+                        "--inverse",
                         help="Inverse input LUT (1D only)",
                         action="store_true")
     # # 3D arg
     # out cube size
-    parser.add_argument("-ocs", "--out-cube-size", help=(
-        "Output cube size (3D only). Ex : 17, 32."
-    ), default=17, type=int)
+    parser.add_argument("-ocs",
+                        "--out-cube-size",
+                        help="Output cube size (3D only). Ex : 17, 32.",
+                        default=17,
+                        type=int)
     # version
-    parser.add_argument('-v', "--version", action='version',
+    parser.add_argument('-v',
+                        "--version",
+                        action='version',
                         version='{0} - version {1}'.format(description,
                                                            __version__))
     # full version
@@ -149,10 +185,13 @@ def __get_options():
     versions = '{0} - version {1}\n\n{2}'.format(description,
                                                  __version__,
                                                  versions)
-    parser.add_argument('-V', "--full-versions",
+    parser.add_argument('-V',
+                        "--full-versions",
                         action=debug_helper.make_full_version_action(versions))
     # verbose
-    parser.add_argument('--verbose', action='store_true', help='Print log')
+    parser.add_argument('--verbose',
+                        action='store_true',
+                        help='Print log')
     return parser.parse_args()
 
 
