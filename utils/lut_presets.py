@@ -29,6 +29,7 @@
 __version__ = "0.2"
 import collections
 from utils.color_log_helper import print_warning_message
+import json
 
 
 class PresetException(Exception):
@@ -230,3 +231,20 @@ def string_preset(preset):
         string = "{0}  {1}: {2},\n".format(string, attr, preset[attr])
     string += '}\n'
     return string
+
+
+def write_preset(file_path, preset):
+    """Write a preset as a json file
+
+    """
+    presetfile = open(file_path, 'w+')
+    json.dump(preset, presetfile)
+    presetfile.close()
+
+
+def read_preset(file_path):
+    """Read a preset from a json file
+
+    """
+    preset_data = open(file_path, 'r').read()
+    return json.loads(preset_data)

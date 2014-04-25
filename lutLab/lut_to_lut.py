@@ -23,7 +23,8 @@ from utils.export_tool_helper import (add_export_lut_options,
                                       add_inlutfile_option,
                                       add_trace_option,
                                       get_preset_and_write_function,
-                                      add_outlutfile_option)
+                                      add_outlutfile_option,
+                                      get_write_function)
 from utils.color_log_helper import print_error_message, print_success_message
 
 
@@ -37,10 +38,10 @@ class LutToLutException(Exception):
     pass
 
 
-def lut_to_lut(inlutfile, out_type, out_format, outlutfile=None,
+def lut_to_lut(inlutfile, out_type=None, out_format=None, outlutfile=None,
                input_range=None, output_range=None, out_bit_depth=None,
                inverse=False, out_cube_size=None, verbose=False,
-               smooth_size=None):
+               smooth_size=None, preset=None):
     """ Concert a LUT in another LUT
     Arguments testing are delegated to LUT helpers
 
@@ -76,13 +77,20 @@ def lut_to_lut(inlutfile, out_type, out_format, outlutfile=None,
         So the smaller this value is, the smoother the curve will be.
         Ex: 10, 20,...
 
+        preset (dict): lut generic and sampling informations
+
     """
-    preset, write_function = get_preset_and_write_function(out_type,
-                                                           out_format,
-                                                           input_range,
-                                                           output_range,
-                                                           out_bit_depth,
-                                                           out_cube_size)
+    if preset:
+        write_function = get_write_function(preset)
+    elif out_type is None or out_format is None:
+        raise LutToLutException("Specify out_type/out_format or a preset.")
+    else:
+        preset, write_function = get_preset_and_write_function(out_type,
+                                                               out_format,
+                                                               input_range,
+                                                               output_range,
+                                                               out_bit_depth,
+                                                               out_cube_size)
     ext = preset[presets.EXT]
     if not outlutfile:
         outlutfile = get_default_out_path(inlutfile, ext)
@@ -170,5 +178,5 @@ if __name__ == '__main__':
         if ARGS.trace:
             print_error_message(error)
             raise
-        message = "{0}.\nUse --trace option to get details".format(error)
-        print_error_message(message)
+        MSG = "{0}.\nUse --trace option to get details".format(error)
+        print_error_message(MSG)
