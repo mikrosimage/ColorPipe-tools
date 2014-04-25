@@ -15,6 +15,9 @@ from utils.lut_presets import (TYPE, IN_RANGE, OUT_RANGE, OUT_BITDEPTH,
                                BITDEPTH_MIN_VALUE, CUBE_SIZE_MAX_VALUE,
                                CUBE_SIZE_MIN_VALUE, PresetException,
                                MISSING_ATTR_MESSAGE)
+from scipy.interpolate import PchipInterpolator
+import numpy
+import itertools
 
 # RGB triplet object
 Rgb = namedtuple('Rgb', 'r g b')
@@ -124,11 +127,17 @@ class AbstractLUTHelper(object):
                                         " {0}").format(preset))
         input_range = preset[presets.IN_RANGE]
         output_range = preset[presets.OUT_RANGE]
-        samples_count = pow(2,  preset[presets.OUT_BITDEPTH])
+        smooth_size = None
+        if presets.SMOOTH in preset and not preset[presets.SMOOTH] is None:
+            smooth_size = preset[presets.SMOOTH]
+        if smooth_size:
+            samples_count = smooth_size
+        else:
+            samples_count = pow(2,  preset[presets.OUT_BITDEPTH])
         is_int = presets.is_int(preset[OUT_RANGE])
         compute_range = linspace(input_range[0],
-                                      input_range[1],
-                                      samples_count)
+                                 input_range[1],
+                                 samples_count)
         data = []
         for code_value in compute_range:
             norm_value = code_value
@@ -139,6 +148,55 @@ class AbstractLUTHelper(object):
             if is_int:
                 res = [int(x) for x in res]
             data.append(Rgb(res[0], res[1], res[2]))
+        if smooth_size:
+            data = self.__smooth_1d_data(data, preset)
+        return data
+
+    def __smooth_1d_data(self, data, preset):
+        """ Smooth data (1D / 2D only)
+
+        Args:
+            data ([Rgb]): processed with _get_1d_data
+
+            preset (dict): lut generic and sampling informations
+
+        Returns:
+            .[Rgb]
+
+        """
+        samples_count = pow(2, preset[presets.OUT_BITDEPTH])
+        smooth_count = preset['smooth']
+
+        # remap processed values
+        red_values = []
+        green_values = []
+        blue_values = []
+        for rgb in data:
+            red_values.append(rgb.r)
+            green_values.append(rgb.g)
+            blue_values.append(rgb.b)
+        # get full range
+        old_range = numpy.arange(0, smooth_count)
+        new_range = numpy.arange(0, smooth_count - 1,
+                                 float(smooth_count - 1) / samples_count)
+        # get a monotonic cubic function from subsampled curve
+        red_cubic_monotonic_func = PchipInterpolator(old_range,
+                                                     red_values)
+        green_cubic_monotonic_func = PchipInterpolator(old_range,
+                                                       green_values)
+        blue_cubic_monotonic_func = PchipInterpolator(old_range,
+                                                      blue_values)
+        # get new values
+        sampled_reds = red_cubic_monotonic_func(new_range)
+        sampled_greens = green_cubic_monotonic_func(new_range)
+        sampled_blues = blue_cubic_monotonic_func(new_range)
+
+        # remap processed values in data
+        data = []
+        for red, green, blue in itertools.izip(sampled_reds,
+                                               sampled_greens,
+                                               sampled_blues):
+            data.append(Rgb(red, green, blue))
         return data
 
     def _get_3d_data(self, process_function, preset):
@@ -365,6 +423,19 @@ class AbstractLUTHelper(object):
                     raise PresetException(("Invalid range: {0}"
                                            ).format(preset[arange]))
                 preset[arange] = default_preset[arange]
+        # Check smooth
+        if presets.SMOOTH in preset:
+            if preset[TYPE] == '3D':
+                if mode == RAISE_MODE:
+                    raise PresetException(("Smooth size musn't be used in"
+                                           " 3D export"
+                                           ).format(preset[presets.SMOOTH]))
+                del preset[presets.SMOOTH]
+            if not isinstance(preset[presets.SMOOTH], int):
+                if mode == RAISE_MODE:
+                    raise PresetException(("Invalid smooth size: {0}"
+                                           ).format(preset[presets.SMOOTH]))
+                del preset[presets.SMOOTH]
         # return updated preset
         return preset
 

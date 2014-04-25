@@ -35,7 +35,7 @@ class LUTToLUTTest(unittest.TestCase):
             # test 1D/2D export
             outlutfile = os.path.join(self.tmp_dir,
                                       "CineonToLin_export." + form)
-            lut_to_lut(self.lut1d, "1D", form, outlutfile)
+            lut_to_lut(self.lut3d, "1D", form, outlutfile, smooth_size=15)
             # test 3D export
             outlutfile = os.path.join(self.tmp_dir,
                                       "saturation_export." + form)

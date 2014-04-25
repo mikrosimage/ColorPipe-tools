@@ -39,7 +39,8 @@ class LutToLutException(Exception):
 
 def lut_to_lut(inlutfile, out_type, out_format, outlutfile=None,
                input_range=None, output_range=None, out_bit_depth=None,
-               inverse=False, out_cube_size=None, verbose=False):
+               inverse=False, out_cube_size=None, verbose=False,
+               smooth_size=None):
     """ Concert a LUT in another LUT
     Arguments testing are delegated to LUT helpers
 
@@ -68,6 +69,13 @@ def lut_to_lut(inlutfile, out_type, out_format, outlutfile=None,
 
         verbose (bool): print log if true
 
+        smooth_size (int): smooth exported LUT (1D only).
+        Specify how many points are computed.
+        A first subsampled curve is first processed and then resample with
+        a smooth to fit input lutsize.
+        So the smaller this value is, the smoother the curve will be.
+        Ex: 10, 20,...
+
     """
     preset, write_function = get_preset_and_write_function(out_type,
                                                            out_format,
@@ -83,6 +91,9 @@ def lut_to_lut(inlutfile, out_type, out_format, outlutfile=None,
         outlutfile = os.path.join(outlutfile, filename)
     else:
         check_extension(outlutfile, ext)
+    # smooth
+    if smooth_size:
+        preset[presets.SMOOTH] = smooth_size
     if verbose:
         print "{0} will be converted into {1}.".format(inlutfile,
                                                        outlutfile)
@@ -118,6 +129,10 @@ def __get_options():
     add_export_lut_options(parser)
     # inverse (1d arg)
     add_inverse_option(parser)
+    # Smooth size
+    parser.add_argument("-sms", "--smooth-size", help=(
+        "Smooth sub-sampling size (1D only). Ex : 17"
+    ), default=None, type=int)
     # version
     full_version = debug_helper.get_imported_modules_versions(sys.modules,
                                                               globals())
@@ -149,6 +164,7 @@ if __name__ == '__main__':
                    ARGS.inverse,
                    ARGS.out_cube_size,
                    ARGS.verbose,
+                   ARGS.smooth_size
                    )
     except Exception as error:
         if ARGS.trace:

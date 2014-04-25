@@ -6,7 +6,6 @@ import plot_that_lut
 import os
 import tempfile
 import shutil
-import ext_1d_lut
 import rgb_to_xyz_matrix
 
 
@@ -34,14 +33,6 @@ class GeneralTest(unittest.TestCase):
         """
         plot_that_lut.plot_that_lut(self.lut3d,
                                     count=plot_that_lut.DEFAULT_CUBE_SIZE)
-
-    def test_extract_lut(self):
-        """Extract the 1d composante of a 3D LUT and plot the result
-
-        """
-        csp_lut = os.path.join(self.tmp_dir, "identity_3d_export.csp")
-        ext_1d_lut.extract_1d_lut(self.lut3d, 10, csp_lut, True)
-        plot_that_lut.plot_that_lut(csp_lut)
 
     def test_rgb_to_matrix(self):
         """Display rgb matrix

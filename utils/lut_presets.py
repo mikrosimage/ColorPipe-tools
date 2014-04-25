@@ -51,6 +51,14 @@ OUT_RANGE = 'output_range'
 # 1D / 2D specific attribute
 OUT_BITDEPTH = 'output_bitdepth'
 
+# Smooth Specify how many points are computed.
+# A first subsampled curve is first processed and then resample with
+# a smooth to fit input lutsize.
+# So the smaller this value is, the smoother the curve will be.
+# 1D / 2D only
+# Ex: 10, 20,...
+SMOOTH = 'smooth'
+
 # 3D specific attribute
 CUBE_SIZE = 'cube_size'
 
