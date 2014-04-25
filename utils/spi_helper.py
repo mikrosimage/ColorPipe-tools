@@ -6,7 +6,7 @@
 __version__ = "0.2"
 from utils.abstract_lut_helper import AbstractLUTHelper
 from utils import lut_presets as presets
-from utils.color_log_helper import print_warning_message, print_success_message
+from utils.color_log_helper import print_warning_message
 from itertools import izip
 
 
@@ -67,12 +67,12 @@ class SpiLutHelper(AbstractLUTHelper):
             lutfile.write(line_function(preset, rgb))
         lutfile.write("}/n")
         lutfile.close()
-        print_success_message(self.get_export_message(file_path))
+        return self.get_export_message(file_path)
 
     def write_2d_lut(self, process_function, file_path, preset):
         print_warning_message("2D LUT is not supported in spi1d format"
                               " --> Switch to 1D LUT.")
-        self.write_1d_lut(process_function, file_path, preset)
+        return self.write_1d_lut(process_function, file_path, preset)
 
     def write_3d_lut(self, process_function, file_path, preset):
         # Test ranges
@@ -88,7 +88,7 @@ class SpiLutHelper(AbstractLUTHelper):
         for in_rgb, rgb in izip(in_data, data):
             lutfile.write(self._get_rgb_value_line(preset, rgb, in_rgb))
         lutfile.close()
-        print_success_message(self.get_export_message(file_path))
+        return self.get_export_message(file_path)
 
     @staticmethod
     def _get_range_message(range_name, arange):

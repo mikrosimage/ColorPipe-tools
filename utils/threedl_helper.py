@@ -8,7 +8,6 @@ import math
 from utils.abstract_lut_helper import AbstractLUTHelper
 from utils import lut_presets as presets
 from utils.lut_presets import RAISE_MODE, TYPE, PresetException
-from utils.color_log_helper import print_error_message, print_success_message
 
 
 class ThreeDLHelperException(Exception):
@@ -48,7 +47,6 @@ class ThreedlLutHelper(AbstractLUTHelper):
     def _write_1d_2d_lut(self, process_function, file_path, preset,
                          line_function):
         message = "1D/2D  LUT is not supported in 3DL format"
-        print_error_message(message)
         raise ThreeDLHelperException(message)
 
     def write_3d_lut(self, process_function, file_path, preset):
@@ -94,7 +92,7 @@ class ThreedlLutHelper(AbstractLUTHelper):
         for rgb in data:
             lutfile.write(self._get_rgb_value_line(preset, rgb))
         lutfile.close()
-        print_success_message(self.get_export_message(file_path))
+        return self.get_export_message(file_path)
 
     def _get_rgb_value_line(self, preset, rgb, in_rgb=None):
         # 3dl layout is bgr

@@ -19,11 +19,14 @@ from utils.export_tool_helper import (add_export_lut_options,
                                       add_version_option,
                                       add_verbose_option,
                                       get_preset_and_write_function,
-                                      add_outlutfile_option)
+                                      add_outlutfile_option,
+                                      add_trace_option)
 import utils.lut_presets as presets
 from utils.lut_utils import check_extension, LUTException
 from utils.private_colorspaces import PRIVATE_COLORSPACES
-from utils.color_log_helper import print_warning_message
+from utils.color_log_helper import (print_warning_message,
+                                    print_error_message,
+                                    print_success_message)
 
 
 class CurveToLUTException(Exception):
@@ -81,8 +84,8 @@ def curve_to_lut(colorspace, gamma, out_type, out_format, outlutfile,
 
     """
     if out_type == '3D':
-        print_warning_message(("Gradations and gamma functions are 1D / 2D "
-                               "transformations. Baking them in a 3D LUT "
+        print_warning_message(("Gradations and gamma functions are 1D / 2D"
+                               " transformations. Baking them in a 3D LUT "
                                "may not be efficient. Are you sure ?"))
     # get colorspace function
     if colorspace is None and gamma is None:
@@ -136,6 +139,8 @@ def curve_to_lut(colorspace, gamma, out_type, out_format, outlutfile,
         print "Final setting:\n{0}".format(presets.string_preset(preset))
     # write
     write_function(gradation, outlutfile, preset)
+    if verbose:
+        print_success_message(message)
 
 
 def __get_options():
@@ -173,12 +178,18 @@ def __get_options():
     add_version_option(parser, description, __version__, full_version)
     # verbose
     add_verbose_option(parser)
+    # trace
+    add_trace_option(parser)
     return parser.parse_args()
 
 
 if __name__ == '__main__':
     ARGS = __get_options()
     try:
+        if not ARGS.input_range is None:
+            ARGS.input_range = presets.convert_string_range(ARGS.input_range)
+        if not ARGS.output_range is None:
+            ARGS.output_range = presets.convert_string_range(ARGS.output_range)
         curve_to_lut(ARGS.colorspace,
                      ARGS.gamma,
                      ARGS.out_type,
@@ -190,5 +201,9 @@ if __name__ == '__main__':
                      ARGS.out_cube_size,
                      ARGS.verbose,
                      ARGS.direction)
-    except (CurveToLUTException, LUTException) as error:
-        print "Curve to LUT: {0}".format(error)
+    except Exception as error:
+        if ARGS.trace:
+            print_error_message(error)
+            raise
+        message = "{0}.\nUse --trace option to get details".format(error)
+        print_error_message(message)

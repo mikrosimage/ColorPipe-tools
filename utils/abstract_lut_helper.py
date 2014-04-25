@@ -227,8 +227,12 @@ class AbstractLUTHelper(object):
             functions
 
             preset (dict): lut generic and sampling informations
+
+        Returns:
+            .str (success message)
+
         """
-        self._write_1d_2d_lut(process_function, file_path, preset,
+        return self._write_1d_2d_lut(process_function, file_path, preset,
                               self._get_rgb_value_line)
 
     def write_1d_lut(self, process_function, file_path, preset):
@@ -241,8 +245,12 @@ class AbstractLUTHelper(object):
             functions
 
             preset (dict): lut generic and sampling informations
+
+        Returns:
+            .str (success message)
+
         """
-        self._write_1d_2d_lut(process_function, file_path, preset,
+        return self._write_1d_2d_lut(process_function, file_path, preset,
                               self._get_r_value_line)
 
     @abstractmethod
@@ -256,6 +264,10 @@ class AbstractLUTHelper(object):
             functions
 
             preset (dict): lut generic and sampling informations
+
+        Returns:
+            .str (success message)
+
         """
         pass
 

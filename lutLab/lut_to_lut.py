@@ -21,8 +21,10 @@ from utils.export_tool_helper import (add_export_lut_options,
                                       add_inverse_option,
                                       add_verbose_option,
                                       add_inlutfile_option,
+                                      add_trace_option,
                                       get_preset_and_write_function,
-    add_outlutfile_option)
+                                      add_outlutfile_option)
+from utils.color_log_helper import print_error_message, print_success_message
 
 
 class LutToLutException(Exception):
@@ -82,7 +84,8 @@ def lut_to_lut(inlutfile, out_type, out_format, outlutfile=None,
     else:
         check_extension(outlutfile, ext)
     if verbose:
-        print "{0} will be converted into {1}.".format(inlutfile, outlutfile)
+        print "{0} will be converted into {1}.".format(inlutfile,
+                                                       outlutfile)
         print "Final setting:\n{0}".format(presets.string_preset(preset))
     processor = create_ocio_processor(inlutfile,
                                       interpolation=INTERP_LINEAR,
@@ -93,12 +96,9 @@ def lut_to_lut(inlutfile, out_type, out_format, outlutfile=None,
                                           interpolation=INTERP_TETRAHEDRAL,
                                           inverse=inverse)
     # write LUT
-    if out_type == '3D':
-        write_function(processor.applyRGB, outlutfile, preset)
-    elif out_type == '1D':
-        write_function(processor.applyRGB, outlutfile, preset)
-    elif out_type == '2D':
-        write_function(processor.applyRGB, outlutfile, preset)
+    message = write_function(processor.applyRGB, outlutfile, preset)
+    if verbose:
+        print_success_message(message)
 
 
 def __get_options():
@@ -124,6 +124,8 @@ def __get_options():
     add_version_option(parser, description, __version__, full_version)
     # verbose
     add_verbose_option(parser)
+    # trace
+    add_trace_option(parser)
     return parser.parse_args()
 
 
@@ -135,14 +137,22 @@ if __name__ == '__main__':
         ARGS.input_range = presets.convert_string_range(ARGS.input_range)
     if not ARGS.output_range is None:
         ARGS.output_range = presets.convert_string_range(ARGS.output_range)
-    lut_to_lut(ARGS.inlutfile,
-               ARGS.out_type,
-               ARGS.out_format,
-               ARGS.outlutfile,
-               ARGS.input_range,
-               ARGS.output_range,
-               ARGS.out_bit_depth,
-               ARGS.inverse,
-               ARGS.out_cube_size,
-               ARGS.verbose
-               )
+
+    try:
+        lut_to_lut(ARGS.inlutfile,
+                   ARGS.out_type,
+                   ARGS.out_format,
+                   ARGS.outlutfile,
+                   ARGS.input_range,
+                   ARGS.output_range,
+                   ARGS.out_bit_depth,
+                   ARGS.inverse,
+                   ARGS.out_cube_size,
+                   ARGS.verbose,
+                   )
+    except Exception as error:
+        if ARGS.trace:
+            print_error_message(error)
+            raise
+        message = "{0}.\nUse --trace option to get details".format(error)
+        print_error_message(message)

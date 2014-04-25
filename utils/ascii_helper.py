@@ -6,7 +6,6 @@
 __version__ = "0.2"
 from utils.abstract_lut_helper import AbstractLUTHelper
 import utils.lut_presets as presets
-from utils.color_log_helper import print_error_message, print_success_message
 
 
 class AsciiHelperException(Exception):
@@ -91,21 +90,20 @@ class AsciiLutHelper(AbstractLUTHelper):
             for rgb in data:
                 lutfile.write(self._get_pattern_1d(preset).format(rgb.b))
         lutfile.close()
-        print_success_message(self.get_export_message(file_path))
+        return self.get_export_message(file_path)
 
     def write_1d_lut(self, process_function, file_path, preset):
         preset[presets.TYPE] = '1D'
-        AbstractLUTHelper.write_1d_lut(self, process_function, file_path,
-                                       preset)
+        return AbstractLUTHelper.write_1d_lut(self, process_function,
+                                              file_path, preset)
 
     def write_2d_lut(self, process_function, file_path, preset):
         preset[presets.TYPE] = '2D'
-        AbstractLUTHelper.write_2d_lut(self, process_function, file_path,
-                                       preset)
+        return AbstractLUTHelper.write_2d_lut(self, process_function,
+                                              file_path, preset)
 
     def write_3d_lut(self, process_function, file_path, preset):
         message = "3D  LUT is not supported in Ascii format"
-        print_error_message(message)
         raise AsciiHelperException(message)
 
     @staticmethod

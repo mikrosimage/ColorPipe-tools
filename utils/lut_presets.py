@@ -28,7 +28,7 @@
 """
 __version__ = "0.2"
 import collections
-from utils.color_log_helper import print_error_message, print_warning_message
+from utils.color_log_helper import print_warning_message
 
 
 class PresetException(Exception):
@@ -172,7 +172,6 @@ def check_range_is_float(arange, message=None):
     if message is None:
         message = _get_range_float_message(arange)
     if is_int(arange):
-        print_error_message(message)
         raise PresetException(message)
     elif arange[1] > FLOAT_BOUNDARY:
         message = ("{0} seems too big !\n"
@@ -189,7 +188,6 @@ def check_range_is_int(arange, message=None):
     if message is None:
         message = _get_range_int_message(arange)
     if not is_int(arange):
-        print_error_message(message)
         raise PresetException(message)
     elif arange[1] < BITDEPTH_MAX_VALUE:
         message = ("{0} seems too low !\n"

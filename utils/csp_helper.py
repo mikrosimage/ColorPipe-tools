@@ -7,7 +7,7 @@ __version__ = "0.3"
 from utils.abstract_lut_helper import AbstractLUTHelper
 from utils import lut_presets as presets
 from utils.lut_presets import RAISE_MODE
-from utils.color_log_helper import print_warning_message, print_success_message
+from utils.color_log_helper import print_warning_message
 
 
 class CSPHelperException(Exception):
@@ -75,25 +75,25 @@ class CSPLutHelper(AbstractLUTHelper):
         for rgb in data:
             lutfile.write(line_function(preset, rgb))
         lutfile.close()
-        print_success_message(self.get_export_message(file_path))
+        return self.get_export_message(file_path)
 
     def _write_1d_2d_lut(self, process_function, file_path, preset,
                          line_function):
-        self.__generic_write_lut(process_function, file_path, preset,
-                                 line_function,
-                                 CSPLutHelper.get_1d_csp_header,
-                                 self._get_1d_data)
+        return self.__generic_write_lut(process_function, file_path, preset,
+                                        line_function,
+                                        CSPLutHelper.get_1d_csp_header,
+                                        self._get_1d_data)
 
     def write_1d_lut(self, process_function, file_path, preset):
         print_warning_message("1D LUT is not supported in Csp format"
                               " --> Switch to 2D LUT.")
-        self.write_2d_lut(process_function, file_path, preset)
+        return self.write_2d_lut(process_function, file_path, preset)
 
     def write_3d_lut(self, process_function, file_path, preset):
-        self.__generic_write_lut(process_function, file_path, preset,
-                                 self._get_rgb_value_line,
-                                 CSPLutHelper.get_3d_csp_header,
-                                 self._get_3d_data)
+        return self.__generic_write_lut(process_function, file_path, preset,
+                                        self._get_rgb_value_line,
+                                        CSPLutHelper.get_3d_csp_header,
+                                        self._get_3d_data)
 
     @staticmethod
     def __get_csp_header(preset, mode, count_header):

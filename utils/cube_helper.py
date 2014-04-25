@@ -5,7 +5,7 @@
 """
 __version__ = "0.3"
 from utils.abstract_lut_helper import AbstractLUTHelper
-from utils.color_log_helper import print_warning_message, print_success_message
+from utils.color_log_helper import print_warning_message
 from utils import lut_presets as presets
 
 
@@ -61,7 +61,7 @@ class CubeLutHelper(AbstractLUTHelper):
         for rgb in data:
             lutfile.write(line_function(preset, rgb))
         lutfile.close()
-        print_success_message(self.get_export_message(file_path))
+        return self.get_export_message(file_path)
 
     def write_1d_lut(self, process_function, file_path, preset):
         print_warning_message("1D LUT is not supported in Cube format"
@@ -86,7 +86,7 @@ class CubeLutHelper(AbstractLUTHelper):
         for rgb in data:
             lutfile.write(self._get_rgb_value_line(preset, rgb))
         lutfile.close()
-        print_success_message(self.get_export_message(file_path))
+        return self.get_export_message(file_path)
 
     @staticmethod
     def _get_range_message(output_range):

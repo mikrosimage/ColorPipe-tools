@@ -6,7 +6,6 @@
 __version__ = "0.1"
 from utils.abstract_lut_helper import AbstractLUTHelper
 import utils.lut_presets as presets
-from utils.color_log_helper import print_error_message, print_success_message
 import json
 
 
@@ -41,7 +40,6 @@ class JsonLutHelper(AbstractLUTHelper):
     def _write_1d_2d_lut(self, process_function, file_path, preset,
                          line_function):
         message = "1D/2D  LUT is not supported in json format"
-        print_error_message(message)
         raise JsonHelperException(message)
 
     def write_3d_lut(self, process_function, file_path, preset):
@@ -73,7 +71,7 @@ class JsonLutHelper(AbstractLUTHelper):
         lutfile = open(file_path, 'w+')
         json.dump(json_data, lutfile)
         lutfile.close()
-        print_success_message(self.get_export_message(file_path))
+        return self.get_export_message(file_path)
 
     def _validate_preset(self, preset, mode=presets.RAISE_MODE,
                          default_preset=None):

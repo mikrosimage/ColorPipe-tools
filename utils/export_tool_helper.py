@@ -206,6 +206,18 @@ def add_verbose_option(parser):
                         help='Print log')
 
 
+def add_trace_option(parser):
+    """ Add trace argument
+
+    Args:
+        parser (argparse.ArgumentParser): parser on which option will be add
+
+    """
+    parser.add_argument('--trace',
+                        action='store_true',
+                        help='In case of error, print stack trace')
+
+
 def add_export_lut_options(parser):
     """ Add export LUT arguments : out lut file, type, format, ranges,
     out bit depth and out cube size.

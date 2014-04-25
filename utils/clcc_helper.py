@@ -7,7 +7,6 @@ __version__ = "0.1"
 import datetime
 from utils.abstract_lut_helper import AbstractLUTHelper
 import utils.lut_presets as presets
-from utils.color_log_helper import print_error_message, print_success_message
 
 
 class CLCCHelperException(Exception):
@@ -78,7 +77,6 @@ class CLCCHelper(AbstractLUTHelper):
     def _write_1d_2d_lut(self, process_function, file_path, preset,
                          line_function):
         message = "1D/2D  LUT is not supported in 3DL format"
-        print_error_message(message)
         raise CLCCHelperException(message)
 
     @staticmethod
@@ -95,7 +93,7 @@ class CLCCHelper(AbstractLUTHelper):
         for rgb in data:
             lutfile.write(self._get_rgb_value_line(preset, rgb))
         lutfile.close()
-        print_success_message(self.get_export_message(file_path))
+        return self.get_export_message(file_path)
 
     @staticmethod
     def _get_range_message(output_range):
