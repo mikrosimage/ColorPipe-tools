@@ -235,6 +235,85 @@ def add_export_lut_options(parser):
     add_out_cube_size_option(parser)
 
 
+def _get_ext_and_helper(key, typ):
+    """ Guess the helper and extension thanks to key.
+    Key can be an extension or an option. If its an option, extension is deduce
+    from the option name
+
+    Args:
+        key (str): option (spi, clcc, 3dl...) or extension (.spi1d, .cc, .3dl)
+
+        typ (str): LUT type. Values: '1D', '2D' or '3D'
+
+    Returns:
+        .helper, ext
+
+    """
+    if not key.startswith('.'):
+        ext = ".{0}".format(key)
+    else:
+        ext = key
+    if key.endswith('3dl'):
+        helper = THREEDL_HELPER
+    elif key.endswith('cube'):
+        helper = CUBE_HELPER
+    elif key.endswith('csp'):
+        helper = CSP_HELPER
+    elif key.endswith('lut'):
+        helper = ASCII_HELPER
+    elif key.endswith('spi') or key.endswith('spi1d') or key.endswith('spi3d'):
+        if typ == '3D':
+            ext = '.spi3d'
+        else:
+            ext = '.spi1d'
+        helper = SPI_HELPER
+    elif key.endswith('clcc') or key.endswith('.cc'):
+        ext = ".cc"
+        helper = CLCC_HELPER
+    elif key.endswith('json'):
+        helper = JSON_HELPER
+    else:
+        raise ExportLutException("Unsupported export format: {0}".format(key))
+    return ext, helper
+
+
+def _get_write_function(helper, typ):
+    """ Return write function
+
+    Args:
+        typ (str): LUT type. Values: '1D', '2D' or '3D'
+
+    Returns:
+        .write function
+
+    """
+    # get write function
+    if typ == '3D':
+        return helper.write_3d_lut
+    elif typ == '1D':
+        return helper.write_1d_lut
+    elif typ == '2D':
+        return helper.write_2d_lut
+
+
+def get_write_function(preset):
+    """ Get write function from a preset
+
+    Args:
+        preset (dict): lut generic and sampling informations
+
+    Returns:
+        .write function
+
+    """
+    ext = preset[presets.EXT]
+    typ = preset[presets.TYPE]
+    helper = _get_ext_and_helper(ext, typ)[1]
+    # check
+    helper.check_preset(preset)
+    return _get_write_function(helper, typ)
+
+
 def get_preset_and_write_function(out_type, out_format,
                           input_range=None, output_range=None,
                           out_bit_depth=None, out_cube_size=None):
@@ -265,33 +344,8 @@ def get_preset_and_write_function(out_type, out_format,
     # out type (1D, 2D, 3D)
     preset[presets.TYPE] = out_type
     # out format (csp, 3dl...)
-    if out_format == '3dl':
-        preset[presets.EXT] = '.3dl'
-        helper = THREEDL_HELPER
-    elif out_format == 'cube':
-        preset[presets.EXT] = '.cube'
-        helper = CUBE_HELPER
-    elif out_format == 'csp':
-        preset[presets.EXT] = '.csp'
-        helper = CSP_HELPER
-    elif out_format == 'lut':
-        preset[presets.EXT] = '.lut'
-        helper = ASCII_HELPER
-    elif out_format == 'spi':
-        if out_type == '3D':
-            preset[presets.EXT] = '.spi3d'
-        else:
-            preset[presets.EXT] = '.spi1d'
-        helper = SPI_HELPER
-    elif out_format == 'clcc':
-        preset[presets.EXT] = '.cc'
-        helper = CLCC_HELPER
-    elif out_format == 'json':
-        preset[presets.EXT] = '.json'
-        helper = JSON_HELPER
-    else:
-        raise ExportLutException(("Unsupported export "
-                                 "format : {0}").format(out_format))
+    ext, helper = _get_ext_and_helper(out_format, out_type)
+    preset[presets.EXT] = ext
     # check args
     if not input_range is None:
         preset[presets.IN_RANGE] = input_range
@@ -304,11 +358,4 @@ def get_preset_and_write_function(out_type, out_format,
 
     # fill missing args if necessary
     preset = helper.complete_preset(preset)
-    # get write function
-    if out_type == '3D':
-        write_function = helper.write_3d_lut
-    elif out_type == '1D':
-        write_function = helper.write_1d_lut
-    elif out_type == '2D':
-        write_function = helper.write_2d_lut
-    return preset, write_function
+    return preset, _get_write_function(helper, out_type)
