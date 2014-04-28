@@ -2,11 +2,11 @@
 
 """
 import unittest
-import plot_that_lut
+from plotThatLut import plot_that_lut
 import os
 import tempfile
 import shutil
-import rgb_to_xyz_matrix
+from lutLab import rgb_to_xyz_matrix
 
 
 DISPLAY = False
