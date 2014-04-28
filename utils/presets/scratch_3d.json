@@ -1,10 +1,10 @@
 {
-"title": "Autodesk Flame and Smoke 3D LUT",
+"title": "Assimilate Scratch 3D LUT",
 "comment": "Generated with ColorPipe-tools",
 "type": "3D",
 "extension": ".3dl",
 "input_range": [0, 1023],
-"output_range": [0, 4095],
+"output_range": [0, 1023],
 "cube_size": 17,
 "version": "1",
 "shaper": true,

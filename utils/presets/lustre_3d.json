@@ -1,5 +1,5 @@
 {
-"title": "Autodesk Flame and Smoke 3D LUT",
+"title": "Autodesk Lustre 3D LUT",
 "comment": "Generated with ColorPipe-tools",
 "type": "3D",
 "extension": ".3dl",
@@ -8,5 +8,5 @@
 "cube_size": 17,
 "version": "1",
 "shaper": true,
-"mesh": false
+"mesh": true
 }
