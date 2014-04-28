@@ -9,6 +9,9 @@ import shutil
 import rgb_to_xyz_matrix
 
 
+DISPLAY = False
+
+
 class GeneralTest(unittest.TestCase):
     """General Test : plot lut 1d/3d, convert lut, extract 1d lut
 
@@ -24,21 +27,30 @@ class GeneralTest(unittest.TestCase):
         """Open a 1D LUT and display it
 
         """
-        plot_that_lut.plot_that_lut(self.lut1d,
-                                    count=plot_that_lut.DEFAULT_SAMPLE)
+        if DISPLAY:
+            plot_that_lut.plot_that_lut(self.lut1d,
+                                        count=plot_that_lut.DEFAULT_SAMPLE)
+        else:
+            # TODO
+            pass
 
     def test_lut_3d(self):
         """Open a 3D LUT and display it
 
         """
-        plot_that_lut.plot_that_lut(self.lut3d,
-                                    count=plot_that_lut.DEFAULT_CUBE_SIZE)
+        if DISPLAY:
+            plot_that_lut.plot_that_lut(self.lut3d,
+                                        count=plot_that_lut.DEFAULT_CUBE_SIZE)
+        else:
+            # TODO
+            pass
 
     def test_rgb_to_matrix(self):
         """Display rgb matrix
 
         """
         rgb_to_xyz_matrix.display_matrix('REC709', 'spimtx')
+        # TODO test values
 
     def tearDown(self):
         #Remove test directory

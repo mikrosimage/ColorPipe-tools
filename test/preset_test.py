@@ -45,7 +45,7 @@ class GeneralTest(unittest.TestCase):
 
         """
         preset = presets.read_preset(self.sample_preset)
-        outlutfile = os.path.join(self.tmp_dir, 'test_preset.csp')
+        outlutfile = os.path.join(self.tmp_dir, 'test_preset.cube')
         lut_to_lut(self.lut3d, preset=preset, outlutfile=outlutfile)
         proc = create_ocio_processor(outlutfile,
                                      interpolation=INTERP_LINEAR)
