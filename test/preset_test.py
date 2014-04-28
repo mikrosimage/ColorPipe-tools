@@ -8,6 +8,10 @@ import os
 from utils import lut_presets as presets
 from lutLab.lut_to_lut import lut_to_lut
 from utils.csp_helper import CSP_HELPER
+from utils.ocio_helper import create_ocio_processor
+from PyOpenColorIO.Constants import INTERP_LINEAR
+
+DISPLAY = False
 
 
 class GeneralTest(unittest.TestCase):
@@ -41,7 +45,15 @@ class GeneralTest(unittest.TestCase):
 
         """
         preset = presets.read_preset(self.sample_preset)
-        lut_to_lut(self.lut3d, preset=preset)
+        outlutfile = os.path.join(self.tmp_dir, 'test_preset.csp')
+        lut_to_lut(self.lut3d, preset=preset, outlutfile=outlutfile)
+        proc = create_ocio_processor(outlutfile,
+                                     interpolation=INTERP_LINEAR)
+        proc.applyRGB([0, 0, 0])
+        proc.applyRGB([1, 1, 1])
+        if DISPLAY:
+            import plot_that_lut
+            plot_that_lut.plot_that_lut(outlutfile)
 
     def tearDown(self):
         #Remove test directory

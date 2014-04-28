@@ -1,0 +1,10 @@
+{
+"title": "CSP 33D LUT",
+"comment": "Generated with ColorPipe-tools and preset_sample",
+"type": "3D",
+"extension": ".csp",
+"output_range": [0.0, 1.0],
+"cube_size": 17,
+"input_range": [0.0, 1.0],
+"version": "1"
+}
