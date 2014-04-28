@@ -86,7 +86,8 @@ def lut_to_lut(inlutfile, out_type=None, out_format=None, outlutfile=None,
                                             input_range,
                                             output_range,
                                             out_bit_depth,
-                                            out_cube_size)
+                                            out_cube_size,
+                                            verbose)
     elif out_type is None or out_format is None:
         raise LutToLutException("Specify out_type/out_format or a preset.")
     else:

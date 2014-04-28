@@ -119,7 +119,8 @@ def curve_to_lut(colorspace, gamma, outlutfile, out_type=None, out_format=None,
                                             input_range,
                                             output_range,
                                             out_bit_depth,
-                                            out_cube_size)
+                                            out_cube_size,
+                                            verbose)
     elif out_type is None or out_format is None:
         raise CurveToLUTException("Specify out_type/out_format or a preset.")
     else:

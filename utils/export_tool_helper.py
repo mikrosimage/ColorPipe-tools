@@ -14,6 +14,7 @@ from utils.ascii_helper import ASCII_HELPER
 from utils.clcc_helper import CLCC_HELPER
 from utils.spi_helper import SPI_HELPER
 from utils.json_helper import JSON_HELPER
+from utils.color_log_helper import print_warning_message
 
 import warnings
 warnings.filterwarnings(
@@ -325,7 +326,7 @@ def _get_write_function(helper, typ):
 
 def get_write_function(preset, overwrite_preset=False, out_type=None,
                        out_format=None, input_range=None, output_range=None,
-                        out_bit_depth=None, out_cube_size=None):
+                        out_bit_depth=None, out_cube_size=None, verbose=False):
     """ Get write function from a preset
 
     Args:
@@ -348,6 +349,23 @@ def get_write_function(preset, overwrite_preset=False, out_type=None,
             preset[presets.OUT_BITDEPTH] = out_bit_depth
         if not out_cube_size is None:
             preset[presets.CUBE_SIZE] = out_cube_size
+
+    if (not overwrite_preset
+    and (not out_type is None
+         or not out_format is None
+         or not input_range is None
+         or not output_range is None
+         or not out_bit_depth is None
+         or not out_cube_size is None
+         )):
+        if verbose:
+            print_warning_message(("A preset was specified."
+                                   " Default behaviour is to ignore other"
+                                   " export options. Use "
+                                   "--overwrite-preset, if you want to "
+                                   "overwrite preset values that are"
+                                   " redefined by other options"))
+
     typ = preset[presets.TYPE]
     ext, helper = _get_ext_and_helper(preset[presets.EXT], typ)
     # necessary if presets.TYPE was overwrite by overwrite_preset option
