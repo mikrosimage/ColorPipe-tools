@@ -7,6 +7,7 @@ import shutil
 import os
 from utils import lut_presets as presets
 from lutLab.lut_to_lut import lut_to_lut
+from lutLab.curve_to_lut import curve_to_lut
 from utils.csp_helper import CSP_HELPER
 from utils.ocio_helper import create_ocio_processor
 from PyOpenColorIO.Constants import INTERP_LINEAR
@@ -60,12 +61,12 @@ class GeneralTest(unittest.TestCase):
 
         """
         loaded_presets = presets.get_presets_from_env()
-        self.assert_(len(loaded_presets) > 0, ("No preset loaded."
+        self.assert_(len(loaded_presets) > 0, ("No preset loaded. "
                                                "Default presets should at "
                                                "least have been detected"))
         # try to use the first preset
         preset = loaded_presets.values()[0]
-        lut_to_lut(self.lut3d, preset=preset, outlutfile=self.tmp_dir)
+        curve_to_lut('sRGB', None, outlutfile=self.tmp_dir, preset=preset)
 
     def tearDown(self):
         #Remove test directory

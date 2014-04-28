@@ -41,7 +41,7 @@ class LutToLutException(Exception):
 def lut_to_lut(inlutfile, out_type=None, out_format=None, outlutfile=None,
                input_range=None, output_range=None, out_bit_depth=None,
                inverse=False, out_cube_size=None, verbose=False,
-               smooth_size=None, preset=None):
+               smooth_size=None, preset=None, overwrite_preset=False):
     """ Concert a LUT in another LUT
     Arguments testing are delegated to LUT helpers
 
@@ -81,7 +81,12 @@ def lut_to_lut(inlutfile, out_type=None, out_format=None, outlutfile=None,
 
     """
     if preset:
-        write_function = get_write_function(preset)
+        write_function = get_write_function(preset, overwrite_preset,
+                                            out_type, out_format,
+                                            input_range,
+                                            output_range,
+                                            out_bit_depth,
+                                            out_cube_size)
     elif out_type is None or out_format is None:
         raise LutToLutException("Specify out_type/out_format or a preset.")
     else:
@@ -160,7 +165,8 @@ if __name__ == '__main__':
         ARGS.input_range = presets.convert_string_range(ARGS.input_range)
     if not ARGS.output_range is None:
         ARGS.output_range = presets.convert_string_range(ARGS.output_range)
-
+    if not ARGS.preset is None:
+        ARGS.preset = presets.get_presets_from_env()[ARGS.preset]
     try:
         lut_to_lut(ARGS.inlutfile,
                    ARGS.out_type,
@@ -172,7 +178,9 @@ if __name__ == '__main__':
                    ARGS.inverse,
                    ARGS.out_cube_size,
                    ARGS.verbose,
-                   ARGS.smooth_size
+                   ARGS.smooth_size,
+                   ARGS.preset,
+                   ARGS.overwrite_preset
                    )
     except Exception as error:
         if ARGS.trace:

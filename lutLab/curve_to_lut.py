@@ -14,13 +14,13 @@ from utils import debug_helper
 from utils.colors_helper import lin_to_gamma, gamma_to_lin
 from utils.colorspaces import COLORSPACES
 # To prevent a warning in argparse
-import utils.export_tool_helper
 from utils.export_tool_helper import (add_export_lut_options,
                                       add_version_option,
                                       add_verbose_option,
                                       get_preset_and_write_function,
                                       add_outlutfile_option,
-                                      add_trace_option)
+                                      add_trace_option,
+                                      get_write_function)
 import utils.lut_presets as presets
 from utils.lut_utils import check_extension, LUTException
 from utils.private_colorspaces import PRIVATE_COLORSPACES
@@ -47,10 +47,10 @@ class Direction(object):
     DECODE = "decode"
 
 
-def curve_to_lut(colorspace, gamma, out_type, out_format, outlutfile,
+def curve_to_lut(colorspace, gamma, outlutfile, out_type=None, out_format=None,
                  input_range=None, output_range=None, out_bit_depth=None,
-                 out_cube_size=None, verbose=False,
-                 direction=Direction.ENCODE):
+                 out_cube_size=None, verbose=False, direction=Direction.ENCODE,
+                 preset=None, overwrite_preset=False):
     """Export a LUT from a colorspace gradation function
 
     Args:
@@ -82,11 +82,9 @@ def curve_to_lut(colorspace, gamma, out_type, out_format, outlutfile,
 
         direction (Direction): encode or decode
 
+        preset (dict): lut generic and sampling informations
+
     """
-    if out_type == '3D':
-        print_warning_message(("Gradations and gamma functions are 1D / 2D"
-                               " transformations. Baking them in a 3D LUT "
-                               "may not be efficient. Are you sure ?"))
     # get colorspace function
     if colorspace is None and gamma is None:
         raise AttributeError("A colorspace or a gamma should be specified")
@@ -115,12 +113,26 @@ def curve_to_lut(colorspace, gamma, out_type, out_format, outlutfile,
             gradation = colorspace_obj.encode_gradation
             title = "Lin_to_{0}".format(colorspace)
     # get preset and write function
-    preset, write_function = get_preset_and_write_function(out_type,
-                                                           out_format,
-                                                           input_range,
-                                                           output_range,
-                                                           out_bit_depth,
-                                                           out_cube_size)
+    if preset:
+        write_function = get_write_function(preset, overwrite_preset,
+                                            out_type, out_format,
+                                            input_range,
+                                            output_range,
+                                            out_bit_depth,
+                                            out_cube_size)
+    elif out_type is None or out_format is None:
+        raise CurveToLUTException("Specify out_type/out_format or a preset.")
+    else:
+        preset, write_function = get_preset_and_write_function(out_type,
+                                                               out_format,
+                                                               input_range,
+                                                               output_range,
+                                                               out_bit_depth,
+                                                               out_cube_size)
+    if preset[presets.TYPE] == '3D':
+        print_warning_message(("Gradations and gamma functions are 1D / 2D"
+                               " transformations. Baking them in a 3D LUT "
+                               "may not be efficient. Are you sure ?"))
     # process file output
     if os.path.isdir(outlutfile):
         filename = "{0}{1}".format(title,
@@ -138,7 +150,7 @@ def curve_to_lut(colorspace, gamma, out_type, out_format, outlutfile,
         print "{0} will be written in {1}.".format(title, outlutfile)
         print "Final setting:\n{0}".format(presets.string_preset(preset))
     # write
-    write_function(gradation, outlutfile, preset)
+    message = write_function(gradation, outlutfile, preset)
     if verbose:
         print_success_message(message)
 
@@ -164,14 +176,14 @@ def __get_options():
     action.add_argument("--gamma",
                         help="Input pure gamma gradation",
                         type=float)
-    # out lut file, type, format, ranges,  out bit depth, out cube size
-    add_outlutfile_option(parser, required=True)
-    add_export_lut_options(parser)
     # direction
     parser.add_argument("-d", "--direction", help=("Direction : "
                                                    "encode or decode."),
                         type=str, choices=[Direction.ENCODE, Direction.DECODE],
                         default=Direction.ENCODE)
+    # out lut file, type, format, ranges,  out bit depth, out cube size
+    add_outlutfile_option(parser, required=True)
+    add_export_lut_options(parser)
     # version
     full_version = debug_helper.get_imported_modules_versions(sys.modules,
                                                               globals())
@@ -190,20 +202,25 @@ if __name__ == '__main__':
             ARGS.input_range = presets.convert_string_range(ARGS.input_range)
         if not ARGS.output_range is None:
             ARGS.output_range = presets.convert_string_range(ARGS.output_range)
+        if not ARGS.preset is None:
+            ARGS.preset = presets.get_presets_from_env()[ARGS.preset]
         curve_to_lut(ARGS.colorspace,
                      ARGS.gamma,
+                     ARGS.outlutfile,
                      ARGS.out_type,
                      ARGS.out_format,
-                     ARGS.outlutfile,
                      ARGS.input_range,
                      ARGS.output_range,
                      ARGS.out_bit_depth,
                      ARGS.out_cube_size,
                      ARGS.verbose,
-                     ARGS.direction)
+                     ARGS.direction,
+                     ARGS.preset,
+                     ARGS.overwrite_preset
+                     )
     except Exception as error:
         if ARGS.trace:
             print_error_message(error)
             raise
-        message = "{0}.\nUse --trace option to get details".format(error)
-        print_error_message(message)
+        MSG = "{0}.\nUse --trace option to get details".format(error)
+        print_error_message(MSG)

@@ -22,12 +22,12 @@ class CurveToLUTTest(unittest.TestCase):
 
         """
         # test colorspace
-        curve_to_lut('sRGB', None, '1D', 'csp', self.tmp_dir)
-        curve_to_lut('sRGB', None, '1D', 'csp', self.tmp_dir,
+        curve_to_lut('sRGB', None, self.tmp_dir, '1D', 'csp')
+        curve_to_lut('sRGB', None, self.tmp_dir, '1D', 'csp',
                      direction="decode")
         # test gamma
-        curve_to_lut(None, 2.2, '1D', 'csp', self.tmp_dir)
-        curve_to_lut(None, 2.2, '1D', 'csp', self.tmp_dir, direction="decode")
+        curve_to_lut(None, 2.2, self.tmp_dir, '1D', 'csp')
+        curve_to_lut(None, 2.2, self.tmp_dir, '1D', 'csp', direction="decode")
 
     def tearDown(self):
         #Remove test directory

@@ -80,12 +80,12 @@ def add_out_type_option(parser):
         parser (argparse.ArgumentParser): parser on which option will be add
 
     """
-    parser.add_argument("out_type",
+    parser.add_argument("--out_type",
                         help=("Output LUT type.\nBeware: every format doesn't "
                               "support each type. See format help."),
                         type=str,
                         choices=presets.EXPORT_CHOICE,
-                        default='3D')
+                        default=None)
 
 
 def add_out_format_option(parser):
@@ -95,13 +95,13 @@ def add_out_format_option(parser):
         parser (argparse.ArgumentParser): parser on which option will be add
 
     """
-    parser.add_argument("out_format",
+    parser.add_argument("--out_format",
                         help=("Output LUT format.\nBeware: 3dl, clcc, json are"
                               " 3D only and lut is 1D/2D only."),
                         type=str,
                         choices=['3dl', 'csp', 'cube', 'lut', 'spi', 'clcc',
                                  'json'],
-                        default='cube')
+                        default=None)
 
 
 def add_range_option(parser):
@@ -132,7 +132,7 @@ def add_out_bitdepth_option(parser):
                         "--out-bit-depth",
                         help=("Output lut bit precision (1D only). "
                               "Ex : 10, 16, 32."),
-                        default=16,
+                        default=None,
                         type=int)
 
 
@@ -161,7 +161,7 @@ def add_out_cube_size_option(parser):
     parser.add_argument("-ocs",
                         "--out-cube-size",
                         help="Output cube size (3D only). Ex : 17, 32.",
-                        default=17,
+                        default=None,
                         type=int)
 
 
@@ -218,6 +218,31 @@ def add_trace_option(parser):
                         help='In case of error, print stack trace')
 
 
+def add_preset_option(parser):
+    """ Add preset argument
+
+    Args:
+        parser (argparse.ArgumentParser): parser on which option will be add
+
+    """
+    loaded_presets = presets.get_presets_from_env()
+    if len(loaded_presets) > 0:
+        parser.add_argument('--preset',
+                            type=str,
+                            choices=loaded_presets.keys(),
+                            help=('Use a LUT export preset to set output LUT '
+                                  'arguments'),
+                            default=None)
+        parser.add_argument('--overwrite-preset',
+                            action='store_true',
+                            help=("If a preset + other options are "
+                                  "specified, it will overwrite preset values"
+                                  " with the option values."
+                                  "Ex: --preset lustre --output-range [0, 255]"
+                                  ", will use range defined by --output-range"
+                                  ))
+
+
 def add_export_lut_options(parser):
     """ Add export LUT arguments : out lut file, type, format, ranges,
     out bit depth and out cube size.
@@ -233,6 +258,8 @@ def add_export_lut_options(parser):
     add_out_bitdepth_option(parser)
     # 3D arg
     add_out_cube_size_option(parser)
+    # presets
+    add_preset_option(parser)
 
 
 def _get_ext_and_helper(key, typ):
@@ -296,7 +323,9 @@ def _get_write_function(helper, typ):
         return helper.write_2d_lut
 
 
-def get_write_function(preset):
+def get_write_function(preset, overwrite_preset=False, out_type=None,
+                       out_format=None, input_range=None, output_range=None,
+                        out_bit_depth=None, out_cube_size=None):
     """ Get write function from a preset
 
     Args:
@@ -306,9 +335,23 @@ def get_write_function(preset):
         .write function
 
     """
-    ext = preset[presets.EXT]
+    if overwrite_preset:
+        if not out_type is None:
+            preset[presets.TYPE] = out_type
+        if not out_format is None:
+            preset[presets.EXT] = out_format
+        if not input_range is None:
+            preset[presets.IN_RANGE] = input_range
+        if not output_range is None:
+            preset[presets.OUT_RANGE] = output_range
+        if not out_bit_depth is None:
+            preset[presets.OUT_BITDEPTH] = out_bit_depth
+        if not out_cube_size is None:
+            preset[presets.CUBE_SIZE] = out_cube_size
     typ = preset[presets.TYPE]
-    helper = _get_ext_and_helper(ext, typ)[1]
+    ext, helper = _get_ext_and_helper(preset[presets.EXT], typ)
+    # necessary if presets.TYPE was overwrite by overwrite_preset option
+    preset[presets.EXT] = ext
     # check
     helper.check_preset(preset)
     return _get_write_function(helper, typ)
