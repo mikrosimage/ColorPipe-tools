@@ -55,6 +55,18 @@ class GeneralTest(unittest.TestCase):
             import plot_that_lut
             plot_that_lut.plot_that_lut(outlutfile)
 
+    def test_env_presets(self):
+        """ Load presets from env
+
+        """
+        loaded_presets = presets.get_presets_from_env()
+        self.assert_(len(loaded_presets) > 0, ("No preset loaded."
+                                               "Default presets should at "
+                                               "least have been detected"))
+        # try to use the first preset
+        preset = loaded_presets.values()[0]
+        lut_to_lut(self.lut3d, preset=preset, outlutfile=self.tmp_dir)
+
     def tearDown(self):
         #Remove test directory
         shutil.rmtree(self.tmp_dir)

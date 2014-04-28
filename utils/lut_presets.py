@@ -26,10 +26,12 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-__version__ = "0.2"
+__version__ = "0.3"
 import collections
 from utils.color_log_helper import print_warning_message
 import json
+import os
+import ntpath
 
 
 class PresetException(Exception):
@@ -76,6 +78,11 @@ RAISE_MODE = 'raise'
 FILL_MODE = 'fill'
 
 MISSING_ATTR_MESSAGE = "Preset must have '{0}' attribute"
+
+# Presets on disk
+
+PRESET_DEFAULT_DIR = 'presets'
+PRESET_ENV = 'LUT_PRESETS'
 
 
 def get_default_preset():
@@ -233,6 +240,8 @@ def string_preset(preset):
     return string
 
 
+# Read and write preset on disk
+
 def write_preset(file_path, preset):
     """Write a preset as a json file
 
@@ -248,3 +257,72 @@ def read_preset(file_path):
     """
     preset_data = open(file_path, 'r').read()
     return json.loads(preset_data)
+
+
+# Get presets present in the environment
+
+
+def get_default_preset_path():
+    """ Return default preset path
+
+    Returns:
+        .str
+
+    """
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                        PRESET_DEFAULT_DIR)
+
+
+def get_env_items():
+    """ Return preset paths contained in preset environment variable
+
+    Returns:
+        .str
+
+    """
+    items = os.getenv(PRESET_ENV, get_default_preset_path())
+    if items:
+        return items
+    return get_default_preset_path()
+
+
+def _check_and_load_preset(file_path, presets):
+    """ Check if the file is a json file and try to load a preset dict.
+    On success, resulting preset is added to presets.
+    On failure, presets remains untouched
+
+    Returns:
+        .dict {str, preset}
+
+    """
+    if not file_path.lower().endswith(".json"):
+        return presets
+    try:
+        preset = read_preset(file_path)
+    except ValueError:
+        return presets
+    if preset is None or not isinstance(preset, dict):
+        return presets
+    file_name = os.path.splitext(ntpath.basename(file_path))[0]
+    presets[file_name] = preset
+    return presets
+
+
+def get_presets_from_env():
+    """ Return a dict containing presets found in environment.
+
+    Returns:
+        .dict {str, preset}
+
+    """
+    items = get_env_items().split(os.pathsep)
+    presets = {}
+    for item in items:
+        if os.path.isfile(item):
+            presets = _check_and_load_preset(item, presets)
+        elif os.path.isdir(item):
+            for file_name in os.listdir(item):
+                file_path = os.path.join(item, file_name)
+                if os.path.isfile(file_path):
+                    presets = _check_and_load_preset(file_path, presets)
+    return presets
