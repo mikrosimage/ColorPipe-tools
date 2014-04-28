@@ -195,16 +195,16 @@ def add_version_option(parser, description, version, full_version):
                         action=make_full_version_action(versions))
 
 
-def add_verbose_option(parser):
+def add_silent_option(parser):
     """ Add verbose argument
 
     Args:
         parser (argparse.ArgumentParser): parser on which option will be add
 
     """
-    parser.add_argument('--verbose',
+    parser.add_argument('--silent',
                         action='store_true',
-                        help='Print log')
+                        help='Hide log')
 
 
 def add_trace_option(parser):

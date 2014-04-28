@@ -16,7 +16,7 @@ from utils.colorspaces import COLORSPACES
 # To prevent a warning in argparse
 from utils.export_tool_helper import (add_export_lut_options,
                                       add_version_option,
-                                      add_verbose_option,
+                                      add_silent_option,
                                       get_preset_and_write_function,
                                       add_outlutfile_option,
                                       add_trace_option,
@@ -190,7 +190,7 @@ def __get_options():
                                                               globals())
     add_version_option(parser, description, __version__, full_version)
     # verbose
-    add_verbose_option(parser)
+    add_silent_option(parser)
     # trace
     add_trace_option(parser)
     return parser.parse_args()
@@ -214,7 +214,7 @@ if __name__ == '__main__':
                      ARGS.output_range,
                      ARGS.out_bit_depth,
                      ARGS.out_cube_size,
-                     ARGS.verbose,
+                     not ARGS.silent,
                      ARGS.direction,
                      ARGS.preset,
                      ARGS.overwrite_preset

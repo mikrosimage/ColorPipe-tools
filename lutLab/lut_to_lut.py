@@ -19,7 +19,7 @@ from utils.ocio_helper import (create_ocio_processor,
 from utils.export_tool_helper import (add_export_lut_options,
                                       add_version_option,
                                       add_inverse_option,
-                                      add_verbose_option,
+                                      add_silent_option,
                                       add_inlutfile_option,
                                       add_trace_option,
                                       get_preset_and_write_function,
@@ -152,7 +152,7 @@ def __get_options():
                                                               globals())
     add_version_option(parser, description, __version__, full_version)
     # verbose
-    add_verbose_option(parser)
+    add_silent_option(parser)
     # trace
     add_trace_option(parser)
     return parser.parse_args()
@@ -178,7 +178,7 @@ if __name__ == '__main__':
                    ARGS.out_bit_depth,
                    ARGS.inverse,
                    ARGS.out_cube_size,
-                   ARGS.verbose,
+                   not ARGS.silent,
                    ARGS.smooth_size,
                    ARGS.preset,
                    ARGS.overwrite_preset
