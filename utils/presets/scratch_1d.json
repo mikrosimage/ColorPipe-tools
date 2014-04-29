@@ -1,0 +1,12 @@
+{
+"title": "Assimilate Scratch 1D LUT",
+"comment": "Generated with ColorPipe-tools",
+"type": "1D",
+"extension": ".lut",
+"output_range": [0, 1023],
+"input_range": [0, 1023],
+"output_bitdepth": 10,
+"version": "1",
+"layout": "block",
+"header_type": "scratch_header"
+}
