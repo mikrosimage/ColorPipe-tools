@@ -67,7 +67,7 @@ def add_outlutfile_option(parser, required=False):
                             type=str,
                             default=None)
     else:
-        parser.add_argument("-out",
+        parser.add_argument("-outfile",
                             "--outlutfile",
                             help=help_msg,
                             type=str,
