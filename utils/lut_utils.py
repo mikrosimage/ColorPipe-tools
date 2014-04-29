@@ -6,6 +6,7 @@
 __version__ = "0.4"
 import os
 import ntpath
+import math
 
 
 class LUTException(Exception):
@@ -146,3 +147,16 @@ def get_file_shortname(file_path):
         .str
     """
     return os.path.splitext(ntpath.basename(file_path))[0]
+
+
+def get_bitdepth(max_value):
+    """ Return bitdepth from max value
+
+    Args:
+        max_value (int): ex, 1023, 4095...
+
+    Return:
+        .int
+
+    """
+    return int(math.log(max_value + 1, 2))

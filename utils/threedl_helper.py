@@ -8,6 +8,7 @@ import math
 from utils.abstract_lut_helper import AbstractLUTHelper
 from utils import lut_presets as presets
 from utils.lut_presets import RAISE_MODE, TYPE, PresetException
+from utils.lut_utils import get_bitdepth
 
 
 class ThreeDLHelperException(Exception):
@@ -75,8 +76,8 @@ class ThreedlLutHelper(AbstractLUTHelper):
         lutfile.write("# Input range {0}\n".format(input_range))
         lutfile.write("# Output range {0}\n".format(output_range))
         # get bit depth from ranges
-        in_bit_depth = int(math.log(input_range[1] + 1, 2))
-        out_bit_depth = int(math.log(output_range[1] + 1, 2))
+        in_bit_depth = get_bitdepth(input_range[1])
+        out_bit_depth = get_bitdepth(output_range[1])
         if preset[MESH]:
             # About mesh values :
             # Mesh 5 12
