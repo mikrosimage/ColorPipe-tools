@@ -5,26 +5,45 @@ ColorPipe-tools
 
 Tools for Color Pipelines.
 
-Includes :
+Tools overview
+---------------
 
-+ [plotThatLUT](https://github.com/mikrosimage/ColorPipe-tools/tree/master/plotThatLut) is a python script for plotting look up tables based on [OpenColorIO](http://opencolorio.org/) and [matplotlib](http://matplotlib.org/).
+###Plot That LUT
+[plotThatLUT](https://github.com/mikrosimage/ColorPipe-tools/tree/master/plotThatLut) is a python script for plotting look up tables based on [OpenColorIO](http://opencolorio.org/) and [matplotlib](http://matplotlib.org/).
 
 ![plotThatLUT](https://dl.dropboxusercontent.com/u/2979643/plotThatLUT.png "plotThatLUT")
 
-+ [lutLab](https://github.com/mikrosimage/ColorPipe-tools/tree/master/lutLab) contains utility python scripts to convert and manipulate Look Up Tables.
+###LUT Lab
+[lutLab](https://github.com/mikrosimage/ColorPipe-tools/tree/master/lutLab) contains utility python scripts to convert and manipulate Look Up Tables.
 
 Available scripts :   
 
-**lut_to_lut**: convert a 1D/2D/3D lut into another format.   
+**lut_to_lut**: convert a 1D/2D/3D LUT into another format.   
 
-**ext_1d_lut**: extract the tone mapping curve of a 3D LUT using a bicubic interpolation (or not)   
+**curve_to_lut**: export a LUT from a colorspace gradation function
 
-**rgb_to_xyz_matrix**: generate RGB colorspace to XYZ conversion matrix    
+**rgb_to_xyz_matrix**: generate RGB colorspace to XYZ conversion matrix     
 
-**curve_to_lut**: Export a LUT from a colorspace gradation function
+**plot_that_chroma**: plot chromaticity coordinates.
 
+![Plot that chroma](https://dl.dropboxusercontent.com/u/2979643/plot_that_chroma.jpg "Plot that chroma")
 
-
-+ [web_app](https://github.com/mikrosimage/ColorPipe-tools/tree/master/web_app) is a web version of the previous tools based on [cherryPy](http://www.cherrypy.org/).
+###Web app
+[web_app](https://github.com/mikrosimage/ColorPipe-tools/tree/master/web_app) is a web version of the previous tools based on [cherryPy](http://www.cherrypy.org/).
 
 ![Web app](https://dl.dropboxusercontent.com/u/2979643/PlotThatLUT_webapp2.png "Web app")
+
+Requirements
+-------------------
+
++ OpenColorIO / PyOpenColorIO
++ Numpy 1.7.1 
++ Scipy 0.12
++ Argparse
++ Clint (optional)
+
+####For plot tools
++ Matplotlib 1.2.1
+
+####For web app
++ cherryPy 3.2.4
