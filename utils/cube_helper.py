@@ -66,7 +66,7 @@ class CubeLutHelper(AbstractLUTHelper):
     def write_1d_lut(self, process_function, file_path, preset):
         print_warning_message("1D LUT is not supported in Cube format"
                               " --> Switch to 2D LUT.")
-        self.write_2d_lut(process_function, file_path, preset)
+        return self.write_2d_lut(process_function, file_path, preset)
 
     def write_3d_lut(self, process_function, file_path, preset):
         data = self._get_3d_data(process_function, preset)[1]

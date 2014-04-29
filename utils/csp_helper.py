@@ -6,7 +6,6 @@
 __version__ = "0.3"
 from utils.abstract_lut_helper import AbstractLUTHelper
 from utils import lut_presets as presets
-from utils.lut_presets import RAISE_MODE
 from utils.color_log_helper import print_warning_message
 
 
