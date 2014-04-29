@@ -6,7 +6,6 @@
 
 """
 __version__ = "0.1"
-## imports
 import os
 # OpenColorIO
 from PyOpenColorIO.Constants import INTERP_LINEAR
@@ -52,7 +51,7 @@ def show_plot(fig, filename):
         split_filename = os.path.splitext(filename)
         filename = '{0}{1}'.format(split_filename[0],
                                    split_filename[1].replace(".", "_"))
-        #todo parametrize current_dir
+        # TODO parametrize current_dir
         current_dir = os.path.dirname(os.path.abspath(__file__))
         current_dir = os.path.join(os.path.dirname(current_dir), 'web_app')
         export_path = 'img/export_{0}.png'.format(filename)
@@ -262,15 +261,15 @@ def plot_that_lut(lutfiles, plot_type=None, count=None, inverse=False,
         draw_green_curve = True
         draw_blue_curve = True
         if 'red' in plot_type:
-            #red_curve option
+            # red_curve option
             draw_green_curve = False
             draw_blue_curve = False
         elif 'green' in plot_type:
-            #green_curve option
+            # green_curve option
             draw_red_curve = False
             draw_blue_curve = False
         elif 'blue' in plot_type:
-            #blue_curve option
+            # blue_curve option
             draw_red_curve = False
             draw_green_curve = False
         return plot_curve(lutfiles, count, processors,

@@ -62,13 +62,13 @@ def make_full_version_action(version_text):
 
         """
         def __init__(self, option_strings, dest=None, nargs=0, default=None,
-                     required=False, type=None, metavar=None,
-                     help=("show version number of the program and its "
+                     required=False, typ=None, metavar=None,
+                     help_str=("show version number of the program and its "
                            "dependencies. And then exit")):
             super(FullVersionAction, self).__init__(
                 option_strings=option_strings,
                 dest=dest, nargs=nargs, default=default, required=required,
-                metavar=metavar, type=type, help=help)
+                metavar=metavar, type=typ, help=help_str)
 
         def __call__(self, parser, namespace, values, option_string=None):
             print version_text

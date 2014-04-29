@@ -65,7 +65,7 @@ SMOOTH = 'smooth'
 # 3D specific attribute
 CUBE_SIZE = 'cube_size'
 
-# ascii specific attribute
+# ascii specific attributes
 WRITE_INDEX = 'write_index'
 WRITE_ALPHA = 'write_alpha'
 IS_FLOAT = 'is_float'

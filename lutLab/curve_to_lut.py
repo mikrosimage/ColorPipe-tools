@@ -163,7 +163,7 @@ def __get_options():
         .argparse.ArgumentParser.args
 
     """
-    ## Define parser
+    # Define parser
     description = ('Create lut file corresponding to a colorspace or gamma '
                    'gradation')
     parser = argparse.ArgumentParser(description=description)

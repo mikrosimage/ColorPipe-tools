@@ -19,7 +19,7 @@ def __get_options():
         .argparse.ArgumentParser.args
 
     """
-    ## Define parser
+    # Define parser
     description = 'PlotThatLUT command line tool'
     parser = argparse.ArgumentParser(description=description)
     # main lut
@@ -66,14 +66,11 @@ default=None, type=int)
                                                  versions)
     parser.add_argument('-V', "--full-versions",
                         action=debug_helper.make_full_version_action(versions))
-    ## return args
+    # return args
     return parser.parse_args()
 
 
 if __name__ == '__main__':
-    """ Command line interface for plot_that_lut
-
-    """
     ARGS = __get_options()
     try:
         plot_that_lut.plot_that_lut(ARGS.lutfiles,

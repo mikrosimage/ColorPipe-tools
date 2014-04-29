@@ -63,7 +63,7 @@ def __get_options():
         .argparse.ArgumentParser.args
 
     """
-    ## Define parser
+    # Define parser
     description = 'Plot chromaticities in a xy or u\'v\' diagram'
     parser = argparse.ArgumentParser(description=description)
     # RGB colorspace

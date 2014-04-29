@@ -133,7 +133,7 @@ def __get_options():
         .argparse.ArgumentParser.args
 
     """
-    ## Define parser
+    # Define parser
     description = 'Convert a LUT into another format'
     parser = argparse.ArgumentParser(description=description)
     # input lut
@@ -159,8 +159,6 @@ def __get_options():
 
 
 if __name__ == '__main__':
-    """ Command line interface
-    """
     ARGS = __get_options()
     if not ARGS.input_range is None:
         ARGS.input_range = presets.convert_string_range(ARGS.input_range)
