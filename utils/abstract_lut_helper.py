@@ -199,7 +199,8 @@ class AbstractLUTHelper(object):
             data.append(Rgb(red, green, blue))
         return data
 
-    def _get_3d_data(self, process_function, preset):
+    def _get_3d_data(self, process_function, preset,
+                     inverse_loops_order=False):
         """ Process 3D data considering LUT params
 
         Args:
@@ -209,6 +210,15 @@ class AbstractLUTHelper(object):
             functions
 
             preset (dict): lut generic and sampling informations
+
+            inverse_loops_order (bool): if true (3dl case), loops are :
+            for red in reds:
+                for green in greens:
+                    for blue in blues:
+            if false (other 3d formats), loops are:
+            for blue in reds:
+                for green in greens:
+                    for red in blues:
 
         Returns:
             .[input Rgb], [output Rgb]
@@ -231,11 +241,17 @@ class AbstractLUTHelper(object):
         data = []
         in_data = []
         b_index = 0
-        for blue in compute_range:
+        for first in compute_range:
             g_index = 0
             for green in compute_range:
                 r_index = 0
-                for red in compute_range:
+                for last in compute_range:
+                    if inverse_loops_order:
+                        blue = last
+                        red = first
+                    else:
+                        blue = first
+                        red = last
                     norm_red = red
                     norm_green = green
                     norm_blue = blue

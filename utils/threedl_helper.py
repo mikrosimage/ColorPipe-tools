@@ -57,7 +57,9 @@ class ThreedlLutHelper(AbstractLUTHelper):
                                        self. _get_range_message(str_range,
                                                                 arange))
         # get data
-        data = self._get_3d_data(process_function, preset)[1]
+        data = self._get_3d_data(process_function,
+                                 preset,
+                                 inverse_loops_order=True)[1]
         # get attribute
         lutfile = open(file_path, 'w+')
         cube_size = preset[presets.CUBE_SIZE]
@@ -96,7 +98,7 @@ class ThreedlLutHelper(AbstractLUTHelper):
 
     def _get_rgb_value_line(self, preset, rgb, in_rgb=None):
         # 3dl layout is bgr
-        return self._get_pattern(preset).format(rgb.b, rgb.g, rgb.r)
+        return self._get_pattern(preset).format(rgb.r, rgb.g, rgb.b)
 
     @staticmethod
     def _get_range_message(range_name, arange):
