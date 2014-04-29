@@ -262,6 +262,8 @@ class AbstractLUTTest(unittest.TestCase):
         """ Test preset complete function
 
         """
+        colorspace = REC709
+        outlutfile = os.path.join(self.tmp_dir, "default_ascii_1D.lut")
         default_preset = ASCII_HELPER.get_default_preset()
         cust_preset = {}
         cust_preset = ASCII_HELPER.complete_preset(cust_preset)
@@ -271,6 +273,17 @@ class AbstractLUTTest(unittest.TestCase):
                       "Completed preset:\n{0}\nDefault one:\n{1}"
                       ).format(cust_preset, default_preset))
         ASCII_HELPER.check_preset(cust_preset)
+        # try to write a float ascii lut without forcing float mode
+        cust_preset[presets.IN_RANGE] = [0, 1.0]
+        self.failUnlessRaises(PresetException, ASCII_HELPER.write_1d_lut,
+                                               colorspace.decode_gradation,
+                                               outlutfile,
+                                               cust_preset)
+        # force float mode
+        cust_preset[presets.IS_FLOAT] = True
+        ASCII_HELPER.write_1d_lut(colorspace.decode_gradation,
+                                  outlutfile,
+                                  cust_preset)
 
     def tearDown(self):
         #Remove test directory

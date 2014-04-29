@@ -65,6 +65,24 @@ SMOOTH = 'smooth'
 # 3D specific attribute
 CUBE_SIZE = 'cube_size'
 
+# ascii specific attribute
+WRITE_INDEX = 'write_index'
+WRITE_ALPHA = 'write_alpha'
+IS_FLOAT = 'is_float'
+# layout option
+LAYOUT = 'layout'
+# with block layout, channel values are written by block. Ex: first red values,
+# then green values...
+BLOCK_LAYOUT = 'block'
+# with line layout, values are written triplet by triplet
+TRIPLET_LAYOUT = 'triplet'
+SEPARATOR = 'separator'
+# header types
+HEADER_TYPE = 'header_type'
+LUSTRE_HEADER = 'lustre_header'
+SCRATCH_HEADER = 'scratch_header'
+
+
 BASIC_ATTRS = [TYPE, EXT, VERSION, TITLE, COMMENT, IN_RANGE, OUT_RANGE]
 
 BITDEPTH_MAX_VALUE = 128

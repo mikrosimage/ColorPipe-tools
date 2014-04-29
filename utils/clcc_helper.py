@@ -80,7 +80,7 @@ class CLCCHelper(AbstractLUTHelper):
         raise CLCCHelperException(message)
 
     @staticmethod
-    def _get_pattern(preset):
+    def _get_pattern(preset, separator=' '):
         return "{0:.6f},{1:.6f},{2:.6f}\n"
 
     def write_3d_lut(self, process_function, file_path, preset):

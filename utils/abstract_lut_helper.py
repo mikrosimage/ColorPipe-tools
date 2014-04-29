@@ -55,7 +55,7 @@ class AbstractLUTHelper(object):
         return pattern
 
     @staticmethod
-    def _get_pattern(preset):
+    def _get_pattern(preset, separator=' '):
         """ Get string pattern considering sampling types (float / int)
 
         Args:
@@ -67,9 +67,10 @@ class AbstractLUTHelper(object):
         """
         is_int = presets.is_int(preset[OUT_RANGE])
         if is_int:
-            pattern = "{0} {1} {2}\n"
+            pattern = "{0}" + separator + "{1}" + separator + "{2}\n"
         else:
-            pattern = "{0:.6f} {1:.6f} {2:.6f}\n"
+            pattern = ("{0:.6f}" + separator +
+                       "{1:.6f}" + separator + "{2:.6f}\n")
         return pattern
 
     def _get_r_value_line(self, preset, rgb):
@@ -86,7 +87,7 @@ class AbstractLUTHelper(object):
         """
         return self._get_pattern_1d(preset).format(rgb.r)
 
-    def _get_rgb_value_line(self, preset, rgb, in_rgb=None):
+    def _get_rgb_value_line(self, preset, rgb, in_rgb=None, separator=" "):
         """ Get string pattern for a 2D / 3D LUT
 
         Args:
@@ -97,13 +98,20 @@ class AbstractLUTHelper(object):
         Kwargs:
             in_rgb: input triplets, required by some LUT formats
 
+            separator (str): string that will separate each triplet values.
+            Ex: ' ', '\t'
+
         Returns:
             .str
 
         """
-        line = self._get_pattern(preset).format(rgb.r, rgb.g, rgb.b)
+        line = self._get_pattern(preset, separator).format(rgb.r, rgb.g, rgb.b)
         if not in_rgb is None:
-            return "{0} {1} {2} {3}".format(in_rgb.r, in_rgb.g, in_rgb.b, line)
+            return "{0}{4}{1}{4}{2}{4}{3}".format(in_rgb.r,
+                                            in_rgb.g,
+                                            in_rgb.b,
+                                            line,
+                                            separator)
         return line
 
     def _get_1d_data(self, process_function, preset):
