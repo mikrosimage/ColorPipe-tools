@@ -160,3 +160,26 @@ def get_bitdepth(max_value):
 
     """
     return int(math.log(max_value + 1, 2))
+
+
+def get_input_range(colorspace, direction, round_value=10):
+    """ Return input range from colorspace gradation function
+
+    Args:
+        colorspace (utils.AbstractColorspace): colorspace to process
+
+        direction (str): "encode" else will decode.
+
+    Kwargs:
+        round_value (int): number of value after the comma.
+
+    """
+    decode_min = colorspace.decode_gradation(0)
+    decode_max = colorspace.decode_gradation(1)
+    encode_min = colorspace.encode_gradation(decode_min)
+    encode_max = colorspace.encode_gradation(decode_max)
+    if direction == "encode":
+        # Encode input range (return decode value)
+        return [round(decode_min, round_value), round(decode_max, round_value)]
+    # Decode input range (return encode value)
+    return [round(encode_min, round_value), round(encode_max, round_value)]

@@ -17,8 +17,8 @@ from utils.spi_helper import SPI_HELPER
 from utils.ascii_helper import ASCII_HELPER, AsciiHelperException
 from utils.clcc_helper import CLCC_HELPER
 from utils.json_helper import JSON_HELPER
-
 from utils.ocio_helper import create_ocio_processor
+from utils.lut_utils import get_input_range
 
 DISPLAY = False
 
@@ -172,17 +172,17 @@ class AbstractLUTTest(unittest.TestCase):
                 args_1d[presets.OUT_BITDEPTH] = 16
                 decode_min = colorspace.decode_gradation(0)
                 decode_max = colorspace.decode_gradation(1)
-                encode_min = colorspace.encode_gradation(decode_min)
-                encode_max = colorspace.encode_gradation(decode_max)
-                args_1d[presets.IN_RANGE] = [round(decode_min, 10),
-                                             round(decode_max, 10)]
+                args_1d[presets.IN_RANGE] = get_input_range(colorspace,
+                                                            "encode",
+                                                            10)
                 # write encode LUT
                 helper.write_2d_lut(colorspace.encode_gradation,
                                         encode_filepath,
                                         args_1d)
                 # write decode LUT
-                args_1d[presets.IN_RANGE] = [round(encode_min, 10),
-                                             round(encode_max, 10)]
+                args_1d[presets.IN_RANGE] = get_input_range(colorspace,
+                                                            "decode",
+                                                            10)
                 helper.write_2d_lut(colorspace.decode_gradation,
                                         decode_filepath,
                                         args_1d)
