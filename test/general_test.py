@@ -49,7 +49,7 @@ class GeneralTest(unittest.TestCase):
         """Display rgb matrix
 
         """
-        rgb_to_xyz_matrix.display_matrix('REC709', 'spimtx')
+        rgb_to_xyz_matrix.display_matrix('Rec709', 'spimtx')
         # TODO test values
 
     def tearDown(self):
