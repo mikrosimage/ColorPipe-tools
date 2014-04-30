@@ -1,0 +1,10 @@
+{
+"title": "Black Magic 3D LUT",
+"comment": "Generated with ColorPipe-tools",
+"type": "3D",
+"extension": ".cube",
+"output_range": [0.0, 1.0],
+"cube_size": 33,
+"input_range": [0.0, 1.0],
+"version": "1"
+}

@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from utils import matplotlib_helper as mplh
 from utils import colorspaces
 
+DISPLAY = False
+
 
 class Test(unittest.TestCase):
     """Test chromaticity plotting
@@ -26,7 +28,11 @@ class Test(unittest.TestCase):
         mplh.plot_colorspace_gamut(colorspaces.REC709, lines_color="m",
                            upvp_conversion=True)
         plt.legend(loc=4)
-        plt.show()
+        if DISPLAY:
+            plt.show()
+        plt.clf()
+        plt.close()
+
 
 if __name__ == "__main__":
     unittest.main()

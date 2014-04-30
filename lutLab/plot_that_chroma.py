@@ -63,8 +63,8 @@ def __get_options():
         .argparse.ArgumentParser.args
 
     """
-    ## Define parser
-    description = 'Create lut file corresponding to a colorspace gradation'
+    # Define parser
+    description = 'Plot chromaticities in a xy or u\'v\' diagram'
     parser = argparse.ArgumentParser(description=description)
     # RGB colorspace
     parser.add_argument("-space", "--colorspace",

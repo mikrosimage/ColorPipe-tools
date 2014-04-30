@@ -3,8 +3,10 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-__version__ = "0.3"
+__version__ = "0.4"
 import os
+import ntpath
+import math
 
 
 class LUTException(Exception):
@@ -71,6 +73,8 @@ def get_3d_list_values(cubesize, processor, hexa_values=False):
         .dict containing cubesize and red, green, blue, input color values
         as lists
 
+    TODO Use by plot_that_lut, to remove someday
+
     """
     input_range = range(0, cubesize)
     max_value = cubesize - 1.0
@@ -107,24 +111,6 @@ def get_3d_list_values(cubesize, processor, hexa_values=False):
             }
 
 
-def write_3d_json_file(filepath, cubesize, processor):
-    """Export cube into a json file
-
-    Args:
-        filepath (str): out LUT path
-
-        cubesize (int): cube size. Ex: 17, 32...
-
-        processor (PyOpenColorIO.config.Processor): an OpenColorIO processor
-
-    """
-    processed_values = get_3d_list_values(cubesize, processor)
-    import json
-    lutfile = open(filepath, 'w+')
-    json.dump(processed_values, lutfile)
-    lutfile.close()
-
-
 def check_extension(filepath, extension):
     """Raise an exception if filepath doesn't match extention
 
@@ -152,3 +138,48 @@ def int_scale_range(values, out_value, in_value=1.0):
 
     """
     return [int(value / float(in_value) * out_value) for value in values]
+
+
+def get_file_shortname(file_path):
+    """ Get file name (without ext and path)
+
+    Returns:
+        .str
+    """
+    return os.path.splitext(ntpath.basename(file_path))[0]
+
+
+def get_bitdepth(max_value):
+    """ Return bitdepth from max value
+
+    Args:
+        max_value (int): ex, 1023, 4095...
+
+    Return:
+        .int
+
+    """
+    return int(math.log(max_value + 1, 2))
+
+
+def get_input_range(colorspace, direction, round_value=10):
+    """ Return input range from colorspace gradation function
+
+    Args:
+        colorspace (utils.AbstractColorspace): colorspace to process
+
+        direction (str): "encode" else will decode.
+
+    Kwargs:
+        round_value (int): number of value after the comma.
+
+    """
+    decode_min = colorspace.decode_gradation(0)
+    decode_max = colorspace.decode_gradation(1)
+    encode_min = colorspace.encode_gradation(decode_min)
+    encode_max = colorspace.encode_gradation(decode_max)
+    if direction == "encode":
+        # Encode input range (return decode value)
+        return [round(decode_min, round_value), round(decode_max, round_value)]
+    # Decode input range (return encode value)
+    return [round(encode_min, round_value), round(encode_max, round_value)]

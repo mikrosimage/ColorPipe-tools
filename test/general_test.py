@@ -2,13 +2,14 @@
 
 """
 import unittest
-import plot_that_lut
+from plotThatLut import plot_that_lut
 import os
 import tempfile
 import shutil
-import lut_to_lut
-import ext_1d_lut
-import rgb_to_xyz_matrix
+from lutLab import rgb_to_xyz_matrix
+
+
+DISPLAY = False
 
 
 class GeneralTest(unittest.TestCase):
@@ -26,41 +27,30 @@ class GeneralTest(unittest.TestCase):
         """Open a 1D LUT and display it
 
         """
-        plot_that_lut.plot_that_lut(self.lut1d,
-                                    count=plot_that_lut.DEFAULT_SAMPLE)
+        if DISPLAY:
+            plot_that_lut.plot_that_lut(self.lut1d,
+                                        count=plot_that_lut.DEFAULT_SAMPLE)
+        else:
+            # TODO
+            pass
 
     def test_lut_3d(self):
         """Open a 3D LUT and display it
 
         """
-        plot_that_lut.plot_that_lut(self.lut3d,
-                                    count=plot_that_lut.DEFAULT_CUBE_SIZE)
-
-    def test_convert_lut(self):
-        """Open a CSP LUT into a CUBE lut and the resulting LUT into csp, cube,
-        json, clcc LUTs
-
-        """
-        cube_lut = os.path.join(self.tmp_dir, "identity.cube")
-        lut_to_lut.lut_to_lut(self.lut1d, cube_lut, lut_type='1D_CUBE')
-        lut_to_lut.lut_to_lut(cube_lut, lut_type='1D_CSP')
-        lut_to_lut.lut_to_lut(cube_lut, lut_type='3D_CUBE')
-        lut_to_lut.lut_to_lut(cube_lut, lut_type='3D_JSON')
-        lut_to_lut.lut_to_lut(cube_lut, lut_type='3D_CLCC')
-
-    def test_extract_lut(self):
-        """Extract the 1d composante of a 3D LUT and plot the result
-
-        """
-        csp_lut = os.path.join(self.tmp_dir, "identity_3d_export.csp")
-        ext_1d_lut.extract_1d_lut(self.lut3d, 10, csp_lut, True)
-        plot_that_lut.plot_that_lut(csp_lut)
+        if DISPLAY:
+            plot_that_lut.plot_that_lut(self.lut3d,
+                                        count=plot_that_lut.DEFAULT_CUBE_SIZE)
+        else:
+            # TODO
+            pass
 
     def test_rgb_to_matrix(self):
         """Display rgb matrix
 
         """
-        rgb_to_xyz_matrix.display_matrix('REC709', 'spimtx')
+        rgb_to_xyz_matrix.display_matrix('Rec709', 'spimtx')
+        # TODO test values
 
     def tearDown(self):
         #Remove test directory

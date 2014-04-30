@@ -135,10 +135,10 @@ class Application(object):
         saved_file.close()
         return backup_filename
 
-#Application root
+# Application root
 APP_ROOT = Application()
 
-#Set up root configuration
+# Set up root configuration
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 APP_CONF = {'/css/style.css': {'tools.staticfile.on': True,
                            'tools.staticfile.filename': os.path.join(
@@ -161,9 +161,9 @@ APP_CONF = {'/css/style.css': {'tools.staticfile.on': True,
                          }
         }
 
-#Update server config
+# Update server config
 cherrypy.config.update("server.conf")
 
-#Start server
+# Start server
 cherrypy.quickstart(APP_ROOT, config=APP_CONF)
 cherrypy.engine.start()

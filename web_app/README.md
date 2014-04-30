@@ -9,12 +9,15 @@ For now, only basic features of PlotThatLut are available.
 
 
 Requirements
-------------
-- Python
-- matplotlib
-- OpenColorIO Python binding
-- CherryPy
-- mako
+-------------------
++ OpenColorIO / PyOpenColorIO
++ Numpy 1.7.1 
++ Scipy 0.12
++ Argparse
++ Clint (optional)
++ Matplotlib 1.2.1
++ cherryPy 3.2.4
++ mako
 
 Web app usage
 -------------
