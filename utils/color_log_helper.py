@@ -16,7 +16,8 @@ def disable_color():
     """ Disable all colors
 
     """
-    colored.disable()
+    if IS_CLINT:
+        colored.disable()
 
 
 def __get_message(prefix, message, color_function):
@@ -45,7 +46,11 @@ def get_error_message(message):
         message (str): message to display
 
     """
-    return __get_message("Error:", message, colored.red)
+    if IS_CLINT:
+        func = colored.red
+    else:
+        func = None
+    return __get_message("Error:", message, func)
 
 
 def get_warning_message(message):
@@ -55,7 +60,11 @@ def get_warning_message(message):
         message (str): message to display
 
     """
-    return __get_message("Warning:", message, colored.yellow)
+    if IS_CLINT:
+        func = colored.yellow
+    else:
+        func = None
+    return __get_message("Warning:", message, func)
 
 
 def get_success_message(message):
@@ -65,7 +74,11 @@ def get_success_message(message):
         message (str): message to display
 
     """
-    return __get_message("Success:", message, colored.green)
+    if IS_CLINT:
+        func = colored.green
+    else:
+        func = None
+    return __get_message("Success:", message, func)
 
 
 def print_error_message(message):
