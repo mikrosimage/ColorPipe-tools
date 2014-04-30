@@ -22,7 +22,7 @@ from utils.export_tool_helper import (add_export_lut_options,
                                       add_trace_option,
                                       get_write_function)
 import utils.lut_presets as presets
-from utils.lut_utils import check_extension, LUTException
+from utils.lut_utils import check_extension, LUTException, get_input_range
 from utils.private_colorspaces import PRIVATE_COLORSPACES
 from utils.color_log_helper import (print_warning_message,
                                     print_error_message,
@@ -50,7 +50,8 @@ class Direction(object):
 def curve_to_lut(colorspace, gamma, outlutfile, out_type=None, out_format=None,
                  input_range=None, output_range=None, out_bit_depth=None,
                  out_cube_size=None, verbose=False, direction=Direction.ENCODE,
-                 preset=None, overwrite_preset=False):
+                 preset=None, overwrite_preset=False,
+                 process_input_range=False):
     """Export a LUT from a colorspace gradation function
 
     Args:
@@ -83,6 +84,9 @@ def curve_to_lut(colorspace, gamma, outlutfile, out_type=None, out_format=None,
         direction (Direction): encode or decode
 
         preset (dict): lut generic and sampling informations
+
+        process_input_range (bool): If true, input range will be computed from
+        colorspace gradation functions. Colorspace only"
 
     """
     # get colorspace function
@@ -147,6 +151,14 @@ def curve_to_lut(colorspace, gamma, outlutfile, out_type=None, out_format=None,
             raise CurveToLUTException(("Directory doesn't exist "
                                        "or {0}").format(error))
     preset[presets.TITLE] = title
+    if process_input_range:
+        if colorspace:
+            preset[presets.IN_RANGE] = get_input_range(colorspace_obj,
+                                                       direction,
+                                                       8)
+        else:
+            raise CurveToLUTException(("--process-input-range must be used"
+                                       " with --colorspace."))
     if verbose:
         print "{0} will be written in {1}.".format(title, outlutfile)
         print "Final setting:\n{0}".format(presets.string_preset(preset))
@@ -185,6 +197,10 @@ def __get_options():
     # out lut file, type, format, ranges,  out bit depth, out cube size
     add_outlutfile_option(parser, required=True)
     add_export_lut_options(parser)
+    parser.add_argument("--process-input-range", action="store_true",
+                        help=("If true, input range will be computed from "
+                              " colorspace gradation functions."
+                              "(Colorspace only))"))
     # version
     full_version = debug_helper.get_imported_modules_versions(sys.modules,
                                                               globals())
@@ -217,7 +233,8 @@ if __name__ == '__main__':
                      not ARGS.silent,
                      ARGS.direction,
                      ARGS.preset,
-                     ARGS.overwrite_preset
+                     ARGS.overwrite_preset,
+                     ARGS.process_input_range
                      )
     except Exception as error:
         if ARGS.trace:

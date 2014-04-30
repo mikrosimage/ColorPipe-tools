@@ -29,6 +29,10 @@ class CurveToLUTTest(unittest.TestCase):
         curve_to_lut(None, 2.2, self.tmp_dir, '1D', 'csp')
         curve_to_lut(None, 2.2, self.tmp_dir, '1D', 'csp', direction="decode")
 
+        # test AlexaLogC, processed input range
+        curve_to_lut('ALEXALOGCV3', None, self.tmp_dir, '1D', 'csp',
+                     process_input_range=True)
+
     def tearDown(self):
         #Remove test directory
         shutil.rmtree(self.tmp_dir)
