@@ -174,13 +174,15 @@ class AbstractLUTTest(unittest.TestCase):
                 decode_max = colorspace.decode_gradation(1)
                 encode_min = colorspace.encode_gradation(decode_min)
                 encode_max = colorspace.encode_gradation(decode_max)
-                args_1d[presets.IN_RANGE] = [decode_min, decode_max]
+                args_1d[presets.IN_RANGE] = [round(decode_min, 10),
+                                             round(decode_max, 10)]
                 # write encode LUT
                 helper.write_2d_lut(colorspace.encode_gradation,
                                         encode_filepath,
                                         args_1d)
                 # write decode LUT
-                args_1d[presets.IN_RANGE] = [encode_min, encode_max]
+                args_1d[presets.IN_RANGE] = [round(encode_min, 10),
+                                             round(encode_max, 10)]
                 helper.write_2d_lut(colorspace.decode_gradation,
                                         decode_filepath,
                                         args_1d)
