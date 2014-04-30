@@ -146,7 +146,7 @@ def clamp_value(value, max_value=1.0, min_value=0.0):
     return max(min(value, max_value), min_value)
 
 
-def lin_to_gamma(value, gamma):
+def _lin_to_gamma(value, gamma):
     """Simple lin to Gamma function
 
     Args:
@@ -161,7 +161,24 @@ def lin_to_gamma(value, gamma):
     return math.pow(value, 1 / gamma)
 
 
-def gamma_to_lin(value, gamma):
+def lin_to_gamma(value, gamma):
+    """Simple lin to Gamma function
+
+    Args:
+        value (float or [float]): input value
+
+        gamma (float): gamma value
+
+    Returns:
+        .float
+
+    """
+    if not isinstance(value, (list, tuple)):
+        return _lin_to_gamma(value, gamma)
+    return [_lin_to_gamma(val, gamma) for val in value]
+
+
+def _gamma_to_lin(value, gamma):
     """Simple gamma to lin function
 
     Args:
@@ -174,6 +191,23 @@ def gamma_to_lin(value, gamma):
 
     """
     return math.pow(value, gamma)
+
+
+def gamma_to_lin(value, gamma):
+    """Simple gamma to lin function
+
+    Args:
+        value (float or [float]): input value
+
+        gamma (float): gamma value
+
+    Returns:
+        .float
+
+    """
+    if not isinstance(value, (list, tuple)):
+        return _gamma_to_lin(value, gamma)
+    return [_gamma_to_lin(val, gamma) for val in value]
 
 
 def get_primaries_matrix(xy_red, xy_green, xy_blue):

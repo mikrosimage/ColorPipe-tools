@@ -91,7 +91,7 @@ def __get_options():
         .argparse.ArgumentParser.args
 
     """
-    ## Define parser
+    # Define parser
     description = 'Print RGB -> XYZ matrix'
     parser = argparse.ArgumentParser(description=description)
     # RGB colorspace
@@ -123,7 +123,5 @@ def __get_options():
 
 
 if __name__ == '__main__':
-    """ Command line interface
-    """
     ARGS = __get_options()
     display_matrix(ARGS.colorspace, ARGS.format)

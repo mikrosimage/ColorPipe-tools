@@ -11,17 +11,17 @@ See [OpenColorIO FAQ](http://opencolorio.org/FAQ.html) for more informations.
 
 Requirements
 ------------
-- Python
-- matplotlib + a backend (for exemple Qt, Gtk...)
-- OpenColorIO Python binding
 
-To use web app : 
-
-- CherryPy (see web_app)
++ OpenColorIO / PyOpenColorIO
++ Numpy 1.7.1 
++ Scipy 0.12
++ Argparse
++ Clint (optional)
++ Matplotlib 1.2.1 + a backend (for exemple Qt, Gtk...)
 
 Tested config
 -------------
-- Python 2.6, Qt 4.8, OpenColorIO 1.0.8, matplotlib 1.2, CherryPy 3.2.4 on openSuse 12.1
+- Python 2.6/2.7, Qt 4.8, OpenColorIO 1.0.8 / 1.0.8, matplotlib 1.2 on openSuse 12.1 and Windows 7
 
 Command line usage
 -----

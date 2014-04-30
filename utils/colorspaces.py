@@ -3,10 +3,11 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-__version__ = "0.2"
+__version__ = "0.3"
 from utils import colors_helper
 from abc import ABCMeta, abstractmethod
 import math
+import collections
 
 
 class AbstractColorspace(object):
@@ -56,7 +57,7 @@ class AbstractColorspace(object):
         pass
 
     @abstractmethod
-    def encode_gradation(self, value):
+    def _encode_gradation(self, value):
         """Gradation encoding function
 
         Args:
@@ -69,7 +70,33 @@ class AbstractColorspace(object):
         pass
 
     @abstractmethod
-    def decode_gradation(self, value):
+    def _decode_gradation(self, value):
+        """Gradation decoding function
+
+        Args:
+            values (float): values to transform
+
+        Returns:
+            .float
+
+        """
+        pass
+
+    def encode_gradation(self, values):
+        """Gradation encoding function
+
+        Args:
+            values (float): values to transform
+
+        Returns:
+            .float
+
+        """
+        if not isinstance(values, (list, tuple)):
+            return self._encode_gradation(values)
+        return [self._encode_gradation(value) for value in values]
+
+    def decode_gradation(self, values):
         """Gradation decoding function
 
         Args:
@@ -79,7 +106,9 @@ class AbstractColorspace(object):
             .float
 
         """
-        pass
+        if not isinstance(values, (list, tuple)):
+            return self._decode_gradation(values)
+        return [self._decode_gradation(value) for value in values]
 
 
 class sRGB(AbstractColorspace):
@@ -98,13 +127,13 @@ class sRGB(AbstractColorspace):
     def get_white_point(self):
         return 0.3127, 0.3290
 
-    def encode_gradation(self, value):
+    def _encode_gradation(self, value):
         if value > 0.0031308:
             return 1.055 * pow(value, 1.0 / 2.4) - 0.055
         else:
             return 12.92 * value
 
-    def decode_gradation(self, value):
+    def _decode_gradation(self, value):
         if value > 0.04045:
             return pow((value + 0.055) / 1.055, 2.4)
         else:
@@ -120,13 +149,13 @@ class Rec709(sRGB):
         self._beta = 0.018
         self._round_depth = 3
 
-    def encode_gradation(self, value):
+    def _encode_gradation(self, value):
         if value < self._beta:
             return value * 4.5
         else:
             return pow(value, 0.45) * self._alpha - (self._alpha - 1)
 
-    def decode_gradation(self, value):
+    def _decode_gradation(self, value):
         inv_beta = round(self.encode_gradation(self._beta), self._round_depth)
         if value < inv_beta:
             return value * 1 / 4.5
@@ -182,15 +211,15 @@ class AlexaLogCV3(AbstractColorspace):
     def get_white_point(self):
         return 0.3127, 0.3290
 
-    def encode_gradation(self, value):
-        if value > 0.010591:
-            value = (0.247190 * math.log10(5.555556 * value + 0.052272)
+    def _encode_gradation(self, value):
+        if value > 0.0106232378792:
+            value = (0.2471896 * math.log10((value + 0.00937677) / 0.18)
                      + 0.385537)
         else:
-            value = 5.367655 * value + 0.092809
+            value = 0.9661776 * ((value + 0.00937677) / 0.18 + 0.04378604)
         return value
 
-    def decode_gradation(self, value):
+    def _decode_gradation(self, value):
         if value > 0.1496582:
             value = (math.pow(10.0, (value - 0.385537) / 0.2471896) * 0.18
                      - 0.00937677)
@@ -218,10 +247,10 @@ class WideGamut(AbstractColorspace):
     def get_white_point(self):
         return 0.3457, 0.3585
 
-    def encode_gradation(self, value):
+    def _encode_gradation(self, value):
         return colors_helper.lin_to_gamma(value, self._gamma)
 
-    def decode_gradation(self, value):
+    def _decode_gradation(self, value):
         return colors_helper.gamma_to_lin(value, self._gamma)
 
 
@@ -241,10 +270,10 @@ class ACES(AbstractColorspace):
     def get_white_point(self):
         return 0.32168, 0.33767
 
-    def encode_gradation(self, value):
+    def _encode_gradation(self, value):
         return value
 
-    def decode_gradation(self, value):
+    def _decode_gradation(self, value):
         return value
 
 
@@ -259,7 +288,7 @@ class ACESlog(ACES):
         self.denorm_trans = math.pow(2.0, -15)
         self.denorm_fake0 = math.pow(2.0, -16)
 
-    def encode_gradation(self, value):
+    def _encode_gradation(self, value):
         if value < 0:
             res = 0
         elif value < self.denorm_trans:
@@ -274,7 +303,7 @@ class ACESlog(ACES):
         else:
             return res
 
-    def decode_gradation(self, value):
+    def _decode_gradation(self, value):
         if value < self.xperstop:
             # (2^((ACESlog - 32768) / 2048) - 2^-16) * 2
             return ((math.pow(2, (value - self.unity) / self.xperstop)
@@ -322,7 +351,7 @@ class ACESproxy(ACES):
         """
         return max(self.cv_min, min(self.cv_max, round(value)))
 
-    def encode_gradation(self, value):
+    def _encode_gradation(self, value):
         if value <= 0:
             return self.cv_min
         else:
@@ -331,7 +360,7 @@ class ACESproxy(ACES):
                                     self.steps_per_stop + self.mid_cv_offset
                                     )
 
-    def decode_gradation(self, value):
+    def _decode_gradation(self, value):
         return math.pow(2, (value - self.mid_cv_offset) / self.steps_per_stop
                         + self.mid_log_offset)
 
@@ -354,6 +383,100 @@ class ACESproxy12(ACESproxy):
                            mid_cv_offset=1700, mid_log_offset=-2.5)
 
 
+class SGamutSLog(AbstractColorspace):
+    """Sony SGammut and SLog
+
+    """
+    def get_red_primaries(self):
+        return 0.73, 0.28
+
+    def get_green_primaries(self):
+        return 0.14, 0.855
+
+    def get_blue_primaries(self):
+        return 0.10, -0.05
+
+    def get_white_point(self):
+        return 0.3127, 0.3290
+
+    def _encode_gradation(self, value):
+        return (0.432699 * math.log10(value + 0.037584) + 0.616596) + 0.03
+
+    def _decode_gradation(self, value):
+        return (math.pow(10.0, ((value - 0.616596 - 0.03) / 0.432699))
+                - 0.037584)
+
+
+class SGamutSLog2(SGamutSLog):
+    """Sony SGamut and SLog2
+    Inspired from OpenColorIO ACES profil SLog2
+
+    """
+    def __init__(self):
+        self.min = 64.0 / 1023.0
+        self.max = 940.0 / 1023.0
+        self.decode_threshold = 0.030001222851889303
+
+    def _encode_gradation(self, value):
+        value = value / 0.9
+        if value < self.decode_gradation(self.decode_threshold):
+            value = value / 0.28258064516129 + self.decode_threshold
+        else:
+            value = (0.432699 * math.log10(155.0 * value / 219.0 + 0.037584)
+                     + 0.616596 + 0.03)
+        value = value * (self.max - self.min) + self.min
+        return value
+
+    def _decode_gradation(self, value):
+        value = (value - self.min) / (self.max - self.min)
+        if value < self.decode_threshold:
+            value = ((value - self.decode_threshold) * 0.28258064516129)
+        else:
+            value = (219.0 *
+                     (math.pow(10.0, (value - 0.616596 - 0.03) / 0.432699)
+                      - 0.037584) / 155.0)
+        return value * 0.9
+
+
+class SGamutSLog3(SGamutSLog):
+    """Sony SGamut/SGamut3 and SLog3
+    SGamut3 has the same primaries than SGamut
+
+    """
+    def _encode_gradation(self, value):
+        if value >= 0.01125000:
+            return ((420.0 + math. log10((value + 0.01) / (0.18 + 0.01))
+                     * 261.5) / 1023.0)
+        else:
+            return ((value * (171.2102946929 - 95.0) / 0.01125000 + 95.0)
+                    / 1023.0)
+
+    def _decode_gradation(self, value):
+        if value >= 171.2102946929 / 1023.0:
+            return ((math.pow(10.0, (value * 1023 - 420) / 261.5))
+                    * (0.18 + 0.01) - 0.01)
+        else:
+            return ((value * 1023.0 - 95.0) * 0.01125000
+                    / (171.2102946929 - 95.0))
+
+
+class SGamut3CineSLog3(SGamutSLog3):
+    """Sony SGamut3Cine and SLog3
+
+    """
+    def get_red_primaries(self):
+        return 0.766, 0.275
+
+    def get_green_primaries(self):
+        return 0.225, 0.8
+
+    def get_blue_primaries(self):
+        return 0.089, -0.087
+
+    def get_white_point(self):
+        return 0.31270, 0.329
+
+
 REC709 = Rec709()
 ALEXALOGCV3 = AlexaLogCV3()
 WIDEGAMUT = WideGamut()
@@ -365,16 +488,25 @@ ACESLOG_16i = ACESlog(is_integer=True)
 ACESPROXY_10i = ACESproxy10()
 ACESPROXY_12i = ACESproxy12()
 sRGB = sRGB()
+SGAMUTSLOG = SGamutSLog()
+SGAMUTSLOG2 = SGamutSLog2()
+SGAMUTSLOG3 = SGamutSLog3()
+SGAMUT3CINESLOG3 = SGamut3CineSLog3()
+
 COLORSPACES = {
-    'REC709': REC709,
-    'ALEXALOGCV3': ALEXALOGCV3,
-    'WIDEGAMUT': WIDEGAMUT,
-    'REC2020_10bits': REC2020_10B,
-    'REC2020_12bits': REC2020_12B,
+    'Rec709': REC709,
+    'AlexaLogCV3': ALEXALOGCV3,
+    'WideGamut': WIDEGAMUT,
+    'Rec2020_10bits': REC2020_10B,
+    'Rec2020_12bits': REC2020_12B,
     'ACES': ACES,
     'sRGB': sRGB,
     'ACESlog_32f': ACESLOG_32f,
     'ACESlog_16i': ACESLOG_16i,
     'ACESproxy_10': ACESPROXY_10i,
     'ACESproxy_12': ACESPROXY_12i,
+    'SGamutSLog': SGAMUTSLOG,
+    'SGamutSLog2': SGAMUTSLOG2,
+    'SGamutSLog3': SGAMUTSLOG3,
+    'SGamut3CineSLog3': SGAMUT3CINESLOG3,
 }

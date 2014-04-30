@@ -1,0 +1,15 @@
+{
+"title": "DVS Clipster 1D LUT",
+"comment": "Generated with ColorPipe-tools",
+"type": "2D",
+"extension": ".lut",
+"output_range": [0.0, 1.0],
+"input_range": [0.0, 1.0],
+"is_float": true,
+"output_bitdepth": 16,
+"version": "1",
+"layout": "triplet",
+"write_index": true,
+"write_alpha": true,
+"separator": "\t"
+}
