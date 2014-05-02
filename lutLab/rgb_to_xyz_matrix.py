@@ -100,7 +100,7 @@ def __get_options():
                         type=str,
                         choices=sorted(COLORSPACES.keys() +
                                         PRIVATE_COLORSPACES.keys()),
-                        default='REC709')
+                        default='Rec709')
     # Output format
     parser.add_argument("-f", "--format",
                         help=("Output formatting."),
