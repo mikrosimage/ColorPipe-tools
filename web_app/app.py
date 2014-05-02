@@ -10,7 +10,7 @@ from mako.lookup import TemplateLookup
 import os
 import ntpath
 import traceback
-import plot_that_lut
+from plotThatLut import plot_that_lut
 from utils import matplotlib_helper as mplh
 
 mplh.WEB_MODE = True
