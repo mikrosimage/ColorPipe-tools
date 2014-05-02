@@ -10,12 +10,13 @@ from mako.lookup import TemplateLookup
 import os
 import ntpath
 import traceback
-import plot_that_lut
+from plotThatLut import plot_that_lut
 from utils import matplotlib_helper as mplh
 
 mplh.WEB_MODE = True
 
-MY_LOOKUP = TemplateLookup(directories=['html'])
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+MY_LOOKUP = TemplateLookup(directories=[os.path.join(CURRENT_DIR, 'html')])
 
 
 class Application(object):
@@ -139,7 +140,6 @@ class Application(object):
 APP_ROOT = Application()
 
 # Set up root configuration
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 APP_CONF = {'/css/style.css': {'tools.staticfile.on': True,
                            'tools.staticfile.filename': os.path.join(
                                                                   CURRENT_DIR,
@@ -162,7 +162,7 @@ APP_CONF = {'/css/style.css': {'tools.staticfile.on': True,
         }
 
 # Update server config
-cherrypy.config.update("server.conf")
+cherrypy.config.update(os.path.join(CURRENT_DIR, "server.conf"))
 
 # Start server
 cherrypy.quickstart(APP_ROOT, config=APP_CONF)
