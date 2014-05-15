@@ -35,17 +35,60 @@
 
 <p>Tools for Color Pipelines.</p>
 
-<p>Includes :</p>
+<h2>
+<a name="tools-overview" class="anchor" href="#tools-overview"><span class="octicon octicon-link"></span></a>Tools overview</h2>
+
+<h3>
+<a name="plot-that-lut" class="anchor" href="#plot-that-lut"><span class="octicon octicon-link"></span></a>Plot That LUT</h3>
+
+<p><a href="https://github.com/mikrosimage/ColorPipe-tools/tree/master/plotThatLut">plotThatLUT</a> is a python script for plotting look up tables based on <a href="http://opencolorio.org/">OpenColorIO</a> and <a href="http://matplotlib.org/">matplotlib</a>.</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/2979643/plotThatLUT.png" alt="plotThatLUT" title="plotThatLUT"></p>
+
+<h3>
+<a name="lut-lab" class="anchor" href="#lut-lab"><span class="octicon octicon-link"></span></a>LUT Lab</h3>
+
+<p><a href="https://github.com/mikrosimage/ColorPipe-tools/tree/master/lutLab">lutLab</a> contains utility python scripts to convert and manipulate Look Up Tables.</p>
+
+<p>Available scripts :   </p>
+
+<p><strong>lut_to_lut</strong>: convert a 1D/2D/3D LUT into another format.   </p>
+
+<p><strong>curve_to_lut</strong>: export a LUT from a colorspace gradation function</p>
+
+<p><strong>rgb_to_xyz_matrix</strong>: generate RGB colorspace to XYZ conversion matrix     </p>
+
+<p><strong>plot_that_chroma</strong>: plot chromaticity coordinates.</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/2979643/plot_that_chroma.jpg" alt="Plot that chroma" title="Plot that chroma"></p>
+
+<h3>
+<a name="web-app" class="anchor" href="#web-app"><span class="octicon octicon-link"></span></a>Web app</h3>
+
+<p><a href="https://github.com/mikrosimage/ColorPipe-tools/tree/master/web_app">web_app</a> is a web version of the previous tools based on <a href="http://www.cherrypy.org/">cherryPy</a>.</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/2979643/PlotThatLUT_webapp2.png" alt="Web app" title="Web app"></p>
+
+<h2>
+<a name="requirements" class="anchor" href="#requirements"><span class="octicon octicon-link"></span></a>Requirements</h2>
 
 <ul>
-<li>
-<a href="https://github.com/mikrosimage/ColorPipe-tools/tree/master/plotThatLut">plotThatLUT</a> is a python script for plotting look up tables based on <a href="http://opencolorio.org/">OpenColorIO</a> and <a href="http://matplotlib.org/">matplotlib</a>.</li>
-</ul><p><img src="https://dl.dropboxusercontent.com/u/2979643/plotThatLUT.png" alt="plotThatLUT" title="plotThatLUT"></p>
+<li>OpenColorIO / PyOpenColorIO</li>
+<li>Numpy 1.7.1 </li>
+<li>Scipy 0.12</li>
+<li>Argparse</li>
+<li>Clint (optional)</li>
+</ul><h4>
+<a name="for-plot-tools" class="anchor" href="#for-plot-tools"><span class="octicon octicon-link"></span></a>For plot tools</h4>
 
 <ul>
-<li>
-<a href="https://github.com/mikrosimage/ColorPipe-tools/tree/master/lutLab">lutLab</a> contains utility python scripts to convert and manipulate Look Up Tables.</li>
-</ul><p><img src="https://dl.dropboxusercontent.com/u/2979643/ext_1d_lut_compare.png" alt="ext_1d_lut" title="ext_1d_lut"></p>
+<li>Matplotlib 1.2.1</li>
+</ul><h4>
+<a name="for-web-app" class="anchor" href="#for-web-app"><span class="octicon octicon-link"></span></a>For web app</h4>
+
+<ul>
+<li>cherryPy 3.2.4</li>
+</ul>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/mikrosimage">mikrosimage</a></p>
