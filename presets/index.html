@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>ColorPipe-tools</title>
+    <title>About presets</title>
     <meta name="viewport" content="width=device-width">
     <meta name="description" content="ColorPipe-tools is a set of tools to handle and process LUTs or color spaces. It includes PlotThatLUT, a tool to plot LUT and LUTLab, a bunch of scripts to handle LUT and colorspace.">
-    <link rel="canonical" href="http://mikrosimage.github.io/ColorPipe-toolshttp://mikrosimage.github.io/ColorPipe-tools/">
+    <link rel="canonical" href="http://mikrosimage.github.io/ColorPipe-toolshttp://mikrosimage.github.io/ColorPipe-tools/presets/">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="http://mikrosimage.github.io/ColorPipe-tools/css/main.css">
@@ -77,23 +77,169 @@
 
     <div class="page-content">
       <div class="wrap">
-      <div class="home">
+      <div class="post">
 
-  <h1>Posts</h1>
+  <header class="post-header">
+    <h1>About presets</h1>
+  </header>
 
-  <ul class="posts">
-    
-      <li>
-        <span class="post-date">May 15, 2014</span>
-        <a class="post-link" href="http://mikrosimage.github.io/ColorPipe-tools/release/2014/05/15/New-Release/">New release - v0.11</a>
-      </li>
-    
-  </ul>
+  <article class="post-content">
+  <p>Presets allow to define export parameters for a specific LUT format.<br />
+Ex: 3D LUT for Lustre, or 1D LUT for Clipster.</p>
 
-  <p class="rss-subscribe">subscribe <a href="http://mikrosimage.github.io/ColorPipe-tools/feed.xml">via RSS</a></p>
+<p>They can be used in LUT to LUT and Curve to LUT, and come in the form of json files.</p>
+
+<p>Unless stipulated otherwise, presets are loaded from utils/presets directory that already contains some well known use cases : </p>
+
+<ul>
+  <li>clipster_1d.json,  </li>
+  <li>clipster_3d.json,  </li>
+  <li>lustre_1d.json,  </li>
+  <li>lustre_3d.json,  </li>
+  <li>resolve_3d.json,  </li>
+  <li>rv_3d.json,  </li>
+  <li>scratch_1d.json,  </li>
+  <li>scratch_3d.json,  </li>
+  <li>smoke_flame_3d.json</li>
+</ul>
+
+<h2 id="customize-preset-path">Customize preset path</h2>
+<p>You can specify where to load presets or add a path with LUT_PRESETS environment variable.</p>
+
+<h2 id="write-a-preset">Write a preset</h2>
+
+<p><strong>Required attributes :</strong><br />
+* title: “a title”<br />
+* comment: “a comment”<br />
+* type: “1D”, “2D”, “3D”<br />
+* extension: “.csp”, “.cube”, “.spi1d”, “.spi3d”, “.cc”, “.json”, “.3dl” , “.lut”<br />
+* input_range: [0.0, 0.1], [-2.0, 5.0], [0, 1023], …<br />
+* output_range: [0.0, 0.1], [-2.0, 5.0], [0, 1023], …<br />
+* version: “1”,  “version 1”…</p>
+
+<p><strong>Required attributes for 1D/2D LUT :</strong><br />
+* output_bitdepth: 8, 10, 12, 16..</p>
+
+<p><strong>Required attributes for 3D LUT :</strong><br />
+* cube_size: 17, 33, …</p>
+
+<p><strong>Required attributes for 3dl format :</strong></p>
+
+<p>3dl format can have two types of non-exclusive headers : a shaper LUT or a mesh. These headers are used to precise LUT sampling.</p>
+
+<p>A shaper LUT defines an input range and a cube size.<br />
+Example with a [0, 1023] range and a 17 cube size : <br />
+0 63 127 191 255 319 383 447 511 575 639 703 767 831 895 959 1023</p>
+
+<p>A mesh defines a cube size and an output range. <br />
+Example with a 17 cube size (17=(2^4)+1) and a 12 bits output range (=[0, 4095]) :<br />
+mesh 4 12</p>
+
+<p>shaper: true ou false. If true, write shaper lut. Default = true.<br />
+mesh: true ou false.  If true, write mesh. Default = false.</p>
+
+<p><strong>Optional attributes for ascii LUT (.lut)</strong></p>
+
+<ul>
+  <li>layout: “triplet” or “block” ( default = “block”).<br />
+Define how rgb values are written.<br />
+If “triplet” :    <br />
+r g b   <br />
+r g b   <br />
+(…)   <br />
+If “block” :    <br />
+r   <br />
+r   <br />
+(…)   <br />
+g   <br />
+g   <br />
+(…)   <br />
+b   <br />
+b   </li>
+  <li>header_type: “lustre_header”, “scratch_header”, custom header (default : no header)</li>
+  <li>is_float: true, false (default = false)</li>
+</ul>
+
+<p>if layout = “triplet”:   </p>
+
+<ul>
+  <li>
+    <p>write_index: true, false (default = false). If true, write index value :    <br />
+0 r g b   <br />
+1 r g b   <br />
+(…)   </p>
+  </li>
+  <li>
+    <p>write_alpha: true, false (default = false). If true,  write a default alpha :   <br />
+r g b 0.0   <br />
+r g b 0.0   <br />
+(…)   </p>
+  </li>
+  <li>
+    <p>separator: “ “, “\t”, “     “… (default = “ “). string between RGB values.   </p>
+  </li>
+</ul>
+
+<h2 id="examples">Examples</h2>
+<p><strong>Preset 1D pour Lustre</strong>   
+<code>{   
+"title": "Autodesk Lustre 1D LUT",   
+"comment": "Generated with ColorPipe-tools",   
+"type": "2D",   
+"extension": ".lut",   
+"output_range": [0, 65535],   
+"input_range": [0, 65535],   
+"output_bitdepth": 16,   
+"version": "1",   
+"layout": "triplet",   
+"write_index": true,   
+"separator": "\t",   
+"header_type": "lustre_header"    
+}</code>   </p>
+
+<p><strong>Preset 3D pour Lustre</strong>   
+<code>{
+"title": "Autodesk Lustre 3D LUT",
+"comment": "Generated with ColorPipe-tools",
+"type": "3D",
+"extension": ".3dl",
+"input_range": [0, 1023],
+"output_range": [0, 4095],
+"cube_size": 17,
+"version": "1",
+"shaper": true,
+"mesh": true
+}</code></p>
+
+<p><strong>Preset 1D pour Scratch</strong>   
+<code>{
+"title": "Assimilate Scratch 1D LUT",
+"comment": "Generated with ColorPipe-tools",
+"type": "1D",
+"extension": ".lut",
+"output_range": [0, 1023],
+"input_range": [0, 1023],
+"output_bitdepth": 10,
+"version": "1",
+"layout": "block",
+"header_type": "scratch_header"
+}</code></p>
+
+<p><strong>Preset 3D pour RV</strong>   
+<code>{
+"title": "Tweak Software RV 3D LUT",
+"comment": "Generated with ColorPipe-tools",
+"type": "3D",
+"extension": ".cube",
+"output_range": [0.0, 1.0],
+"cube_size": 17,
+"input_range": [0.0, 1.0],
+"version": "1"
+}</code></p>
+
+  </article>
 
 </div>
-
       </div>
     </div>
 

@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>ColorPipe-tools</title>
+    <title>LUTLab</title>
     <meta name="viewport" content="width=device-width">
     <meta name="description" content="ColorPipe-tools is a set of tools to handle and process LUTs or color spaces. It includes PlotThatLUT, a tool to plot LUT and LUTLab, a bunch of scripts to handle LUT and colorspace.">
-    <link rel="canonical" href="http://mikrosimage.github.io/ColorPipe-toolshttp://mikrosimage.github.io/ColorPipe-tools/">
+    <link rel="canonical" href="http://mikrosimage.github.io/ColorPipe-toolshttp://mikrosimage.github.io/ColorPipe-tools/LUTLab/">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="http://mikrosimage.github.io/ColorPipe-tools/css/main.css">
@@ -77,23 +77,89 @@
 
     <div class="page-content">
       <div class="wrap">
-      <div class="home">
+      <div class="post">
 
-  <h1>Posts</h1>
+  <header class="post-header">
+    <h1>LUTLab</h1>
+  </header>
 
-  <ul class="posts">
-    
-      <li>
-        <span class="post-date">May 15, 2014</span>
-        <a class="post-link" href="http://mikrosimage.github.io/ColorPipe-tools/release/2014/05/15/New-Release/">New release - v0.11</a>
-      </li>
-    
-  </ul>
+  <article class="post-content">
+  <p>Based on <a href="http://opencolorio.org/">OpenColorIO</a>, LUTLab gathers a set of scripts to convert LUTs or color spaces.<br />
+For now, LUTLab is only available in command line but is intended to become part of a web service.</p>
 
-  <p class="rss-subscribe">subscribe <a href="http://mikrosimage.github.io/ColorPipe-tools/feed.xml">via RSS</a></p>
+<p>Four tools are currently available :</p>
+
+<h2 id="luttolut">lut_to_lut</h2>
+<p><strong>convert a LUT into another one.</strong></p>
+
+<p>Supported input formats :  .3dl, .csp, .cub, .cube, .hdl, .look, .mga/m3d, .spi1d, .spi3d, .spimtx, .vf<br />
+Supported output formats :  csp, cube, 3dl, spi1d, spi3d, cc (Ace Color Cube), lut, json…  (to be continued)</p>
+
+<p>lut_to_lut can also invert or smooth an 1D/2D LUT.</p>
+
+<p><a href="http://mikrosimage.github.io/ColorPipe-tools/LUTLab/LUT_to_LUT/">Find out more</a>.</p>
+
+<h2 id="curvetolut">curve_to_lut</h2>
+<p><strong>convert a gradation function in a 1D/2D LUT.</strong></p>
+
+<p>Supported output formats :  csp, cube, 3dl, spi1d, spi3d, cc (Ace Color Cube), lut, json…  (to be continued)</p>
+
+<p>Available gradations : </p>
+
+<ul>
+  <li>ACESlog_16i / ACESlog_32f, ACESproxy_10 / ACESproxy_12,</li>
+  <li>AlexaLogCV3,</li>
+  <li>DCI / DCI_D60,</li>
+  <li>Rec2020_10bits / Rec2020_12bits,</li>
+  <li>Rec709,</li>
+  <li>sRGB,</li>
+  <li>SGamut3CineSLog3, SGamutSLog, SGamutSLog2, </li>
+  <li>SGamutSLog3,</li>
+  <li>WideGamut,</li>
+  <li>gamma custom,</li>
+  <li>to be continued …</li>
+</ul>
+
+<p><a href="http://mikrosimage.github.io/ColorPipe-tools/LUTLab/Curve_to_LUT/">Find out more</a>.</p>
+
+<h2 id="rgbtoxyzmatrix">rgb_to_xyz_matrix</h2>
+<p><strong>display XYZ conversion matrices and their inverse.</strong></p>
+
+<p>Available gradations : </p>
+
+<ul>
+  <li>ACES, ACESlog_16i / ACESlog_32f, ACESproxy_10 / ACESproxy_12,</li>
+  <li>AlexaLogCV3,</li>
+  <li>DCI, DCI_D60,</li>
+  <li>Rec2020_10bits / Rec2020_12bits</li>
+  <li>Rec709 / sRGB,</li>
+  <li>SGamut3CineSLog3, SGamutSLog, SGamutSLog2, SGamutSLog3,</li>
+  <li>WideGamut,</li>
+  <li>to be continued …</li>
+</ul>
+
+<p>Find out more:
+<code>rgb_to_xyz_matrix -h</code></p>
+
+<h2 id="plotthatchroma">plot_that_chroma</h2>
+<p><strong>Plot chromaticities in a xy or u’v’ diagram</strong></p>
+
+<p>Main options</p>
+
+<ul>
+  <li>–colorspace : RGB Colorspace. See colorspaces.py to see available colorspaces.</li>
+  <li>–point x y : Display an xy point</li>
+  <li>–spectrum-locus : Display spectrum locus</li>
+</ul>
+
+<p>See all options :
+<code>python plot_that_chroma.py -h</code></p>
+
+<p><img src="http://mikrosimage.github.io/ColorPipe-tools/imgs/plot_that_chroma.jpg" alt="PlotThatChroma" /></p>
+
+  </article>
 
 </div>
-
       </div>
     </div>
 

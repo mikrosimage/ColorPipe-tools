@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>ColorPipe-tools</title>
+    <title>PlotThatLUT</title>
     <meta name="viewport" content="width=device-width">
     <meta name="description" content="ColorPipe-tools is a set of tools to handle and process LUTs or color spaces. It includes PlotThatLUT, a tool to plot LUT and LUTLab, a bunch of scripts to handle LUT and colorspace.">
-    <link rel="canonical" href="http://mikrosimage.github.io/ColorPipe-toolshttp://mikrosimage.github.io/ColorPipe-tools/">
+    <link rel="canonical" href="http://mikrosimage.github.io/ColorPipe-toolshttp://mikrosimage.github.io/ColorPipe-tools/PlotThatLUT/">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="http://mikrosimage.github.io/ColorPipe-tools/css/main.css">
@@ -77,23 +77,51 @@
 
     <div class="page-content">
       <div class="wrap">
-      <div class="home">
+      <div class="post">
 
-  <h1>Posts</h1>
+  <header class="post-header">
+    <h1>PlotThatLUT</h1>
+  </header>
 
-  <ul class="posts">
-    
-      <li>
-        <span class="post-date">May 15, 2014</span>
-        <a class="post-link" href="http://mikrosimage.github.io/ColorPipe-tools/release/2014/05/15/New-Release/">New release - v0.11</a>
-      </li>
-    
-  </ul>
+  <article class="post-content">
+  <p>Based on <a href="http://opencolorio.org/">OpenColorIO</a>, PlotThatLut allows to plot a LUT to understand its color transformation.<br />
+If it’s a 3D LUT, it displays a cube; if its a 1D LUT, a curve.</p>
 
-  <p class="rss-subscribe">subscribe <a href="http://mikrosimage.github.io/ColorPipe-tools/feed.xml">via RSS</a></p>
+<p>Examples :   </p>
+
+<p><strong>Brightness</strong>   </p>
+
+<p><img src="http://mikrosimage.github.io/ColorPipe-tools/imgs/brigthness.png" alt="Brightness" />   </p>
+
+<p><strong>Gamma curves</strong>   </p>
+
+<p><img src="http://mikrosimage.github.io/ColorPipe-tools/imgs/gamma_curves.png" alt="Gamma curves" />   </p>
+
+<p><strong>Color temperature correction</strong>   </p>
+
+<p><img src="http://mikrosimage.github.io/ColorPipe-tools/imgs/colorbalance.png" alt="Color temperature correction" />   </p>
+
+<p><strong>Desaturation</strong>  </p>
+
+<p><img src="http://mikrosimage.github.io/ColorPipe-tools/imgs/desaturation.png" alt="Desaturation" />   </p>
+
+<p><strong>Gamut mapping (AdobeRGB -&gt; sRGB)</strong>  </p>
+
+<p><img src="http://mikrosimage.github.io/ColorPipe-tools/imgs/gamut_mapping.png" alt="Gamut mapping (AdobeRGB -&gt; sRGB)" />   </p>
+
+<p>Supported input formats :  .3dl, .csp, .cub, .cube, .hdl, .look, .mga/m3d, .spi1d, .spi3d, .spimtx, .vf   </p>
+
+<p>See <a href="http://opencolorio.org/FAQ.html">OpenColorIO documentation</a>.</p>
+
+<p>PlotThatLUT can be used in command line :</p>
+
+<p>python plotThatLut/ptlut.py -h</p>
+
+<p>Or via the <a href="http://mikrosimage.github.io/ColorPipe-tools/Web_app/">web service</a>.</p>
+
+  </article>
 
 </div>
-
       </div>
     </div>
 

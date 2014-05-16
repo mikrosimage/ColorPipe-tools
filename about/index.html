@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>ColorPipe-tools</title>
+    <title>About</title>
     <meta name="viewport" content="width=device-width">
     <meta name="description" content="ColorPipe-tools is a set of tools to handle and process LUTs or color spaces. It includes PlotThatLUT, a tool to plot LUT and LUTLab, a bunch of scripts to handle LUT and colorspace.">
-    <link rel="canonical" href="http://mikrosimage.github.io/ColorPipe-toolshttp://mikrosimage.github.io/ColorPipe-tools/">
+    <link rel="canonical" href="http://mikrosimage.github.io/ColorPipe-toolshttp://mikrosimage.github.io/ColorPipe-tools/about/">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="http://mikrosimage.github.io/ColorPipe-tools/css/main.css">
@@ -77,23 +77,64 @@
 
     <div class="page-content">
       <div class="wrap">
-      <div class="home">
+      <div class="post">
 
-  <h1>Posts</h1>
+  <header class="post-header">
+    <h1>About</h1>
+  </header>
 
-  <ul class="posts">
-    
-      <li>
-        <span class="post-date">May 15, 2014</span>
-        <a class="post-link" href="http://mikrosimage.github.io/ColorPipe-tools/release/2014/05/15/New-Release/">New release - v0.11</a>
-      </li>
-    
-  </ul>
+  <article class="post-content">
+  <p>ColorPipe-tools is a set of tools to handle and process LUTs or color spaces.<br />
+This project is in line with <a href="http://colorpipe.mikrosimage.eu/en/">ColorPipe blog</a>.</p>
 
-  <p class="rss-subscribe">subscribe <a href="http://mikrosimage.github.io/ColorPipe-tools/feed.xml">via RSS</a></p>
+<p>It includes : </p>
+
+<p><strong>PlotThatLUT</strong></p>
+
+<p>Based on <a href="http://opencolorio.org/">OpenColorIO</a>, PlotThatLut allows to plot a LUT to understand its color transformation.<br />
+If it’s a 3D LUT, it displays a cube; if its a 1D LUT, a curve.</p>
+
+<p>PlotThatLUT is available as command line tool or as a web service.</p>
+
+<p><a href="http://mikrosimage.github.io/ColorPipe-tools/PlotThatLUT/">Find out more</a>.</p>
+
+<p><strong>LUTLab</strong></p>
+
+<p>Also based on <a href="http://opencolorio.org/">OpenColorIO</a>, LUTLab gathers a set of scripts to convert LUTs or color spaces.</p>
+
+<p>For now, LUTLab is only available in command line but is intended to become part of a web service.</p>
+
+<p><a href="http://mikrosimage.github.io/ColorPipe-tools/LUTLab/">Find out more</a>.</p>
+
+<h2 id="dev">Dev</h2>
+
+<p>Github : <a href="https://github.com/mikrosimage/ColorPipe-tools">mikrosimage/ColorPipe-tools</a></p>
+
+<p>License : see <a href="https://github.com/mikrosimage/ColorPipe-tools/blob/master/LICENSE">LICENSE</a></p>
+
+<h3 id="requirements">Requirements</h3>
+
+<ul>
+  <li>OpenColorIO / PyOpenColorIO</li>
+  <li>Numpy 1.7.1 </li>
+  <li>Scipy 0.12</li>
+  <li>Argparse</li>
+  <li>Clint (optional)</li>
+</ul>
+
+<h4 id="for-plot-tools">For plot tools</h4>
+<ul>
+  <li>Matplotlib 1.2.1</li>
+</ul>
+
+<h4 id="for-web-app">For web app</h4>
+<ul>
+  <li>cherryPy 3.2.4</li>
+</ul>
+
+  </article>
 
 </div>
-
       </div>
     </div>
 

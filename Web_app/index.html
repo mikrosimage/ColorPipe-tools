@@ -4,10 +4,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>ColorPipe-tools</title>
+    <title>Web app</title>
     <meta name="viewport" content="width=device-width">
     <meta name="description" content="ColorPipe-tools is a set of tools to handle and process LUTs or color spaces. It includes PlotThatLUT, a tool to plot LUT and LUTLab, a bunch of scripts to handle LUT and colorspace.">
-    <link rel="canonical" href="http://mikrosimage.github.io/ColorPipe-toolshttp://mikrosimage.github.io/ColorPipe-tools/">
+    <link rel="canonical" href="http://mikrosimage.github.io/ColorPipe-toolshttp://mikrosimage.github.io/ColorPipe-tools/Web_app/">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="http://mikrosimage.github.io/ColorPipe-tools/css/main.css">
@@ -77,23 +77,35 @@
 
     <div class="page-content">
       <div class="wrap">
-      <div class="home">
+      <div class="post">
 
-  <h1>Posts</h1>
+  <header class="post-header">
+    <h1>Web app</h1>
+  </header>
 
-  <ul class="posts">
-    
-      <li>
-        <span class="post-date">May 15, 2014</span>
-        <a class="post-link" href="http://mikrosimage.github.io/ColorPipe-tools/release/2014/05/15/New-Release/">New release - v0.11</a>
-      </li>
-    
-  </ul>
+  <article class="post-content">
+  <p>Another goal of ColorPipe-tools is too provide a user-friendly alternative to command-line.</p>
 
-  <p class="rss-subscribe">subscribe <a href="http://mikrosimage.github.io/ColorPipe-tools/feed.xml">via RSS</a></p>
+<p>For now, only PlotThatLUT is integrated in the web app.</p>
+
+<p>You can test quickly in local by :</p>
+
+<ul>
+  <li>setting up your environnement ($PYTHONPATH, …).</li>
+  <li>creating img and uploads directories.</li>
+  <li>going in web_app directory and then launching :</li>
+</ul>
+
+<p><code>python app.py</code></p>
+
+<p>For deeper usages, you’ll have to customize your own cherryPy config (see server.conf).</p>
+
+<p><img src="http://mikrosimage.github.io/ColorPipe-tools/imgs/plot_that_lut.png" alt="PlotThatLUT settings" />
+<img src="http://mikrosimage.github.io/ColorPipe-tools/imgs/ptl_cube.png" alt="PlotThatLUT display" /></p>
+
+  </article>
 
 </div>
-
       </div>
     </div>
 
