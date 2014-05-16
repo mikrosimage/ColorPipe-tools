@@ -17,11 +17,10 @@
         </svg>
       </a>
       <div class="trigger">
-        {% for page in site.pages %}
-          {% if page.title != 'LUT to LUT' and page.title != 'Curve to LUT' and page.title != 'About presets'%}
-            <a class="page-link" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>
-          {% endif %}
-        {% endfor %}
+            <a class="page-link" href="{{ site.baseurl }}/about">About</a>
+            <a class="page-link" href="{{ site.baseurl }}/PlotThatLUT">PlotThatLUT</a>
+            <a class="page-link" href="{{ site.baseurl }}/LUTLab">LUTLab</a>
+            <a class="page-link" href="{{ site.baseurl }}/Web_app">Web app</a>
       </div>
     </nav>
 
