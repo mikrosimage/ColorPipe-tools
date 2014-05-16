@@ -1,0 +1,13 @@
+# Site settings
+title: ColorPipe-tools
+email: colorpipe@mikrosimage.eu
+description: "ColorPipe-tools is a set of tools to handle and process LUTs or color spaces. It includes PlotThatLUT, a tool to plot LUT and LUTLab, a bunch of scripts to handle LUT and colorspace."
+url: http://mikrosimage.github.io/ColorPipe-tools
+baseurl: http://mikrosimage.github.io/ColorPipe-tools
+
+# Build settings
+markdown: kramdown
+permalink: pretty
+
+kramdown:
+  input: GFM
