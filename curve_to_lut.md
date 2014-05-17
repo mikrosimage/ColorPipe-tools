@@ -57,7 +57,7 @@ You need to define at least a type (1D, 2D, 3D) and an output format (csp, cube,
 
 **OR**
 
-*--preset : lustre_3d, scratch_1d, scratch_3d, rv_3d, resolve_3d, csp_1d, clipster_1d, lustre_1d, clipster_3d, smoke_flame_3d . Use a LUT export preset to set output LUT arguments
+* --preset : lustre_3d, scratch_1d, scratch_3d, rv_3d, resolve_3d, csp_1d, clipster_1d, lustre_1d, clipster_3d, smoke_flame_3d . Use a LUT export preset to set output LUT arguments
 
 [Find out more about presets]({{ site.url }}/presets/).
 
@@ -108,6 +108,7 @@ Lustre supports a specific 1D/2D LUT format. A preset is available to export thi
 This command will write /path/Lin_to_sRGB.lut (we encode by default).
 
 To get inverse transform:   
+
 `curve_to_lut --colorspace sRGB --preset lustre_3d --direction decode /path/`   
 This command will write  /path/sRGB_to_Lin.lut.
 

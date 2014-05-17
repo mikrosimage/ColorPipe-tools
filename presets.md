@@ -29,6 +29,7 @@ Write a preset
 -------------------------
 
 **Required attributes :**
+
 * title: "a title"
 * comment: "a comment"
 * type: "1D", "2D", "3D"
@@ -38,9 +39,11 @@ Write a preset
 * version: "1",  "version 1"...
 
 **Required attributes for 1D/2D LUT :**
+
 * output_bitdepth: 8, 10, 12, 16..
 
 **Required attributes for 3D LUT :**
+
 * cube_size: 17, 33, …
 
 **Required attributes for 3dl format :**
@@ -124,7 +127,7 @@ Examples
 "mesh": true
 }`
 
- **Preset 1D pour Scratch**   
+**Preset 1D pour Scratch**   
 `{
 "title": "Assimilate Scratch 1D LUT",
 "comment": "Generated with ColorPipe-tools",

@@ -28,7 +28,7 @@ You need to define at least a type (1D, 2D, 3D) and an output format (csp, cube,
 
 **OR**
 
-*--preset : lustre_3d, scratch_1d, scratch_3d, rv_3d, resolve_3d, csp_1d, clipster_1d, lustre_1d, clipster_3d, smoke_flame_3d . Use a LUT export preset to set output LUT arguments
+* --preset : lustre_3d, scratch_1d, scratch_3d, rv_3d, resolve_3d, csp_1d, clipster_1d, lustre_1d, clipster_3d, smoke_flame_3d . Use a LUT export preset to set output LUT arguments
 
 [Find out more about presets]({{ site.url }}/presets/).
 
@@ -71,7 +71,8 @@ Usage example
 Let’s consider à 3D LUT named display.cube and imagine we want to use it in Clipster.
 Clipster supports 3dl format with a 10 bits input bit depth (0-1023 range), a 12 bits output bit depth (0-4095 range) and a 17 cube size.
 
-Precise command:   
+Precise command: 
+  
 `lut_to_lut --out_type 3D --out_format 3dl --input-range 0 1023 --output-range 0 4095 --out-cube-size 17 --outlutfile /path/display.3dl /path/display.cube`   
 
 This version masters precisely every parameters.
@@ -98,10 +99,13 @@ And if you just want a bigger cube size ? Use --overwrite-preset :
  `lut_to_lut --preset clipster_3d  --out-cube-size 33 --overwrite-preset    /path/display.cube`
 
 Those parameters seem too long ? Be aware that, as soon as there is no ambiguity, they can be shorten to their minimum. A good practise is to shorten so that the option is still recognizable :   
+
 `lut_to_lut --preset clipster_3d  --out-cub 33 --overw /path/display.cube`   
 
 Some shortcut are also available :    
-` lut_to_lut --preset clipster_3d  --ocs 33 --overw /path/display.cube`   
+
+`lut_to_lut --preset clipster_3d  --ocs 33 --overw /path/display.cube`   
 
 All options :   
+
 `lut_to_lut -h`   
