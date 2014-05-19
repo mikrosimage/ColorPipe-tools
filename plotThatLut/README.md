@@ -9,6 +9,8 @@ It uses [OpenColorIO](http://opencolorio.org/) to read and process input LUTs, a
 Supported LUT formats : 3dl, csp, cub, cube, hdl, look, mga/m3d, spid1d, spi3d, spimtx, vf.
 See [OpenColorIO FAQ](http://opencolorio.org/FAQ.html) for more informations.
 
+See on [documentation site](http://mikrosimage.github.io/ColorPipe-tools/PlotThatLUT/).
+
 Requirements
 ------------
 

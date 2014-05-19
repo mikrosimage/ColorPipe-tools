@@ -7,6 +7,7 @@ Use PlotThatLut and LutLab tools through a browser.
 
 For now, only basic features of PlotThatLut are available.
 
+See on [documentation site](http://mikrosimage.github.io/ColorPipe-tools/Web_app/).
 
 Requirements
 -------------------

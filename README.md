@@ -5,6 +5,8 @@ ColorPipe-tools
 
 Tools for Color Pipelines.
 
+See [documentation site](http://mikrosimage.github.io/ColorPipe-tools/about/).
+
 Tools overview
 ---------------
 
