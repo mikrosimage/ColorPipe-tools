@@ -61,7 +61,7 @@ You need to define at least a type (1D, 2D, 3D) and an output format (csp, cube,
 
 [Find out more about presets]({{ site.url }}/presets/).
 
-Warning : Curve to LUT doesn’t prevent you from writing those LUTs in 3D formats. However it’s strongly advised to use 1D/2D LUTs. A 3D LUT may not be precise enough to bake a gradation.
+**Warning** : Curve to LUT doesn’t prevent you from writing those LUTs in 3D formats. However it’s strongly advised to use 1D/2D LUTs. A 3D LUT may not be precise enough to bake a gradation.
 
 
 Optional parameters

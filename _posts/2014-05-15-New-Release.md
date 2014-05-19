@@ -8,7 +8,7 @@ categories: [release]
 ---
 
 **LUTLab**
-* lut_to_lut and curve_to_lut can now use presets file to define export LUT settings.
+* lut_to_lut and curve_to_lut can now use preset files to define export LUT settings.
 See some samples [here](https://github.com/mikrosimage/ColorPipe-tools/tree/master/utils/presets).
 
 * ext_to_1d_lut has been merge into lut_to_lut. Say hello to  --smooth-size option !

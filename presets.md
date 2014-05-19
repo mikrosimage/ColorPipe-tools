@@ -4,7 +4,7 @@ title: "About presets"
 permalink: /presets/
 ---
 
-Presets allow to define export parameters for a specific LUT format.
+Presets allow to define export parameters for specific LUT formats.
 Ex: 3D LUT for Lustre, or 1D LUT for Clipster.
 
 They can be used in LUT to LUT and Curve to LUT, and come in the form of json files.
@@ -23,7 +23,7 @@ Unless stipulated otherwise, presets are loaded from utils/presets directory tha
 
 Customize preset path
 -------------------------
-You can specify where to load presets or add a path with LUT_PRESETS environment variable.
+You can specify where to load presets or add a path using LUT_PRESETS environment variable.
 
 Write a preset
 -------------------------
@@ -98,6 +98,7 @@ r g b 0.0
 Examples
 -------------------------
 **Preset 1D pour Lustre**   
+
 `{   
 "title": "Autodesk Lustre 1D LUT",   
 "comment": "Generated with ColorPipe-tools",   
@@ -114,6 +115,7 @@ Examples
 }`   
 
 **Preset 3D pour Lustre**   
+
 `{
 "title": "Autodesk Lustre 3D LUT",
 "comment": "Generated with ColorPipe-tools",
@@ -128,6 +130,7 @@ Examples
 }`
 
 **Preset 1D pour Scratch**   
+
 `{
 "title": "Assimilate Scratch 1D LUT",
 "comment": "Generated with ColorPipe-tools",
@@ -142,6 +145,7 @@ Examples
 }`
 
 **Preset 3D pour RV**   
+
 `{
 "title": "Tweak Software RV 3D LUT",
 "comment": "Generated with ColorPipe-tools",
