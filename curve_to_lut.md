@@ -112,7 +112,7 @@ To get inverse transform:
 `curve_to_lut --colorspace sRGB --preset lustre_3d --direction decode /path/`   
 This command will write  /path/sRGB_to_Lin.lut.
 
-All options :   
+All options can always be displayed with :   
 `curve_to_lut -h`   
 
 For more tips on command line usage and export options, see LUT to LUT example.

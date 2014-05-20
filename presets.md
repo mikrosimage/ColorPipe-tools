@@ -4,10 +4,10 @@ title: "About presets"
 permalink: /presets/
 ---
 
-Presets allow to define export parameters for specific LUT formats.
+Presets allow to define export parameters for specific LUT formats and can be used in [LUT to LUT]({{ site.url }}/LUTLab/LUT_to_LUT/) and [Curve to LUT]({{ site.url }}/LUTLab/Curve_to_LUT/).
 Ex: 3D LUT for Lustre, or 1D LUT for Clipster.
 
-They can be used in LUT to LUT and Curve to LUT, and come in the form of json files.
+They come in the form of json files.
 
 Unless stipulated otherwise, presets are loaded from utils/presets directory that already contains some well known use cases : 
 

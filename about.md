@@ -16,7 +16,7 @@ It includes :
 Based on [OpenColorIO](http://opencolorio.org/), PlotThatLut allows to plot a LUT to understand its color transformation.
 If it’s a 3D LUT, it displays a cube; if its a 1D LUT, a curve.
 
-PlotThatLUT is available as command line tool or as a web service.
+PlotThatLUT is available as a command line tool or as a web service.
 
 [Find out more]({{ site.url }}/PlotThatLUT/).
 

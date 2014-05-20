@@ -75,7 +75,7 @@ Precise command:
   
 `lut_to_lut --out_type 3D --out_format 3dl --input-range 0 1023 --output-range 0 4095 --out-cube-size 17 --outlutfile /path/display.3dl /path/display.cube`   
 
-This version masters precisely every parameters.
+This extended version enables you to control precisely every parameter.
 However, we may want to export a LUT more simply. That’s the role of default values which depends on the chosen format.
 For example, for 3dl format, default values are : --input-range 0 1023 --output-range 0 4095 --out-cube-size 17.
 
@@ -87,18 +87,18 @@ We can also omit outlutfile parameter. This way, output LUT will be written in i
  `lut_to_lut --out_type 3D --out_format 3dl /path/display.cube`   
 
 
-Those kind of command are possible when we know exactly what format a software supports. But there are many softwares and many combinaisons that may work… or not.
+This kind of command lines is possible when you know exactly what kind of formats are supported by the production software you are using. But there are many softwares and many combinations that may work… or not.
 
 That’s why a preset system is also available.
 
 Command with preset :   
  `lut_to_lut --preset clipster_3d /path/display.cube`   
-Find out more about presets.
+[Find out more about presets]({{ site.url }}/presets/).
 
 And if you just want a bigger cube size ? Use --overwrite-preset :   
  `lut_to_lut --preset clipster_3d  --out-cube-size 33 --overwrite-preset    /path/display.cube`
 
-Those parameters seem too long ? Be aware that, as soon as there is no ambiguity, they can be shorten to their minimum. A good practise is to shorten so that the option is still recognizable :   
+Those parameters seem too long ? Be aware that, as soon as there is no ambiguity, they can be shortened to their minimum. A good practise is to shorten the parameter so that the option is still recognizable :   
 
 `lut_to_lut --preset clipster_3d  --out-cub 33 --overw /path/display.cube`   
 
@@ -106,6 +106,6 @@ Some shortcut are also available :
 
 `lut_to_lut --preset clipster_3d  --ocs 33 --overw /path/display.cube`   
 
-All options :   
+All options can always be displayed with :   
 
 `lut_to_lut -h`   
