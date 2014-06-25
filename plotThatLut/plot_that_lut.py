@@ -17,6 +17,7 @@ from utils.lut_utils import get_3d_list_values
 import matplotlib
 import itertools
 from utils import matplotlib_helper as mplh
+import ntpath
 
 
 class PlotThatLutException(Exception):
@@ -130,16 +131,30 @@ def plot_curve(lutfiles, samples_count, processors, draw_red_curve=True,
         if display_markers:
             markersize = 4
         # plot curves
+        labelbase = os.path.splitext(ntpath.basename(lutfile))[0]
         if draw_red_curve:
+            if not draw_blue_curve and not draw_green_curve:
+                label = labelbase
+            else:
+                label = "{0} (R)".format(labelbase)
             plot(input_range, red_values, color=reds_it.next(), marker=marker,
-                 label='Red values', linewidth=1, markersize=markersize)
+                 label=label, linewidth=1, markersize=markersize)
         if draw_green_curve:
+            if not draw_blue_curve and not draw_red_curve:
+                label = labelbase
+            else:
+                label = "{0} (G)".format(labelbase)
             plot(input_range, green_values, color=greens_it.next(),
-                 marker=marker, label='Green values', linewidth=1,
+                 marker=marker, label=label, linewidth=1,
                  markersize=markersize)
         if draw_blue_curve:
+            if not draw_green_curve and not draw_red_curve:
+                label = labelbase
+            else:
+                label = "{0} (B)".format(labelbase)
             plot(input_range, blue_values, color=blues_it.next(), marker=marker,
-                 label='Blue values', linewidth=1, markersize=markersize)
+                 label=label, linewidth=1, markersize=markersize)
+    matplotlib.pyplot.legend(loc=4)
     return show_plot(fig, filename)
 
 
