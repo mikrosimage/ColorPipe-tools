@@ -108,6 +108,17 @@ class LUTToLUTTest(unittest.TestCase):
         self.failUnlessRaises(AsciiHelperException, lut_to_lut, self.lut1d,
                               "1D", "lut", outlutfile, out_bit_depth=12)
 
+    def test_concatenate_luts(self):
+        """ Test concatenation
+
+        """
+        # contact in a 2D LUT
+        lut_to_lut([self.lut1d, self.lut3d], "2D", "lut", self.tmp_dir)
+        # concat in a 3D LUT
+        outlutfile = os.path.join(self.tmp_dir, "concat.csp")
+        lut_to_lut([self.lut3d, self.lut3d, self.lut1d],
+                   "3D", "csp", outlutfile)
+        lut_to_lut(outlutfile, "2D", "lut", self.tmp_dir)
     def tearDown(self):
         #Remove test directory
         shutil.rmtree(self.tmp_dir)

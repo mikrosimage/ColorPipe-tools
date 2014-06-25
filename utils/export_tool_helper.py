@@ -37,17 +37,24 @@ class ExportLutException(Exception):
 # Argparse options
 
 
-def add_inlutfile_option(parser):
+def add_inlutfile_option(parser, is_list=False):
     """ Add inlutfile argument
 
     Args:
         parser (argparse.ArgumentParser): parser on which option will be add
 
     """
-    parser.add_argument("inlutfile",
-                        help=("path to a LUT.\n Available input formats : {0}"
-                              ).format(str(OCIO_LUTS_FORMATS)),
-                        type=str)
+    help_message = (" to LUTs.\n Available input formats : {0}"
+                    ).format(str(OCIO_LUTS_FORMATS))
+    if is_list:
+        parser.add_argument("inlutfiles",
+                            help="paths{0}".format(help_message),
+                            type=str,
+                            nargs='+')
+    else:
+        parser.add_argument("inlutfile",
+                            help="path{0}".format(help_message),
+                            type=str)
 
 
 def add_outlutfile_option(parser, required=False):

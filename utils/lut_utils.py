@@ -44,15 +44,25 @@ def get_default_out_path(filepath, ext):
     """ Return a defaut output LUT path from an input LUT path
 
     Args:
-        filepath (str): input LUT file path
+        filepath (str or [str]): path to a LUT or list of LUT paths
         ext (str): output file extension
 
     Returns:
         .str
 
     """
-    split_filename = os.path.splitext(filepath)
-    return "{0}_export{1}".format(split_filename[0], ext)
+    if isinstance(filepath, (list, tuple)):
+        filepaths = filepath
+        new_filepath = None
+        for filepath in filepaths:
+            if not new_filepath:
+                new_filepath = os.path.splitext(filepath)[0]
+            else:
+                basename = os.path.splitext(ntpath.basename(filepath))[0]
+                new_filepath += "+{0}".format(basename)
+    else:
+        new_filepath = os.path.splitext(filepath)[0]
+    return "{0}_export{1}".format(new_filepath, ext)
 
 
 def get_3d_list_values(cubesize, processor, hexa_values=False):

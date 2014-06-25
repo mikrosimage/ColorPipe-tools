@@ -25,12 +25,12 @@ OCIO_LUTS_FORMATS = sorted(OCIO_1D_LUTS_FORMATS +
                            - set(OCIO_1D_LUTS_FORMATS)))
 
 
-def create_ocio_processor(lutfile, interpolation=INTERP_LINEAR, inverse=False,
+def create_ocio_processor(lutfiles, interpolation=INTERP_LINEAR, inverse=False,
                           prelutfile=None, postlutfile=None):
     """Create an OpenColorIO processor for lutfile
 
     Args:
-        lutfile (str): path to a LUT
+        lutfiles (str or [str]): path to a LUT or list of LUT paths
 
         interpolation (int): can be INTERP_NEAREST, INTERP_LINEAR or
         INTERP_TETRAHEDRAL (only for 3D LUT)
@@ -53,15 +53,18 @@ def create_ocio_processor(lutfile, interpolation=INTERP_LINEAR, inverse=False,
     config = Config()
     # In colorspace (LUT)
     colorspace = ColorSpace(name='RawInput')
-    main_lut = FileTransform(lutfile, interpolation=interpolation,
-                            direction=direction)
     group = GroupTransform()
     # Prelut
     if prelutfile:
         prelut = FileTransform(prelutfile, interpolation=interpolation)
         group.push_back(prelut)
     # Mainlut
-    group.push_back(main_lut)
+    if not isinstance(lutfiles, (list, tuple)):
+        lutfiles = [lutfiles]
+    for lutfile in lutfiles:
+        main_lut = FileTransform(lutfile, interpolation=interpolation,
+                                 direction=direction)
+        group.push_back(main_lut)
     # Postlut
     if postlutfile:
         postlut = FileTransform(postlutfile, interpolation=interpolation)
@@ -72,7 +75,17 @@ def create_ocio_processor(lutfile, interpolation=INTERP_LINEAR, inverse=False,
     colorspace = ColorSpace(name='ProcessedOutput')
     config.addColorSpace(colorspace)
     # Create a processor corresponding to the LUT transformation
-    return config.getProcessor('RawInput', 'ProcessedOutput')
+    try:
+        return config.getProcessor('RawInput', 'ProcessedOutput')
+    except Exception, e:
+        # tetrahedral interpolation is only allowed with 3D LUT
+        # TODO set interpo mode by LUT
+        if "tetrahedral interpolation is not allowed" in str(e):
+            return create_ocio_processor(lutfiles, interpolation=INTERP_LINEAR,
+                                         inverse=inverse,
+                                         prelutfile=prelutfile,
+                                         postlutfile=postlutfile)
+        raise
 
 
 def is_3d_lut(processor, lutfile):

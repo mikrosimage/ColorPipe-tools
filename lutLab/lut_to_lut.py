@@ -38,7 +38,7 @@ class LutToLutException(Exception):
     pass
 
 
-def lut_to_lut(inlutfile, out_type=None, out_format=None, outlutfile=None,
+def lut_to_lut(inlutfiles, out_type=None, out_format=None, outlutfile=None,
                input_range=None, output_range=None, out_bit_depth=None,
                inverse=False, out_cube_size=None, verbose=False,
                smooth_size=None, preset=None, overwrite_preset=False):
@@ -46,7 +46,7 @@ def lut_to_lut(inlutfile, out_type=None, out_format=None, outlutfile=None,
     Arguments testing are delegated to LUT helpers
 
     Args:
-        inlutfile (str): path to input LUT
+        lutfiles (str or [str]): path to a LUT or list of LUT paths
 
         out_type (str): 1D, 2D or 3D
 
@@ -98,10 +98,12 @@ def lut_to_lut(inlutfile, out_type=None, out_format=None, outlutfile=None,
                                                                out_bit_depth,
                                                                out_cube_size)
     ext = preset[presets.EXT]
+    if not isinstance(inlutfiles, (list, tuple)):
+        inlutfiles = [inlutfiles]
     if not outlutfile:
-        outlutfile = get_default_out_path(inlutfile, ext)
+        outlutfile = get_default_out_path(inlutfiles, ext)
     elif os.path.isdir(outlutfile):
-        filename = os.path.splitext(ntpath.basename(inlutfile))[0] + ext
+        filename = os.path.splitext(ntpath.basename(inlutfiles[0]))[0] + ext
         outlutfile = os.path.join(outlutfile, filename)
     else:
         check_extension(outlutfile, ext)
@@ -109,15 +111,15 @@ def lut_to_lut(inlutfile, out_type=None, out_format=None, outlutfile=None,
     if smooth_size:
         preset[presets.SMOOTH] = smooth_size
     if verbose:
-        print "{0} will be converted into {1}.".format(inlutfile,
+        print "{0} will be converted into {1}.".format(inlutfiles,
                                                        outlutfile)
         print "Final setting:\n{0}".format(presets.string_preset(preset))
-    processor = create_ocio_processor(inlutfile,
+    processor = create_ocio_processor(inlutfiles,
                                       interpolation=INTERP_LINEAR,
                                       inverse=inverse)
     # change interpolation if 3D LUT
-    if is_3d_lut(processor, inlutfile):
-        processor = create_ocio_processor(inlutfile,
+    if is_3d_lut(processor, inlutfiles[0]):
+        processor = create_ocio_processor(inlutfiles,
                                           interpolation=INTERP_TETRAHEDRAL,
                                           inverse=inverse)
     # write LUT
@@ -137,7 +139,7 @@ def __get_options():
     description = 'Convert a LUT into another format'
     parser = argparse.ArgumentParser(description=description)
     # input lut
-    add_inlutfile_option(parser)
+    add_inlutfile_option(parser, is_list=True)
     add_outlutfile_option(parser)
     # type, format, ranges,  out bit depth, out cube size
     add_export_lut_options(parser)
@@ -167,7 +169,7 @@ if __name__ == '__main__':
     if not ARGS.preset is None:
         ARGS.preset = presets.get_presets_from_env()[ARGS.preset]
     try:
-        lut_to_lut(ARGS.inlutfile,
+        lut_to_lut(ARGS.inlutfiles,
                    ARGS.out_type,
                    ARGS.out_format,
                    ARGS.outlutfile,
