@@ -69,7 +69,7 @@ class GeneralTest(unittest.TestCase):
         curve_to_lut('sRGB', None, outlutfile=self.tmp_dir, preset=preset)
 
     def tearDown(self):
-        #Remove test directory
+        # Remove test directory
         shutil.rmtree(self.tmp_dir)
 
 if __name__ == '__main__':

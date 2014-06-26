@@ -128,9 +128,8 @@ class Application(object):
                 break
             all_data += data
         # copy uploaded file on the server
-        backup_filename = "{0}/uploads/{1}".format(CURRENT_DIR,
-                                                   ntpath.basename(
-                                                   upfile.filename))
+        filename = ntpath.basename(upfile.filename)
+        backup_filename = "{0}/uploads/{1}".format(CURRENT_DIR, filename)
         saved_file = open(backup_filename, 'wb')
         saved_file.write(all_data)
         saved_file.close()
@@ -140,26 +139,23 @@ class Application(object):
 APP_ROOT = Application()
 
 # Set up root configuration
+CSS_FILE = os.path.join(CURRENT_DIR, 'css', 'style.css')
+IMG_DIR = os.path.join(CURRENT_DIR, 'img')
+UPLOAD_DIR = os.path.join(CURRENT_DIR, 'uploads')
+FAVICON_FILE = os.path.join(CURRENT_DIR, 'icons', 'favicon.ico')
 APP_CONF = {'/css/style.css': {'tools.staticfile.on': True,
-                           'tools.staticfile.filename': os.path.join(
-                                                                  CURRENT_DIR,
-                                                                  'css',
-                                                                  'style.css')
-                           },
-        '/img':           {'tools.staticdir.on': True,
-                           'tools.staticdir.dir': os.path.join(CURRENT_DIR,
-                                                               'img')
-                           },
-        '/uploads':       {'tools.staticdir.on': True,
-                           'tools.staticdir.dir': os.path.join(CURRENT_DIR,
-                                                               'uploads'
-                                                            )
-                           },
-        '/favicon.ico': {'tools.staticfile.on': True,
-                         'tools.staticfile.filename':
-                         os.path.join(CURRENT_DIR, 'icons', 'favicon.ico')
-                         }
-        }
+                               'tools.staticfile.filename': CSS_FILE
+                               },
+            '/img':           {'tools.staticdir.on': True,
+                               'tools.staticdir.dir': IMG_DIR
+                               },
+            '/uploads':       {'tools.staticdir.on': True,
+                               'tools.staticdir.dir': UPLOAD_DIR
+                               },
+            '/favicon.ico': {'tools.staticfile.on': True,
+                             'tools.staticfile.filename': FAVICON_FILE
+                             }
+            }
 
 # Update server config
 cherrypy.config.update(os.path.join(CURRENT_DIR, "server.conf"))

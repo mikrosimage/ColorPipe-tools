@@ -17,15 +17,15 @@ class ColorspaceTest(unittest.TestCase):
 
         """
         colorspace_to_test = [REC709,
-                                ALEXALOGCV3,
-                                WIDEGAMUT,
-                                REC2020_12B,
-                                ACESLOG_32f,
-                                sRGB,
-                                SGAMUTSLOG,
-                                SGAMUTSLOG2,
-                                SGAMUTSLOG3,
-                            ]
+                              ALEXALOGCV3,
+                              WIDEGAMUT,
+                              REC2020_12B,
+                              ACESLOG_32f,
+                              sRGB,
+                              SGAMUTSLOG,
+                              SGAMUTSLOG2,
+                              SGAMUTSLOG3,
+                              ]
         delta = 0.000000000000001
         for space in colorspace_to_test:
             name = space.__class__.__name__
@@ -34,8 +34,8 @@ class ColorspaceTest(unittest.TestCase):
                 diff = abs(res - value)
                 message = ("{0} gradations not transparent ! "
                            "in: {1:8f} out: {2:8f}").format(name,
-                                                      value,
-                                                      res)
+                                                            value,
+                                                            res)
                 self.assert_(diff < delta, message)
 
 

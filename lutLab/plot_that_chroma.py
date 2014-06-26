@@ -71,7 +71,7 @@ def __get_options():
                         help=("RGB Colorspace."),
                         type=str, action='append', dest='colorspaces',
                         choices=sorted(COLORSPACES.keys() +
-                                        PRIVATE_COLORSPACES.keys()))
+                                       PRIVATE_COLORSPACES.keys()))
     # Points
     parser.add_argument("-p", "--point", type=float, nargs=2,
                         metavar=('x', 'y'), action='append',

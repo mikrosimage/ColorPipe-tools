@@ -67,7 +67,7 @@ class LUTToLUTTest(unittest.TestCase):
 
         """
         for form, ext, excep in [('json', '.json', JsonHelperException),
-                          ('clcc', '.cc', CLCCHelperException)]:
+                                 ('clcc', '.cc', CLCCHelperException)]:
             outlutfile = os.path.join(self.tmp_dir, "CineonToLin_export" + ext)
             lut_to_lut(self.lut1d, "3D", form, outlutfile)
             # test wrong type
@@ -119,8 +119,9 @@ class LUTToLUTTest(unittest.TestCase):
         lut_to_lut([self.lut3d, self.lut3d, self.lut1d],
                    "3D", "csp", outlutfile)
         lut_to_lut(outlutfile, "2D", "lut", self.tmp_dir)
+
     def tearDown(self):
-        #Remove test directory
+        # Remove test directory
         shutil.rmtree(self.tmp_dir)
 
 if __name__ == '__main__':

@@ -200,7 +200,7 @@ def plot_cube(lutfile, cube_size, processor):
     title(filename)
     # plot 3D values
     axis.scatter(red_values, green_values, blue_values, c=input_colors,
-               marker="o")
+                 marker="o")
     return show_plot(fig, filename)
 
 

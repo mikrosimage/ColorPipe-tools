@@ -106,12 +106,12 @@ class AbstractLUTHelper(object):
 
         """
         line = self._get_pattern(preset, separator).format(rgb.r, rgb.g, rgb.b)
-        if not in_rgb is None:
+        if in_rgb is not None:
             return "{0}{4}{1}{4}{2}{4}{3}".format(in_rgb.r,
-                                            in_rgb.g,
-                                            in_rgb.b,
-                                            line,
-                                            separator)
+                                                  in_rgb.g,
+                                                  in_rgb.b,
+                                                  line,
+                                                  separator)
         return line
 
     def _get_1d_data(self, process_function, preset):
@@ -240,8 +240,8 @@ class AbstractLUTHelper(object):
         input_range = preset[presets.IN_RANGE]
         output_range = preset[presets.OUT_RANGE]
         is_int = False
-        if (isinstance(output_range[0], int)
-            and isinstance(output_range[1], int)):
+        if (isinstance(output_range[0], int) and
+                isinstance(output_range[1], int)):
             is_int = True
         compute_range = linspace(input_range[0],
                                  input_range[1],
@@ -315,7 +315,7 @@ class AbstractLUTHelper(object):
 
         """
         return self._write_1d_2d_lut(process_function, file_path, preset,
-                              self._get_rgb_value_line)
+                                     self._get_rgb_value_line)
 
     def write_1d_lut(self, process_function, file_path, preset):
         """ Write 2d LUT in output file
@@ -333,7 +333,7 @@ class AbstractLUTHelper(object):
 
         """
         return self._write_1d_2d_lut(process_function, file_path, preset,
-                              self._get_r_value_line)
+                                     self._get_r_value_line)
 
     @abstractmethod
     def write_3d_lut(self, process_function, file_path, preset):
@@ -369,9 +369,8 @@ class AbstractLUTHelper(object):
             .str
 
         """
-        return "a new LUT was written in {1}".format(
-                                                get_file_shortname(file_path),
-                                                file_path)
+        return ("a new LUT was written in {1}"
+                ).format(get_file_shortname(file_path), file_path)
 
     def _validate_preset(self, preset, mode=RAISE_MODE, default_preset=None):
         """ Check preset. When an irregularity is found, if mode is 'raise'
@@ -398,7 +397,7 @@ class AbstractLUTHelper(object):
                 raise PresetException(("{0} is not a valid type: "
                                       "{1}").format(preset[TYPE], TYPE_CHOICE))
             preset[TYPE] = default_preset[TYPE]
-        ## check if type specific attr are set
+        # # check if type specific attr are set
         # default type
         if preset[TYPE] == 'default' and (OUT_BITDEPTH not in preset
                                           or CUBE_SIZE not in preset):
@@ -480,8 +479,7 @@ class AbstractLUTHelper(object):
             preset (dict): preset to validate
 
         """
-        return self._validate_preset(preset, FILL_MODE,
-                                                  default_preset)
+        return self._validate_preset(preset, FILL_MODE, default_preset)
 
     @staticmethod
     def get_generated_title(file_path, preset):

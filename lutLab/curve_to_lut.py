@@ -106,7 +106,7 @@ def curve_to_lut(colorspace, gamma, outlutfile, out_type=None, out_format=None,
         # colorspace mode
         try:
             colorspace_obj = dict(COLORSPACES.items() +
-                              PRIVATE_COLORSPACES.items())[colorspace]
+                                  PRIVATE_COLORSPACES.items())[colorspace]
         except KeyError:
             raise CurveToLUTException(("Unsupported {0} "
                                        "Colorspace!").format(colorspace))
@@ -141,7 +141,7 @@ def curve_to_lut(colorspace, gamma, outlutfile, out_type=None, out_format=None,
     # process file output
     if os.path.isdir(outlutfile):
         filename = "{0}{1}".format(title,
-                                       preset[presets.EXT])
+                                   preset[presets.EXT])
         outlutfile = os.path.join(outlutfile, filename)
     else:
         try:
@@ -215,11 +215,11 @@ def __get_options():
 if __name__ == '__main__':
     ARGS = __get_options()
     try:
-        if not ARGS.input_range is None:
+        if ARGS.input_range is not None:
             ARGS.input_range = presets.convert_string_range(ARGS.input_range)
-        if not ARGS.output_range is None:
+        if ARGS.output_range is not None:
             ARGS.output_range = presets.convert_string_range(ARGS.output_range)
-        if not ARGS.preset is None:
+        if ARGS.preset is not None:
             ARGS.preset = presets.get_presets_from_env()[ARGS.preset]
         curve_to_lut(ARGS.colorspace,
                      ARGS.gamma,

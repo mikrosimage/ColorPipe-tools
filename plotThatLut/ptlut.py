@@ -44,7 +44,7 @@ def __get_options():
     # type
     parser.add_argument("-t", "--plot-type",
                         help=("Plot type. By default, a curve for a 1D/2D LUT "
-                        "and a cube for a 3D LUT."),
+                              "and a cube for a 3D LUT."),
                         type=str,
                         choices=['auto', 'curve', 'red_curve', 'blue_curve',
                                  'green_curve', 'cube'],
@@ -53,7 +53,7 @@ def __get_options():
     parser.add_argument("-s", "--samples-count", help=(
         "Samples count. Ex : {0} for a curve or {1} for a cube."
     ).format(plot_that_lut.DEFAULT_SAMPLE, plot_that_lut.DEFAULT_CUBE_SIZE),
-default=None, type=int)
+        default=None, type=int)
     # version
     parser.add_argument('-v', "--version", action='version',
                         version='{0} - version {1}'.format(description,

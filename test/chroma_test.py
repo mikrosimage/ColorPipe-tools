@@ -26,7 +26,7 @@ class Test(unittest.TestCase):
         mplh.plot_colorspace_gamut(colorspaces.ACES, lines_color="c",
                                    upvp_conversion=True)
         mplh.plot_colorspace_gamut(colorspaces.REC709, lines_color="m",
-                           upvp_conversion=True)
+                                   upvp_conversion=True)
         plt.legend(loc=4)
         if DISPLAY:
             plt.show()

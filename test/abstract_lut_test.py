@@ -36,22 +36,22 @@ class AbstractLUTTest(unittest.TestCase):
         lut1d = os.path.join(test_dir, 'CineonToLin_1D.csp')
         lut3d = os.path.join(test_dir, 'saturation.3dl')
         self.processor_1d = create_ocio_processor(lut1d,
-                                                 interpolation=INTERP_LINEAR)
+                                                  interpolation=INTERP_LINEAR)
         self.processor_3d = create_ocio_processor(lut3d,
-                                            interpolation=INTERP_TETRAHEDRAL)
+                                                  interpolation=INTERP_TETRAHEDRAL)
         self.helpers_1d_to_test = [
-                                   (CUBE_HELPER, '.cube'),
-                                   [SPI_HELPER, '.spi1d'],
-                                   (CSP_HELPER, '.csp'),
-                                   ]
+            (CUBE_HELPER, '.cube'),
+            [SPI_HELPER, '.spi1d'],
+            (CSP_HELPER, '.csp'),
+            ]
         self.helpers_3d_to_test = [
-                                   (CUBE_HELPER, '.cube', True),
-                                   [SPI_HELPER, '.spi3d', True],
-                                   (CSP_HELPER, '.csp', True),
-                                   (THREEDL_HELPER, '.3dl', True),
-                                   (CLCC_HELPER, '.cc', False),
-                                   (JSON_HELPER, '.json', False)
-                                   ]
+            (CUBE_HELPER, '.cube', True),
+            [SPI_HELPER, '.spi3d', True],
+            (CSP_HELPER, '.csp', True),
+            (THREEDL_HELPER, '.3dl', True),
+            (CLCC_HELPER, '.cc', False),
+            (JSON_HELPER, '.json', False)
+            ]
 
     def test_default_1d_lut(self):
         """ Test a default 1d LUT export
@@ -129,11 +129,11 @@ class AbstractLUTTest(unittest.TestCase):
         CUBE_HELPER.check_preset(cust_preset)
         # try to write a 1D LUT with a 3D preset
         self.failUnlessRaises(alh.AbstractLUTException,
-                      CUBE_HELPER.write_1d_lut,
-                      self.processor_1d,
-                      outlutfile,
-                      cust_preset)
-        ## test value type
+                              CUBE_HELPER.write_1d_lut,
+                              self.processor_1d,
+                              outlutfile,
+                              cust_preset)
+        # # test value type
         # cube size
         cust_preset[presets.CUBE_SIZE] = presets.CUBE_SIZE_MAX_VALUE + 1
         self.failUnlessRaises(presets.PresetException,
@@ -177,15 +177,15 @@ class AbstractLUTTest(unittest.TestCase):
                                                             10)
                 # write encode LUT
                 helper.write_2d_lut(colorspace.encode_gradation,
-                                        encode_filepath,
-                                        args_1d)
+                                    encode_filepath,
+                                    args_1d)
                 # write decode LUT
                 args_1d[presets.IN_RANGE] = get_input_range(colorspace,
                                                             "decode",
                                                             10)
                 helper.write_2d_lut(colorspace.decode_gradation,
-                                        decode_filepath,
-                                        args_1d)
+                                    decode_filepath,
+                                    args_1d)
                 # test transparency
                 proc = create_ocio_processor(encode_filepath,
                                              postlutfile=decode_filepath,
@@ -201,8 +201,8 @@ class AbstractLUTTest(unittest.TestCase):
                     self.assert_(abs_value < delta,
                                  "{0} transparency test failed : {1:8f} >"
                                  " acceptable delta ({2:8f})".format(name,
-                                                                  abs_value,
-                                                                  delta)
+                                                                     abs_value,
+                                                                     delta)
                                  )
 
     def test_3dl_preset(self):
@@ -247,14 +247,14 @@ class AbstractLUTTest(unittest.TestCase):
         outlutfile = os.path.join(self.tmp_dir, "default_2D.lut")
         preset = ASCII_HELPER.get_default_preset()
         ASCII_HELPER.write_2d_lut(colorspace.decode_gradation,
-                                        outlutfile,
-                                        preset)
+                                  outlutfile,
+                                  preset)
         # 1D LUT
         outlutfile = os.path.join(self.tmp_dir, "default_1D.lut")
         preset = ASCII_HELPER.get_default_preset()
         ASCII_HELPER.write_1d_lut(colorspace.decode_gradation,
-                                        outlutfile,
-                                        preset)
+                                  outlutfile,
+                                  preset)
         # test out bit depth inadequate with output range
         preset[OUT_BITDEPTH] = 12
         self.failUnlessRaises(AsciiHelperException, ASCII_HELPER.write_1d_lut,
@@ -278,9 +278,9 @@ class AbstractLUTTest(unittest.TestCase):
         # try to write a float ascii lut without forcing float mode
         cust_preset[presets.IN_RANGE] = [0, 1.0]
         self.failUnlessRaises(PresetException, ASCII_HELPER.write_1d_lut,
-                                               colorspace.decode_gradation,
-                                               outlutfile,
-                                               cust_preset)
+                              colorspace.decode_gradation,
+                              outlutfile,
+                              cust_preset)
         # force float mode
         cust_preset[presets.IS_FLOAT] = True
         ASCII_HELPER.write_1d_lut(colorspace.decode_gradation,
@@ -288,7 +288,7 @@ class AbstractLUTTest(unittest.TestCase):
                                   cust_preset)
 
     def tearDown(self):
-        #Remove test directory
+        # Remove test directory
         shutil.rmtree(self.tmp_dir)
 
 

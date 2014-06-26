@@ -53,7 +53,7 @@ class GeneralTest(unittest.TestCase):
         # TODO test values
 
     def tearDown(self):
-        #Remove test directory
+        # Remove test directory
         shutil.rmtree(self.tmp_dir)
 
 

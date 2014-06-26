@@ -21,8 +21,8 @@ OCIO_3D_LUTS_FORMATS = ['.3dl', '.csp', '.cub', '.cube', '.hdl', '.look',
                         '.mga/m3d', '.spi3d', '.spimtx', '.vf']
 
 OCIO_LUTS_FORMATS = sorted(OCIO_1D_LUTS_FORMATS +
-                           list(set(OCIO_3D_LUTS_FORMATS)
-                           - set(OCIO_1D_LUTS_FORMATS)))
+                           list(set(OCIO_3D_LUTS_FORMATS) -
+                                set(OCIO_1D_LUTS_FORMATS)))
 
 
 def create_ocio_processor(lutfiles, interpolation=INTERP_LINEAR, inverse=False,

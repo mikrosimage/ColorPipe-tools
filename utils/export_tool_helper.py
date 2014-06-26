@@ -122,7 +122,7 @@ def add_range_option(parser):
     parser.add_argument("-ir",
                         "--input-range",
                         help="Input range. Ex: 0.0 1.0 or 0 4095",
-                          nargs='+')
+                        nargs='+')
     parser.add_argument("-or",
                         "--output-range",
                         help="Output range. Ex: 0.0 1.0 or 0 4095",
@@ -187,7 +187,7 @@ def add_version_option(parser, description, version, full_version):
         See debug_helper.get_imported_modules_versions
 
     """
-        # version
+    # version
     parser.add_argument('-v',
                         "--version",
                         action='version',
@@ -344,27 +344,27 @@ def get_write_function(preset, overwrite_preset=False, out_type=None,
 
     """
     if overwrite_preset:
-        if not out_type is None:
+        if out_type is not None:
             preset[presets.TYPE] = out_type
-        if not out_format is None:
+        if out_format is not None:
             preset[presets.EXT] = out_format
-        if not input_range is None:
+        if input_range is not None:
             preset[presets.IN_RANGE] = input_range
-        if not output_range is None:
+        if output_range is not None:
             preset[presets.OUT_RANGE] = output_range
-        if not out_bit_depth is None:
+        if out_bit_depth is not None:
             preset[presets.OUT_BITDEPTH] = out_bit_depth
-        if not out_cube_size is None:
+        if out_cube_size is not None:
             preset[presets.CUBE_SIZE] = out_cube_size
 
     if (not overwrite_preset
-    and (not out_type is None
-         or not out_format is None
-         or not input_range is None
-         or not output_range is None
-         or not out_bit_depth is None
-         or not out_cube_size is None
-         )):
+        and (out_type is not None
+             or out_format is not None
+             or input_range is not None
+             or output_range is not None
+             or out_bit_depth is not None
+             or out_cube_size is not None
+             )):
         if verbose:
             print_warning_message(("A preset was specified."
                                    " Default behaviour is to ignore other"
@@ -383,8 +383,8 @@ def get_write_function(preset, overwrite_preset=False, out_type=None,
 
 
 def get_preset_and_write_function(out_type, out_format,
-                          input_range=None, output_range=None,
-                          out_bit_depth=None, out_cube_size=None):
+                                  input_range=None, output_range=None,
+                                  out_bit_depth=None, out_cube_size=None):
     """ Get preset and write function considering args
 
     Args:
@@ -415,13 +415,13 @@ def get_preset_and_write_function(out_type, out_format,
     ext, helper = _get_ext_and_helper(out_format, out_type)
     preset[presets.EXT] = ext
     # check args
-    if not input_range is None:
+    if input_range is not None:
         preset[presets.IN_RANGE] = input_range
-    if not output_range is None:
+    if output_range is not None:
         preset[presets.OUT_RANGE] = output_range
-    if not out_bit_depth is None:
+    if out_bit_depth is not None:
         preset[presets.OUT_BITDEPTH] = out_bit_depth
-    if not out_cube_size is None:
+    if out_cube_size is not None:
         preset[presets.CUBE_SIZE] = out_cube_size
 
     # fill missing args if necessary

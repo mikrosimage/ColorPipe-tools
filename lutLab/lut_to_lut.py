@@ -162,11 +162,11 @@ def __get_options():
 
 if __name__ == '__main__':
     ARGS = __get_options()
-    if not ARGS.input_range is None:
+    if ARGS.input_range is not None:
         ARGS.input_range = presets.convert_string_range(ARGS.input_range)
-    if not ARGS.output_range is None:
+    if ARGS.output_range is not None:
         ARGS.output_range = presets.convert_string_range(ARGS.output_range)
-    if not ARGS.preset is None:
+    if ARGS.preset is not None:
         ARGS.preset = presets.get_presets_from_env()[ARGS.preset]
     try:
         lut_to_lut(ARGS.inlutfiles,
