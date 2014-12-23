@@ -9,6 +9,7 @@ __version__ = "0.3"
 from utils.colors_helper import get_RGB_to_XYZ_matrix
 from utils.colorspaces import COLORSPACES
 from utils.private_colorspaces import PRIVATE_COLORSPACES
+from utils.matrix_helper import matrix_to_string, matrix_to_spimtx_string
 import argparse
 import sys
 from utils import debug_helper
@@ -24,34 +25,6 @@ class RGBToXYZMatrixException(Exception):
     pass
 
 
-def matrix_to_string(matrix, extra=""):
-    """Return a string version of the matrix
-
-    Args:
-        matrix (numpy.matrix (3x3)): matrix to convert
-        extra (float): additionnal 4th column value
-
-    Returns:
-        string
-
-    """
-    return ("{0:.10f} {1:.10f} {2:.10f} {9}\n"
-            "{3:.10f} {4:.10f} {5:.10f} {10}\n"
-            "{6:.10f} {7:.10f} {8:.10f} {11} \n").format(matrix.item(0, 0),
-                                                         matrix.item(0, 1),
-                                                         matrix.item(0, 2),
-                                                         matrix.item(1, 0),
-                                                         matrix.item(1, 1),
-                                                         matrix.item(1, 2),
-                                                         matrix.item(2, 0),
-                                                         matrix.item(2, 1),
-                                                         matrix.item(2, 2),
-                                                         extra,
-                                                         extra,
-                                                         extra)
-
-
-def display_matrix(colorspace, matrix_format):
     """Display RGB to XYZ matrix corresponding to colorspace and formatting
     as format
 
@@ -73,8 +46,8 @@ def display_matrix(colorspace, matrix_format):
         matrix_dump = matrix_to_string(matrix)
         inv_matrix_dump = matrix_to_string(matrix.I)
     elif matrix_format == 'spimtx':
-        matrix_dump = matrix_to_string(matrix, "0")
-        inv_matrix_dump = matrix_to_string(matrix.I, "0")
+        matrix_dump = matrix_to_spimtx_string(matrix)
+        inv_matrix_dump = matrix_to_spimtx_string(matrix.I)
     else:
         matrix_dump = "{0}".format(matrix)
         inv_matrix_dump = "{0}".format(matrix.I)
