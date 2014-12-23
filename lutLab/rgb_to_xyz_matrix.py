@@ -5,8 +5,8 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-__version__ = "0.3"
-from utils.colors_helper import get_RGB_to_XYZ_matrix
+__version__ = "0.4"
+from utils.colors_helper import get_RGB_to_XYZ_matrix, get_primaries_matrix
 from utils.colorspaces import COLORSPACES
 from utils.private_colorspaces import PRIVATE_COLORSPACES
 from utils.matrix_helper import matrix_to_string, matrix_to_spimtx_string
@@ -25,6 +25,7 @@ class RGBToXYZMatrixException(Exception):
     pass
 
 
+def display_matrix(colorspace, matrix_format, primaries_only=False):
     """Display RGB to XYZ matrix corresponding to colorspace and formatting
     as format
 
@@ -38,10 +39,17 @@ class RGBToXYZMatrixException(Exception):
         colorspace_obj = COLORSPACES[colorspace]
     except KeyError:
         colorspace_obj = PRIVATE_COLORSPACES[colorspace]
-    matrix = get_RGB_to_XYZ_matrix(colorspace_obj.get_red_primaries(),
-                                   colorspace_obj.get_green_primaries(),
-                                   colorspace_obj.get_blue_primaries(),
-                                   colorspace_obj.get_white_point())
+    if primaries_only:
+        matrix = get_primaries_matrix(colorspace_obj.get_red_primaries(),
+                                      colorspace_obj.get_green_primaries(),
+                                      colorspace_obj.get_blue_primaries())
+        matrix_type = "Primaries"
+    else:
+        matrix = get_RGB_to_XYZ_matrix(colorspace_obj.get_red_primaries(),
+                                       colorspace_obj.get_green_primaries(),
+                                       colorspace_obj.get_blue_primaries(),
+                                       colorspace_obj.get_white_point())
+        matrix_type = "Primaries + white point"
     if matrix_format == 'simple':
         matrix_dump = matrix_to_string(matrix)
         inv_matrix_dump = matrix_to_string(matrix.I)
@@ -51,9 +59,9 @@ class RGBToXYZMatrixException(Exception):
     else:
         matrix_dump = "{0}".format(matrix)
         inv_matrix_dump = "{0}".format(matrix.I)
-    print "{0} to XYZ matrix ({1} output):\n".format(colorspace, matrix_format)
+    print "{0} to XYZ matrix ({1}, {2} output):\n".format(colorspace, matrix_type, matrix_format)
     print matrix_dump
-    print "XYZ to {0} matrix ({1} output):\n".format(colorspace, matrix_format)
+    print "XYZ to {0} matrix ({1}, {2} output):\n".format(colorspace, matrix_type, matrix_format)
     print inv_matrix_dump
 
 
@@ -74,6 +82,10 @@ def __get_options():
                         choices=sorted(COLORSPACES.keys() +
                                        PRIVATE_COLORSPACES.keys()),
                         default='Rec709')
+    # Get primarie matrix only
+    parser.add_argument("-po", "--primaries-only",
+                        help="Primaries matrix only, doesn't include white point.",
+                        action="store_true")
     # Output format
     parser.add_argument("-f", "--format",
                         help=("Output formatting."),
@@ -97,4 +109,4 @@ def __get_options():
 
 if __name__ == '__main__':
     ARGS = __get_options()
-    display_matrix(ARGS.colorspace, ARGS.format)
+    display_matrix(ARGS.colorspace, ARGS.format, ARGS.primaries_only)
