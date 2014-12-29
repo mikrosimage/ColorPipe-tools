@@ -11,13 +11,13 @@ See on [documentation site](http://mikrosimage.github.io/ColorPipe-tools/Web_app
 
 Requirements
 -------------------
-+ OpenColorIO / PyOpenColorIO
-+ Numpy 1.7.1 
-+ Scipy 0.12
++ OpenColorIO / PyOpenColorIO (tested versions: 1.0.8 | 1.0.9)
++ Numpy (tested versions: 1.7.1 | 1.9.1) 
++ Scipy Scipy (tested versions: 0.12 | 0.14)
 + Argparse
 + Clint (optional)
-+ Matplotlib 1.2.1
-+ cherryPy 3.2.4
++ Matplotlib (tested versions: 1.2.1 | 1.4.2)
++ cherryPy  (tested versions: 3.2.4 | 3.6.0)
 + mako
 
 Web app usage
