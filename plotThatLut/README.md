@@ -14,16 +14,17 @@ See on [documentation site](http://mikrosimage.github.io/ColorPipe-tools/PlotTha
 Requirements
 ------------
 
-+ OpenColorIO / PyOpenColorIO
-+ Numpy 1.7.1 
-+ Scipy 0.12
++ OpenColorIO / PyOpenColorIO (tested versions: 1.0.8 | 1.0.9)
++ Numpy (tested versions: 1.7.1 | 1.9.1) 
++ Scipy (tested versions: 0.12 | 0.14)
 + Argparse
 + Clint (optional)
-+ Matplotlib 1.2.1 + a backend (for exemple Qt, Gtk...)
++ Matplotlib (tested versions: 1.2.1 | 1.4.2) + a backend (for exemple Qt, Gtk...)
 
 Tested config
 -------------
 - Python 2.6/2.7, Qt 4.8, OpenColorIO 1.0.8 / 1.0.8, matplotlib 1.2 on openSuse 12.1 and Windows 7
+- Python 2.6/2.7, Qt 4.8, OpenColorIO 1.0.9, matplotlib 1.4.2 on Centos 6.5 and Fedora 20
 
 Command line usage
 -----
