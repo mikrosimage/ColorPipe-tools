@@ -38,14 +38,14 @@ Available scripts :
 Requirements
 -------------------
 
-+ OpenColorIO / PyOpenColorIO
-+ Numpy 1.7.1 
-+ Scipy 0.12
++ OpenColorIO / PyOpenColorIO (tested versions: 1.0.8 | 1.0.9) 
++ Numpy (tested versions: 1.7.1 | 1.9.1) 
++ Scipy (tested versions: 0.12 | 0.14) 
 + Argparse
 + Clint (optional)
 
 ####For plot tools
-+ Matplotlib 1.2.1
++ Matplotlib (tested versions: 1.2.1 | 1.4.2) 
 
 ####For web app
-+ cherryPy 3.2.4
++ cherryPy (tested versions: 3.2.4 | 3.6.0) 
