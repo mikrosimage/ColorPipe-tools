@@ -55,6 +55,18 @@ class CubeLutHelper(AbstractLUTHelper):
         if title is None:
             title = self.get_generated_title(file_path, preset)
         lutfile.write("TITLE {0}\n\n".format(title))
+
+        # input range
+        domain = preset['input_range']
+        if domain:
+            domain_min = domain[0]
+            domain_max = domain[1]
+            if domain_min:
+                lutfile.write("DOMAIN_MIN {0} {0} {0}\n".format(domain_min))
+            if domain_max != 1.0:
+                lutfile.write("DOMAIN_MAX {0} {0} {0}\n".format(domain_max))
+            lutfile.write("\n")
+
         # lut size
         lutfile.write("{0} {1}\n\n".format(CUBE_1D, len(data)))
         # data
