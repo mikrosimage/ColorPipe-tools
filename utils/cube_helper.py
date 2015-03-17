@@ -48,31 +48,30 @@ class CubeLutHelper(AbstractLUTHelper):
         # Get data
         data = self._get_1d_data(process_function, preset)
         title = preset['title']
-        lutfile = open(file_path, 'w+')
-        # TODO add metadata
-        # skip comment because not supported by every soft
-        # title
-        if title is None:
-            title = self.get_generated_title(file_path, preset)
-        lutfile.write("TITLE {0}\n\n".format(title))
+        with open(file_path, 'w+') as lutfile:
+            # TODO add metadata
+            # skip comment because not supported by every soft
+            # title
+            if title is None:
+                title = self.get_generated_title(file_path, preset)
+            lutfile.write("TITLE {0}\n\n".format(title))
 
-        # input range
-        domain = preset['input_range']
-        if domain:
-            domain_min = domain[0]
-            domain_max = domain[1]
-            if domain_min:
-                lutfile.write("DOMAIN_MIN {0} {0} {0}\n".format(domain_min))
-            if domain_max != 1.0:
-                lutfile.write("DOMAIN_MAX {0} {0} {0}\n".format(domain_max))
-            lutfile.write("\n")
+            # input range
+            domain = preset['input_range']
+            if domain:
+                domain_min = domain[0]
+                domain_max = domain[1]
+                if domain_min:
+                    lutfile.write("DOMAIN_MIN {0} {0} {0}\n".format(domain_min))
+                if domain_max != 1.0:
+                    lutfile.write("DOMAIN_MAX {0} {0} {0}\n".format(domain_max))
+                lutfile.write("\n")
 
-        # lut size
-        lutfile.write("{0} {1}\n\n".format(CUBE_1D, len(data)))
-        # data
-        for rgb in data:
-            lutfile.write(line_function(preset, rgb))
-        lutfile.close()
+            # lut size
+            lutfile.write("{0} {1}\n\n".format(CUBE_1D, len(data)))
+            # data
+            for rgb in data:
+                lutfile.write(line_function(preset, rgb))
         return self.get_export_message(file_path)
 
     def write_1d_lut(self, process_function, file_path, preset):
@@ -84,20 +83,19 @@ class CubeLutHelper(AbstractLUTHelper):
         data = self._get_3d_data(process_function, preset)[1]
         title = preset['title']
         cube_size = preset['cube_size']
-        lutfile = open(file_path, 'w+')
-        # Test output range
-        self._check_output_range(preset)
-        # skip comment because not supported by every soft
-        # title
-        if title is None:
-            title = self.get_generated_title(file_path, preset)
-        lutfile.write("TITLE {0}\n\n".format(title))
-        # lut size
-        lutfile.write("{0} {1}\n\n".format(CUBE_3D, cube_size))
-        # data
-        for rgb in data:
-            lutfile.write(self._get_rgb_value_line(preset, rgb))
-        lutfile.close()
+        with open(file_path, 'w+') as lutfile:
+            # Test output range
+            self._check_output_range(preset)
+            # skip comment because not supported by every soft
+            # title
+            if title is None:
+                title = self.get_generated_title(file_path, preset)
+            lutfile.write("TITLE {0}\n\n".format(title))
+            # lut size
+            lutfile.write("{0} {1}\n\n".format(CUBE_3D, cube_size))
+            # data
+            for rgb in data:
+                lutfile.write(self._get_rgb_value_line(preset, rgb))
         return self.get_export_message(file_path)
 
     @staticmethod
