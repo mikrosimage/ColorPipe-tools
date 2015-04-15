@@ -55,8 +55,8 @@ def display_matrix(in_colorspace, out_colorspace, matrix_format, primaries_only=
 
     print "{0} to {1} matrix ({2} {3} output):\n".format(in_colorspace,
                                                          out_colorspace,
-                                                         primaries_only and "primaries"
-                                                         or "primaries + white point",
+                                                         primaries_only and "primaries" or
+                                                         "primaries + white point",
                                                          matrix_format)
     print matrix_dump
 
