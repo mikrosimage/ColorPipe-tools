@@ -121,11 +121,8 @@ def apply_matrix(matrix, triplet):
         .[float, float, float]
 
     """
-    a, b, c = triplet
-    ap = matrix.item(0, 0) * a + matrix.item(0, 1) * b + matrix.item(0, 2) * c
-    bp = matrix.item(1, 0) * a + matrix.item(1, 1) * b + matrix.item(1, 2) * c
-    cp = matrix.item(2, 0) * a + matrix.item(2, 1) * b + matrix.item(2, 2) * c
-    return [ap, bp, cp]
+    values = numpy.matrix(triplet)
+    return numpy.dot(matrix, values.T).T.tolist()[0]
 
 
 def clamp_value(value, max_value=1.0, min_value=0.0):
