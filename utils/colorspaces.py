@@ -255,7 +255,7 @@ class WideGamut(AbstractColorspace):
 
 
 class ACES(AbstractColorspace):
-    """ACES Colorspace
+    """ACES Colorspace (P0 primaries and linear encoding)
 
     """
     def get_red_primaries(self):
@@ -277,8 +277,61 @@ class ACES(AbstractColorspace):
         return value
 
 
+class ACEScg(ACES):
+    """ACES cg Colorspace (P1 primaries and linear encoding)
+
+    """
+    def get_red_primaries(self):
+        return 0.713, 0.293
+
+    def get_green_primaries(self):
+        return 0.165, 0.830
+
+    def get_blue_primaries(self):
+        return 0.128, 0.044
+
+    def get_white_point(self):
+        return 0.32168, 0.33767
+
+
+class ACEScc(ACEScg):
+    """ACEScc Colorspace (P1 primaries and log encoding)
+
+    """
+    def __init__(self):
+        self.enc_threshold = math.pow(2.0, -15)
+        self.denorm_fake0 = math.pow(2.0, -16)
+        self.offset = 9.72
+        self.factor = 17.52
+
+        # encode constants
+        self.enc_threshold = math.pow(2.0, -15)
+        self.enc_threshold_cst = (math.log(self.enc_threshold * 0.5, 2.0) + self.offset) / self.factor
+
+        # decode constants
+        self.dec_low_threshold = (self.offset - 15) / self.factor
+        self.dec_white_threshold = 65504.0
+        self.dec_up_threshold = (math.log(self.dec_white_threshold, 2.0) + self.offset) / self.factor
+
+    def _encode_gradation(self, value):
+        if value <= 0:
+            return self.enc_threshold_cst
+        elif value < self.enc_threshold:
+            return (math.log(self.denorm_fake0 + value * 0.5, 2) + self.offset) / self.factor
+        else:
+            return (math.log(value, 2.0) + self.offset) / self.factor
+
+    def _decode_gradation(self, value):
+        if value < self.dec_low_threshold:
+            return (math.pow(2.0, value * self.factor - self.offset) - self.denorm_fake0) * 2
+        elif value >= self.dec_up_threshold:
+            return self.dec_white_threshold
+        else:
+            return math.pow(2.0, value * self.factor - self.offset)
+
+
 class ACESlog(ACES):
-    """ACES LOG colorspace
+    """ACES LOG colorspace (deprecated by ACEScc)
 
     """
     def __init__(self, is_integer=False):
@@ -313,7 +366,7 @@ class ACESlog(ACES):
             return math.pow(2, (value - self.unity) / self.xperstop)
 
 
-class ACESproxy(ACES):
+class ACESproxy(ACEScg):
     """ACESproxy colorspace
     """
     def __init__(self, cv_min, cv_max, steps_per_stop, mid_cv_offset,
@@ -345,6 +398,7 @@ class ACESproxy(ACES):
         self.steps_per_stop = steps_per_stop
         self.mid_cv_offset = mid_cv_offset
         self.mid_log_offset = mid_log_offset
+        self.threshold = math.pow(2.0, -9.72)
 
     def float_to_cv(self, value):
         """Math function returning MAX(cv_min, MIN(cv_max, ROUND(value)))
@@ -352,16 +406,16 @@ class ACESproxy(ACES):
         return max(self.cv_min, min(self.cv_max, round(value)))
 
     def _encode_gradation(self, value):
-        if value <= 0:
+        if value <= self.threshold:
             return self.cv_min
         else:
-            return self.float_to_cv((math.log(value, 2) - self.mid_log_offset)
+            return self.float_to_cv((math.log(value, 2.0) - self.mid_log_offset)
                                     *
                                     self.steps_per_stop + self.mid_cv_offset
                                     )
 
     def _decode_gradation(self, value):
-        return math.pow(2, (value - self.mid_cv_offset) / self.steps_per_stop
+        return math.pow(2.0, (value - self.mid_cv_offset) / self.steps_per_stop
                         + self.mid_log_offset)
 
 
@@ -370,8 +424,8 @@ class ACESproxy10(ACESproxy):
 
     """
     def __init__(self):
-        ACESproxy.__init__(self, cv_min=0, cv_max=1023, steps_per_stop=50,
-                           mid_cv_offset=425, mid_log_offset=-2.5)
+        ACESproxy.__init__(self, cv_min=64.0, cv_max=940.0, steps_per_stop=50.0,
+                           mid_cv_offset=425.0, mid_log_offset=-2.5)
 
 
 class ACESproxy12(ACESproxy):
@@ -379,8 +433,8 @@ class ACESproxy12(ACESproxy):
 
     """
     def __init__(self):
-        ACESproxy.__init__(self, cv_min=0, cv_max=4095, steps_per_stop=200,
-                           mid_cv_offset=1700, mid_log_offset=-2.5)
+        ACESproxy.__init__(self, cv_min=256.0, cv_max=3760.0, steps_per_stop=200.0,
+                           mid_cv_offset=1700.0, mid_log_offset=-2.5)
 
 
 class SGamutSLog(AbstractColorspace):
@@ -487,6 +541,8 @@ ACESLOG_32f = ACESlog(is_integer=False)
 ACESLOG_16i = ACESlog(is_integer=True)
 ACESPROXY_10i = ACESproxy10()
 ACESPROXY_12i = ACESproxy12()
+ACESCG = ACEScg()
+ACESCC = ACEScc()
 sRGB = sRGB()
 SGAMUTSLOG = SGamutSLog()
 SGAMUTSLOG2 = SGamutSLog2()
@@ -505,6 +561,8 @@ COLORSPACES = {
     'ACESlog_16i': ACESLOG_16i,
     'ACESproxy_10': ACESPROXY_10i,
     'ACESproxy_12': ACESPROXY_12i,
+    'ACEScg': ACESCG,
+    'ACEScc': ACESCC,
     'SGamutSLog': SGAMUTSLOG,
     'SGamutSLog2': SGAMUTSLOG2,
     'SGamutSLog3': SGAMUTSLOG3,
