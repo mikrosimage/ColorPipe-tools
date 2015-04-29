@@ -6,7 +6,7 @@ from plotThatLut import plot_that_lut
 import os
 import tempfile
 import shutil
-from lutLab import rgb_to_xyz_matrix
+from utils.colors_helper import get_colorspace_matrix, get_RGB_to_RGB_matrix
 
 
 DISPLAY = False
@@ -44,13 +44,6 @@ class GeneralTest(unittest.TestCase):
         else:
             # TODO
             pass
-
-    def test_rgb_to_matrix(self):
-        """Display rgb matrix
-
-        """
-        rgb_to_xyz_matrix.display_matrix('Rec709', 'spimtx')
-        # TODO test values
 
     def tearDown(self):
         # Remove test directory
