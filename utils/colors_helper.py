@@ -3,7 +3,7 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-__version__ = "0.3"
+__version__ = "0.4"
 import math
 import numpy
 
@@ -121,11 +121,8 @@ def apply_matrix(matrix, triplet):
         .[float, float, float]
 
     """
-    a, b, c = triplet
-    ap = matrix.item(0, 0) * a + matrix.item(0, 1) * b + matrix.item(0, 2) * c
-    bp = matrix.item(1, 0) * a + matrix.item(1, 1) * b + matrix.item(1, 2) * c
-    cp = matrix.item(2, 0) * a + matrix.item(2, 1) * b + matrix.item(2, 2) * c
-    return [ap, bp, cp]
+    values = numpy.matrix(triplet)
+    return numpy.dot(matrix, values.T).T.tolist()[0]
 
 
 def clamp_value(value, max_value=1.0, min_value=0.0):
@@ -307,3 +304,60 @@ def get_XYZ_to_RGB_matrix(xy_red, xy_green, xy_blue, xy_white):
 
     """
     return get_RGB_to_XYZ_matrix(xy_red, xy_green, xy_blue, xy_white).I
+
+
+def get_colorspace_matrix(colorspace, primaries_only=False, inv=False):
+    """Return a colorspace RGB to XYZ matrix.
+
+    Args:
+        colorspace (str): input colorspace.
+
+    Kwargs:
+        primaries_only (bool): primaries matrix only, doesn't include white point.
+        inv (bool): return XYZ to RGB matrix.
+
+    Returns:
+        .numpy.matrix (3x3)
+
+    """
+    from utils.colorspaces import COLORSPACES
+    from utils.private_colorspaces import PRIVATE_COLORSPACES
+    colorspace_obj = COLORSPACES.get(colorspace) or PRIVATE_COLORSPACES.get(colorspace)
+
+    if not colorspace_obj:
+        raise NotImplementedError("Could not find {0} colorspace".format(colorspace))
+
+    if primaries_only:
+        matrix = get_primaries_matrix(colorspace_obj.get_red_primaries(),
+                                      colorspace_obj.get_green_primaries(),
+                                      colorspace_obj.get_blue_primaries())
+    else:
+        matrix = get_RGB_to_XYZ_matrix(colorspace_obj.get_red_primaries(),
+                                       colorspace_obj.get_green_primaries(),
+                                       colorspace_obj.get_blue_primaries(),
+                                       colorspace_obj.get_white_point())
+    if inv:
+        return matrix.I
+    return matrix
+
+
+def get_RGB_to_RGB_matrix(in_colorspace, out_colorspace, primaries_only=False):
+    """Return RGB to RGB conversion matrix.
+
+    Args:
+        in_colorspace (str): input colorspace.
+        out_colorspace (str): output colorspace.
+
+    Kwargs:
+        primaries_only (bool): primaries matrix only, doesn't include white point.
+
+    Returns:
+        .numpy.matrix (3x3)
+
+    """
+    # Get colorspace in to XYZ matrix
+    in_matrix = get_colorspace_matrix(in_colorspace, primaries_only)
+    # Get XYZ to colorspace out matrix
+    out_matrix = get_colorspace_matrix(out_colorspace, primaries_only, inv=True)
+    # Return scalar product of the 2 matrices
+    return numpy.dot(out_matrix, in_matrix)

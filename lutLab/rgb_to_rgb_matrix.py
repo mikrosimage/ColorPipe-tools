@@ -5,14 +5,16 @@
 .. moduleauthor:: `Marie FETIVEAU <github.com/mfe>`_
 
 """
-__version__ = "0.4"
-from utils.colors_helper import get_RGB_to_XYZ_matrix, get_primaries_matrix
+__version__ = "0.5"
+from utils.colors_helper import get_RGB_to_RGB_matrix, get_colorspace_matrix
 from utils.colorspaces import COLORSPACES
 from utils.private_colorspaces import PRIVATE_COLORSPACES
 from utils.matrix_helper import matrix_to_string, matrix_to_spimtx_string
 import argparse
 import sys
 from utils import debug_helper
+
+XYZ_colorspace = 'XYZ'
 
 
 class RGBToXYZMatrixException(Exception):
@@ -25,7 +27,7 @@ class RGBToXYZMatrixException(Exception):
     pass
 
 
-def display_matrix(colorspace, matrix_format, primaries_only=False):
+def display_matrix(in_colorspace, out_colorspace, matrix_format, primaries_only=False):
     """Display RGB to XYZ matrix corresponding to colorspace and formatting
     as format
 
@@ -35,34 +37,28 @@ def display_matrix(colorspace, matrix_format, primaries_only=False):
         matrix_format (str): output format. simple, matrix, spimtx.
 
     """
-    try:
-        colorspace_obj = COLORSPACES[colorspace]
-    except KeyError:
-        colorspace_obj = PRIVATE_COLORSPACES[colorspace]
-    if primaries_only:
-        matrix = get_primaries_matrix(colorspace_obj.get_red_primaries(),
-                                      colorspace_obj.get_green_primaries(),
-                                      colorspace_obj.get_blue_primaries())
-        matrix_type = "Primaries"
+    if in_colorspace == XYZ_colorspace:
+        if out_colorspace == XYZ_colorspace:
+            raise AttributeError("In and out colorspaces can't be both XYZ !")
+        matrix = get_colorspace_matrix(out_colorspace, primaries_only, inv=True)
+    elif out_colorspace == XYZ_colorspace:
+        matrix = get_colorspace_matrix(in_colorspace, primaries_only, inv=False)
     else:
-        matrix = get_RGB_to_XYZ_matrix(colorspace_obj.get_red_primaries(),
-                                       colorspace_obj.get_green_primaries(),
-                                       colorspace_obj.get_blue_primaries(),
-                                       colorspace_obj.get_white_point())
-        matrix_type = "Primaries + white point"
+        matrix = get_RGB_to_RGB_matrix(in_colorspace, out_colorspace, primaries_only)
+
     if matrix_format == 'simple':
         matrix_dump = matrix_to_string(matrix)
-        inv_matrix_dump = matrix_to_string(matrix.I)
     elif matrix_format == 'spimtx':
         matrix_dump = matrix_to_spimtx_string(matrix)
-        inv_matrix_dump = matrix_to_spimtx_string(matrix.I)
     else:
         matrix_dump = "{0}".format(matrix)
-        inv_matrix_dump = "{0}".format(matrix.I)
-    print "{0} to XYZ matrix ({1}, {2} output):\n".format(colorspace, matrix_type, matrix_format)
+
+    print "{0} to {1} matrix ({2} {3} output):\n".format(in_colorspace,
+                                                         out_colorspace,
+                                                         primaries_only and "primaries" or
+                                                         "primaries + white point",
+                                                         matrix_format)
     print matrix_dump
-    print "XYZ to {0} matrix ({1}, {2} output):\n".format(colorspace, matrix_type, matrix_format)
-    print inv_matrix_dump
 
 
 def __get_options():
@@ -73,15 +69,20 @@ def __get_options():
 
     """
     # Define parser
-    description = 'Print RGB -> XYZ matrix'
+    description = 'Print RGB -> RGB matrix'
     parser = argparse.ArgumentParser(description=description)
     # RGB colorspace
-    parser.add_argument("-c", "--colorspace",
+    colorspaces = sorted(COLORSPACES.keys() + PRIVATE_COLORSPACES.keys() + [XYZ_colorspace])
+    parser.add_argument("-in", "--in-colorspace",
                         help=("Input RGB Colorspace."),
                         type=str,
-                        choices=sorted(COLORSPACES.keys() +
-                                       PRIVATE_COLORSPACES.keys()),
-                        default='Rec709')
+                        choices=colorspaces,
+                        required=True)
+    parser.add_argument("-out", "--out-colorspace",
+                        help=("Output RGB Colorspace."),
+                        type=str,
+                        choices=colorspaces,
+                        required=True)
     # Get primarie matrix only
     parser.add_argument("-po", "--primaries-only",
                         help="Primaries matrix only, doesn't include white point.",
@@ -109,4 +110,4 @@ def __get_options():
 
 if __name__ == '__main__':
     ARGS = __get_options()
-    display_matrix(ARGS.colorspace, ARGS.format, ARGS.primaries_only)
+    display_matrix(ARGS.in_colorspace, ARGS.out_colorspace, ARGS.format, ARGS.primaries_only)
