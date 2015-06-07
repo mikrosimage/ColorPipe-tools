@@ -114,7 +114,7 @@ class CSPLutHelper(AbstractLUTHelper):
         output_range = preset[presets.OUT_RANGE]
         # TODO real shaper LUT management
         default_header = (
-            "CSPLUTV100\n{4}\n\n"
+            "CSPLUTV100\n{4}\nBEGIN METADATA\nEND METADATA\n\n"
             "2\n{0} {1}\n{2} {3}\n\n"
             "2\n{0} {1}\n{2} {3}\n\n"
             "2\n{0} {1}\n{2} {3}\n\n".format(input_range[0], input_range[1],

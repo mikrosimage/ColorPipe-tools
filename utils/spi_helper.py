@@ -65,7 +65,7 @@ class SpiLutHelper(AbstractLUTHelper):
         # data
         for rgb in data:
             lutfile.write(line_function(preset, rgb))
-        lutfile.write("}/n")
+        lutfile.write("}\n")
         lutfile.close()
         return self.get_export_message(file_path)
 
