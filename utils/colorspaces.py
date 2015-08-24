@@ -477,7 +477,7 @@ class SGamutSLog2(SGamutSLog):
             value = value / 0.28258064516129 + self.decode_threshold
         else:
             value = (0.432699 * math.log10(155.0 * value / 219.0 + 0.037584)
-                     + 0.616596 + 0.03)
+                     + 0.616596 + self.decode_threshold)
         value = value * (self.max - self.min) + self.min
         return value
 
@@ -487,7 +487,7 @@ class SGamutSLog2(SGamutSLog):
             value = ((value - self.decode_threshold) * 0.28258064516129)
         else:
             value = (219.0 *
-                     (math.pow(10.0, (value - 0.616596 - 0.03) / 0.432699)
+                     (math.pow(10.0, (value - 0.616596 - self.decode_threshold) / 0.432699)
                       - 0.037584) / 155.0)
         return value * 0.9
 
