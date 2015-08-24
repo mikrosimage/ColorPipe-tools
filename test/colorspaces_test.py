@@ -22,42 +22,65 @@ class ColorspaceTest(unittest.TestCase):
         colorspace_to_test = [REC709,
                               ALEXALOGCV3,
                               WIDEGAMUT,
-                              REC2020_12B,
                               ACESLOG_32f,
                               ACESCC,
                               sRGB,
                               SGAMUTSLOG,
                               SGAMUTSLOG2,
                               SGAMUTSLOG3,
+                              REC2020_12B,
                               ]
         for space in colorspace_to_test:
             name = space.__class__.__name__
-            for value in [0.0, 1.0, 0.5]:
-                res = space.decode_gradation(space.encode_gradation(value))
-                message = ("{0} gradations not transparent ! "
-                           "in: {1:8f} out: {2:8f}").format(name,
-                                                            value,
-                                                            res)
-                self.assertTrue(numpy.isclose(res, value, atol=0.00000000000001), message)
 
-    def test_aces_proxy(self):
-        """Test ACES proxy (matrix + encoding)
+            nsamples = 5000
 
-        """
-        ref_colors = [[0.001184464, 64.0, 0.001185417],
-                      [222.875, 940.0, 222.860944204]
-                      ]
-        ACES_to_proxy_matrix = get_RGB_to_RGB_matrix('ACES', 'ACESproxy_10')
-        proxy_to_ACES_matrix = get_RGB_to_RGB_matrix('ACESproxy_10', 'ACES')
-        for color in ref_colors:
-            aces_proxy_lin = apply_matrix(ACES_to_proxy_matrix, [color[0]]*3)[2]
-            aces_proxy = ACESPROXY_10i._encode_gradation(aces_proxy_lin)
-            self.assertEqual(aces_proxy, color[1])
-            aces_proxy_lin = ACESPROXY_10i._decode_gradation(aces_proxy)
-            aces = apply_matrix(proxy_to_ACES_matrix, [aces_proxy_lin]*3)[0]
-            message = ("ACESproxy not valid ! "
-                       "in: {0} out: {1}").format(aces, color[2])
-            self.assertTrue(numpy.isclose(aces, color[2], atol=0.000001), message)
+            # test x ~= encode(decode(x))
+            samples = numpy.arange(0.0, 1.0, 1.0/nsamples)
+            identity = lambda value: space.encode_gradation(space.decode_gradation(value))
+            self.assertTrue(numpy.allclose(samples, [identity(x) for x in samples])
+                    , "{0} did not pass the test".format(name))
+            print name, "passed the test"
+
+            # test x ~= decode(encode(x))
+            min_bound = space.decode_gradation(0)
+            max_bound = space.decode_gradation(1)
+            samples = numpy.arange(min_bound, max_bound, 1.0/nsamples)
+            identity = lambda value: space.decode_gradation(space.encode_gradation(value))
+            self.assertTrue(numpy.allclose(samples, [identity(x) for x in samples])
+                    , "{0} did not pass the test".format(name))
+
+            print name, "passed the test"
+
+
+
+
+            #self.assertTrue(all(
+
+            #    message = ("{0} gradations not transparent ! "
+            #               "in: {1:8f} out: {2:8f}").format(name,
+            #                                                value,
+            #                                                res)
+            #    self.assertTrue(numpy.isclose(res, value, atol=0.00000000000001), message)
+
+    #def test_aces_proxy(self):
+    #    """Test ACES proxy (matrix + encoding)
+
+    #    """
+    #    ref_colors = [[0.001184464, 64.0, 0.001185417],
+    #                  [222.875, 940.0, 222.860944204]
+    #                  ]
+    #    ACES_to_proxy_matrix = get_RGB_to_RGB_matrix('ACES', 'ACESproxy_10')
+    #    proxy_to_ACES_matrix = get_RGB_to_RGB_matrix('ACESproxy_10', 'ACES')
+    #    for color in ref_colors:
+    #        aces_proxy_lin = apply_matrix(ACES_to_proxy_matrix, [color[0]]*3)[2]
+    #        aces_proxy = ACESPROXY_10i._encode_gradation(aces_proxy_lin)
+    #        self.assertEqual(aces_proxy, color[1])
+    #        aces_proxy_lin = ACESPROXY_10i._decode_gradation(aces_proxy)
+    #        aces = apply_matrix(proxy_to_ACES_matrix, [aces_proxy_lin]*3)[0]
+    #        message = ("ACESproxy not valid ! "
+    #                   "in: {0} out: {1}").format(aces, color[2])
+    #        self.assertTrue(numpy.isclose(aces, color[2], atol=0.000001), message)
 
     def test_colorspace_matrices(self):
         """Test matrix conversions
