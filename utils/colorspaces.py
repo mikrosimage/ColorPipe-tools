@@ -8,7 +8,7 @@ from utils import colors_helper
 from abc import ABCMeta, abstractmethod
 import math
 import collections
-
+import numpy as np
 
 class AbstractColorspace(object):
     """Abstract Color Space
@@ -465,31 +465,38 @@ class SGamutSLog2(SGamutSLog):
     """Sony SGamut and SLog2
     Inspired from OpenColorIO ACES profil SLog2
 
+
     """
     def __init__(self):
-        self.min = 64.0 / 1023.0
-        self.max = 940.0 / 1023.0
-        self.decode_threshold = 0.030001222851889303
+
+        def slog2_to_lin(value):
+            black = 64.0 / 1023.0
+            white = 940.0 / 1023.0
+            threshold = 0.030001222851889303
+            value = (value - black) / (white - black)
+            if value < threshold:
+                value = (value - threshold) * 0.28258064516129
+            else:
+                value = (219.0 *
+                         (10.0**((value - 0.616596 - threshold) / 0.432699)
+                          - 0.037584) / 155.0)
+            return value * 0.9
+
+        # We use a 10 bits lookup table to interpolate the values
+        # as the deduced closed form inverse has a precision problem 
+        # around 0.033
+        nsamples = 2**10
+        step = 1.0/(nsamples-1)
+        self.samples = np.arange(0.0, 1.0 + step, step)
+        self.lut10bits = np.array([slog2_to_lin(x) for x in self.samples])
 
     def _encode_gradation(self, value):
-        value = value / 0.9
-        if value < self.decode_gradation(self.decode_threshold):
-            value = value / 0.28258064516129 + self.decode_threshold
-        else:
-            value = (0.432699 * math.log10(155.0 * value / 219.0 + 0.037584)
-                     + 0.616596 + self.decode_threshold)
-        value = value * (self.max - self.min) + self.min
-        return value
+        """ Encode linear to SLog2 using lut interpolation."""
+        return np.interp(value, self.lut10bits, self.samples)
 
     def _decode_gradation(self, value):
-        value = (value - self.min) / (self.max - self.min)
-        if value < self.decode_threshold:
-            value = ((value - self.decode_threshold) * 0.28258064516129)
-        else:
-            value = (219.0 *
-                     (math.pow(10.0, (value - 0.616596 - self.decode_threshold) / 0.432699)
-                      - 0.037584) / 155.0)
-        return value * 0.9
+        """ Decode linear to SLog2 using lut interpolation."""
+        return np.interp(value, self.samples, self.lut10bits)
 
 
 class SGamutSLog3(SGamutSLog):
