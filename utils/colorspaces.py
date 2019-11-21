@@ -531,6 +531,42 @@ class SGamut3CineSLog3(SGamutSLog3):
         return 0.31270, 0.329
 
 
+class VGamutVLog(AbstractColorspace):
+    """Panasonic V-Gamut and V-Log
+
+    """
+    def __init__(self):
+        self.cut1 = 0.01
+        self.cut2 = 0.181
+        self.b = 0.00873
+        self.c = 0.241514
+        self.d = 0.598206
+
+    def get_red_primaries(self):
+        return 0.730, 0.280
+
+    def get_green_primaries(self):
+        return 0.165, 0.840
+
+    def get_blue_primaries(self):
+        return 0.100, -0.030
+
+    def get_white_point(self):
+        return 0.3127, 0.3290
+
+    def _encode_gradation(self, value):
+        if value < self.cut1:
+            return 5.6 * value + 0.125
+        else:
+            return self.c * math.log10(value + self.b) + self.d
+
+    def _decode_gradation(self, value):
+        if value < self.cut2:
+            return (value - 0.125) / 5.6
+        else:
+            return math.pow(10.0, ((value - self.d) / self.c)) - self.b
+
+
 REC709 = Rec709()
 ALEXALOGCV3 = AlexaLogCV3()
 WIDEGAMUT = WideGamut()
@@ -548,6 +584,7 @@ SGAMUTSLOG = SGamutSLog()
 SGAMUTSLOG2 = SGamutSLog2()
 SGAMUTSLOG3 = SGamutSLog3()
 SGAMUT3CINESLOG3 = SGamut3CineSLog3()
+VGAMUTVLOG = VGamutVLog()
 
 COLORSPACES = {
     'Rec709': REC709,
@@ -567,4 +604,5 @@ COLORSPACES = {
     'SGamutSLog2': SGAMUTSLOG2,
     'SGamutSLog3': SGAMUTSLOG3,
     'SGamut3CineSLog3': SGAMUT3CINESLOG3,
+    'VGamutVLog': VGAMUTVLOG,
 }
